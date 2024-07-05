@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>商品列表</title>
+    <meta content="" name="descriptison">
+    <meta content="" name="keywords">
+
+    <!-- Favicons-网站图标 -->
+    <link href="../static/assets/img/lung_(1).ico" rel="icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i,900"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="../static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+    <link href="../static/assets/vendor/venobox/venobox.css" rel="stylesheet">
+    <link href="../static/assets/vendor/aos/aos.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="../static/assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- ======= Header  导航栏======= -->
+<header id="header">
+    <div class="container">
+        <div class="logo float-left">
+            <h1 class="text-light"><a href="/index"><span>商品管理系统</span></a></h1>
+        </div>
+        <nav class="nav-menu float-right d-none d-lg-block">
+            <ul>
+                <li><a href="/index">首页</a></li>
+                <li class="active"><a href="/product_list">商品列表</a></li>
+                <li><a href="/product_new">新增商品</a></li>
+                <li><a href="/logout">退出系统</a></li>
+            </ul>
+        </nav><!-- .nav-menu -->
+    </div>
+</header><!-- End Header -->
+
+<!-- ======= Main 内容 ======= -->
+<main id="main">
+    <section id="about" class="about">
+        <div class="section-title">
+            <h2>商品列表</h2>
+            <p style="text-align:center;">查看和管理所有的商品</p>
+        </div>
+        <div class="container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>型号</th>
+                  <th>图片</th>
+                  <th>规格</th>
+                  <th>颜色</th>
+                  <th>数量</th>
+                  <th>单价</th>
+                  <th>总价</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for product in products %}
+                <tr >
+                  <td>{{ product.model }}</td>
+                  <td><img src="{{ product.picture.url }}" alt="{{ product.model }}"></td>
+                  <td>{{ product.specification }}</td>
+                  <td>{{ product.get_COLOR_display }}</td>
+                  <td>{{ product.qty }}</td>
+                  <td>{{ product.unit_price }}</td>
+                  <td>{{ product.amount }}</td>
+                  <td>
+                    <a href="{% url 'product_edit' pk=product.pk %}">编辑</a>
+                    <a href="{% url 'product_delete' pk=product.pk %}">删除</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </section><!-- End About Us Section -->
+</main><!-- End #main -->
+
+<a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="../static/assets/vendor/jquery/jquery.min.js"></script>
+<script src="../static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../static/assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+<script src="../static/assets/vendor/php-email-form/validate.js"></script>
+<script src="../static/assets/vendor/jquery-sticky/jquery.sticky.js"></script>
+<script src="../static/assets/vendor/venobox/venobox.min.js"></script>
+<script src="../static/assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+<script src="../static/assets/vendor/counterup/counterup.min.js"></script>
+<script src="../static/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="../static/assets/vendor/aos/aos.js"></script>
+
+<!-- Template Main JS File -->
+<script src="../static/assets/js/main.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>首页</title>
+</head>
+<body>
+    <h1>产品列表</h1>
+
+    <ul>
+    {% for product in products %}
+        <li>
+            <h2>{{ product.model }}</h2>
+            <img src="{{ product.picture.url }}" alt="{{ product.model }}">
+            <p>规格：{{ product.specification }}</p>
+            <p>颜色：{{ product.COLOR }}</p>
+            <p>数量：{{ product.qty }}</p>
+            <p>单价：{{ product.unit_price }}</p>
+            <p>总价：{{ product.amount }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+
+    <h1>添加新产品</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">添加</
