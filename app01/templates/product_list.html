@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>产品清单</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <table>
+        <tr>
+            <th>产品型号</th>
+            <th>产品图片</th>
+            <th>产品规格</th>
+            <th>颜色</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>总价</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.model }}</td>
+            <td><img src="{{ product.picture.url }}" alt="{{ product.model }}"></td>
+            <td>{{ product.specification }}</td>
+            <td>{{ product.get_COLOR_display }}</td>
+            <td>{{ product.qty }}</td>
+            <td>{{ product.unit_price }}</td>
+            <td>{{ product.amount }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

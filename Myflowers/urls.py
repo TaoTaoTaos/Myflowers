@@ -16,7 +16,10 @@ Including another URLconf
 
 from django.urls import path
 from app01.views import ProductView
+from django.urls import path
+from app01 import views
 
 urlpatterns = [
-    path("", ProductView.as_view(), name="history"),
+    path("", views.product_list, name="product_list"),
+    # 其他的url映射
 ]
