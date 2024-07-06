@@ -14,12 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import path
-from app01.views import ProductView
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 from app01 import views
 
 urlpatterns = [
     path("", views.product_list, name="product_list"),
+    path("add", views.add_product, name="add_product"),
+    path("product_list", views.product_list, name="product_list"),
     # 其他的url映射
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
