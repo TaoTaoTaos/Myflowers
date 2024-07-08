@@ -1,8 +1,8 @@
 from django import forms
-from .models import Product
+from .models import FlowerMaterial
 
 
-class ProductForm(forms.ModelForm):
+class FlowerMaterialForm(forms.ModelForm):
     class Meta:
-        model = Product
-        fields = ["model", "picture", "specification", "COLOR", "qty", "unit_price"]
+        model = FlowerMaterial
+        fields = "__all__"
