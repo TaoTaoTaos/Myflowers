@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>{% block title %}Components / Accordion - NiceAdmin Bootstrap Template{% endblock %}</title>
+  <title>{% block title %}Template{% endblock %}</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -31,17 +31,13 @@
   <!-- Template Main CSS File -->
   <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
 
-    <style>
-    /* 调整.main区域的样式 */
-    .main {
-      padding: 20000px; /* 内边距，调整内容区域的大小 */
-      margin-top: 50px; /* 外边距，调整距离顶部的位置 */
-    }
-  </style>
+    
+  
 
 </head>
 
 <body>
+
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -51,7 +47,7 @@
         <img src="/static/assets/web_picture/flora logo.jpg" alt="logo">
         <span class="d-none d-lg-block">SummerFlora</span>
       </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
+    <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
     <div class="search-bar">
@@ -132,6 +128,8 @@
   </header><!-- End Header -->
 
   <!-- ======= Sidebar ======= -->
+
+
   <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
@@ -168,6 +166,7 @@
           </li>
         </ul>
       </li><!-- End Warehouse Nav -->
+      
 
       
 
@@ -178,30 +177,34 @@
           <i class="bi bi-person"></i>
           <span>Base页面</span>
         </a>
-      </li><!-- End Profile Page Nav -->
+      </li><!-- End base Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/pages-register">
+        <a class="nav-link collapsed" href="">
           <i class="bi bi-card-list"></i>
-          <span>Register</span>
+          <span>仓库属性管理</span>
         </a>
-      </li><!-- End Register Page Nav -->
+      </li><!-- End 属性管理 Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/pages-login">
+        <a class="nav-link collapsed" href="/admin">
           <i class="bi bi-box-arrow-in-right"></i>
-          <span>Login</span>
+          <span>后台管理</span>
         </a>
       </li><!-- End Login Page Nav -->
 
+
+
     </ul>
-  </aside><!-- End Sidebar-->
+  </aside>
+  <!-- End Sidebar-->
+
+
 
   <main id="main" class="main">
+    
 
     {% block content %}
-   
-
     <!-- 页面内容将由子模板填充 -->
     {% endblock content %}
 
@@ -246,7 +249,7 @@
   <script src="{% static 'assets/js/main.js' %}"></script>
 
 
-   {% block scripts %}
+  {% block scripts %}
  
   {% endblock %}
 
