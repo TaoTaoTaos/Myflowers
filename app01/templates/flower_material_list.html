@@ -13,6 +13,37 @@
   .section {
     flex: 1; /* 确保 section 元素填满 main 元素 */
   }
+
+  .table th, .table td {
+    vertical-align: middle; /* 垂直居中对齐 */
+    text-align: center; /* 水平居中对齐 */
+    white-space: nowrap; /* 防止文本换行 */
+  }
+
+  .table td {
+    width: 100px; /* 固定单元格宽度 */
+    height: 100px; /* 固定单元格高度 */
+    overflow: hidden; /* 隐藏超出部分 */
+    position: relative;
+  }
+
+  .table td img {
+    max-width: 100%; /* 限制图片最大宽度 */
+    max-height: 100%; /* 限制图片最大高度 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 确保图片居中 */
+  }
+
+  .table-responsive {
+    overflow-x: auto; /* 确保表格在小屏幕上水平滚动 */
+    -webkit-overflow-scrolling: touch; /* 确保在移动设备上平滑滚动 */
+  }
+
+  .table {
+    min-width: 1000px; /* 可选：设置表格的最小宽度以确保内容在狭窄的屏幕上不会过度压缩 */
+  }
 </style>
 {% endblock %}
 
@@ -27,23 +58,29 @@
           <div class="card-body">
             <h5 class="card-title">花材管理</h5>
 
-            <a href="{% url 'flower_material_create' %}" class="btn btn-primary mb-3">添加花材</a>
+            <a href="{% url 'add_flower_material' %}" class="btn btn-primary mb-3">添加花材</a>
 
             <div class="table-responsive">
               <table class="table table-striped" id="flower-materials-table">
                 <thead>
                   <tr>
-                    <th>系列</th>
+                    <th>分类</th>
                     <th>型号</th>
-                    <th>品名</th>
-                    <th>尺寸</th>
-                    <th>重量</th>
-                    <th>生产方式</th>
-                    <th>包装规格</th>
-                    <th>包装数量</th>
-                    <th>购买时的规格</th>
-                    <th>使用时的规格</th>
+                    <th>图片</th>
+                    <th>中文品名</th>
+                    <th>英文品名</th>
+                    <th>学名</th>
+                    <th>颜色</th>
+                    <th>尺寸(cm)</th>
+                    <th>重量(g)</th>
+                    <th>销售规格</th>
+                    <th>工艺</th>
+                    <th>外箱尺寸(cm)</th>
+                    <th>装箱数量</th>
                     <th>等级</th>
+                    <th>销售商</th>
+                    <th>价格一</th>
+                    <th>价格二</th>
                     <th>库存</th>
                     <th>操作</th>
                   </tr>
@@ -51,17 +88,29 @@
                 <tbody>
                   {% for material in flower_materials %}
                   <tr>
-                    <td>{{ material.series.name }}</td>
+                    <td>{{ material.category.name }}</td>
                     <td>{{ material.model }}</td>
-                    <td>{{ material.name }}</td>
+                    <td>
+                      {% if material.image %}
+                      <img src="{{ material.image.url }}" alt="图片">
+                      {% else %}
+                      无图片
+                      {% endif %}
+                    </td>
+                    <td>{{ material.chinese_name }}</td>
+                    <td>{{ material.english_name }}</td>
+                    <td>{{ material.scientific_name }}</td>
+                    <td>{{ material.color.name }}</td>
                     <td>{{ material.size }}</td>
                     <td>{{ material.weight }}</td>
+                    <td>{{ material.sale_spec }}</td>
                     <td>{{ material.process.name }}</td>
-                    <td>{{ material.packing_dimension }}</td>
-                    <td>{{ material.packing_qty }}</td>
-                    <td>{{ material.purchase_spe }}</td>
-                    <td>{{ material.usage_spe }}</td>
+                    <td>{{ material.outer_box_size }}</td>
+                    <td>{{ material.packing_quantity }}</td>
                     <td>{{ material.grade }}</td>
+                    <td>{{ material.supplier.name }}</td>
+                    <td>{{ material.price_one }}</td>
+                    <td>{{ material.price_two }}</td>
                     <td>{{ material.stock }}</td>
                     <td>
                       <a href="{% url 'flower_material_update' material.id %}" class="btn btn-sm btn-warning">编辑</a>
@@ -88,7 +137,13 @@
       searchable: true,
       fixedHeight: true,
       perPageSelect: [5, 10, 15, 20],
-      perPage: 10
+      perPage: 10,
+      labels: {
+        placeholder: "搜索...",
+        perPage: "条记录 每页",
+        noRows: "没有找到符合条件的记录",
+        info: "显示第 {start} 到 {end} 条记录，总共 {rows} 条记录",
+      },
     });
   });
 </script>

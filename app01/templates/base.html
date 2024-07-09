@@ -37,7 +37,12 @@
 </head>
 
 <body>
-
+  
+ {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -207,6 +212,7 @@
     {% block content %}
     <!-- 页面内容将由子模板填充 -->
     {% endblock content %}
+
 
   </main><!-- End #main -->
 

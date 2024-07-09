@@ -1,12 +1,12 @@
 # Myflowers/urls.py
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from app01 import views
 from app01.views import base_view, home_view, control_panel_view
 
 from app01.views import (
-    flower_material_create,
     flower_materials_list,
     flower_material_update,
     flower_material_delete,
@@ -19,9 +19,7 @@ urlpatterns = [
     path("base/", base_view, name="base"),
     path("control-panel/", control_panel_view, name="control-panel"),
     path(
-        "/flower_material_create/",
-        flower_material_create,
-        name="flower_material_create",
+        "add-flower-material/", views.add_flower_material, name="add_flower_material"
     ),  # 花材增
     path(
         "flower-materials/<int:pk>/update/",
@@ -38,3 +36,5 @@ urlpatterns = [
     ),  # 花材查
     ################################################################
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
