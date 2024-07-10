@@ -3,7 +3,7 @@ from django.urls import reverse
 from .models import FlowerMaterial
 from .forms import FlowerMaterialForm
 from django.shortcuts import render, redirect
-from .models import Category, Color, Process, Supplier, FlowerMaterial
+from .models import Category, Color, Process, Supplier, FlowerMaterial, Created_by
 from .forms import FlowerMaterialForm
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,61 +12,101 @@ from django.contrib.auth import logout
 
 ##########################
 
+from .forms import FlowerMaterialForm
+
 
 def add_flower_material(request):
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES)
         if form.is_valid():
+            flower_material = form.save(commit=False)
+
+            # 设置默认值
+
+            if not flower_material.chinese_name:
+                flower_material.chinese_name = "默认名"
+            if not flower_material.english_name:
+                flower_material.english_name = "Default Name"
+            if not flower_material.scientific_name:
+                flower_material.scientific_name = "Default Scientific Name"
+
+            if not flower_material.size:
+                flower_material.size = 0.0
+            if not flower_material.weight:
+                flower_material.weight = 0.0
+            if not flower_material.sale_spec_quantity:
+                flower_material.sale_spec_quantity = 1
+            if not flower_material.outer_box_length:
+                flower_material.outer_box_length = 0.0
+            if not flower_material.outer_box_width:
+                flower_material.outer_box_width = 0.0
+            if not flower_material.outer_box_height:
+                flower_material.outer_box_height = 0.0
+            if not flower_material.packing_quantity:
+                flower_material.packing_quantity = 1
+
+            if not flower_material.price_one:
+                flower_material.price_one = 0.0
+            if not flower_material.price_two:
+                flower_material.price_two = 0.0
+
             form.save()
             messages.success(request, "花材添加成功")
             return redirect("flower_material_list")
         else:
-            messages.error(request, "花材添加失败，请检查表单内容")
+            messages.error(request, "花材添加失败，（类别、型号、操作人；为必填项）")
     else:
         form = FlowerMaterialForm()
 
     categories = Category.objects.all()
-    colors = Color.objects.all()
+    grades = grade.objects.all()
     processes = Process.objects.all()
     suppliers = Supplier.objects.all()
+    Created_bys = Created_by.objects.all()
 
     context = {
         "form": form,
         "categories": categories,
-        "colors": colors,
         "processes": processes,
         "suppliers": suppliers,
+        "Created_bys": Created_bys,
     }
-    return render(request, "add_flower_material.html", context)
+    return render(
+        request,
+        "add_flower_material.html",
+        context,
+    )
 
 
 @login_required(login_url="/login/")
 def home_view(request):
-    return render(request, "home.html")
+    return render(request, "home.html", {"current_user": request.user})
 
 
 def base_view(request):
-    return render(request, "base.html")
+    return render(request, "base.html", {"current_user": request.user})
 
 
 def login_view(request):
-    return render(request, "login.html")
+    return render(request, "login.html", {"current_user": request.user})
 
 
 def logout_view(request):
     logout(request)
-    return redirect("home")
+    return redirect("home", {"current_user": request.user})
 
 
 def control_panel_view(request):
-    return render(request, "control_panel.html")
+    return render(request, "control_panel.html", {"current_user": request.user})
 
 
 # 花材表显示
 def flower_materials_list(request):
     flower_materials = FlowerMaterial.objects.all()
     return render(
-        request, "flower_material_list.html", {"flower_materials": flower_materials}
+        request,
+        "flower_material_list.html",
+        {"flower_materials": flower_materials, "current_user": request.user},
     )
 
 
@@ -74,17 +114,21 @@ from django.shortcuts import render, redirect
 from .forms import FlowerMaterialForm
 
 
-# 更新花材
-def flower_material_update(request, pk):
-    flower_material = get_object_or_404(FlowerMaterial, pk=pk)
+# 编辑花材
+def edit_flower_material(request, pk):
+    material = get_object_or_404(FlowerMaterial, pk=pk)
+
     if request.method == "POST":
-        form = FlowerMaterialForm(request.POST, instance=flower_material)
+        form = FlowerMaterialForm(request.POST, request.FILES, instance=material)
         if form.is_valid():
             form.save()
-            return redirect("flower_material_list")
+            return redirect(reverse("flower_material_list"))  # 重定向到花材列表页面
     else:
-        form = FlowerMaterialForm(instance=flower_material)
-    return render(request, "flower_material_form.html", {"form": form})
+        form = FlowerMaterialForm(instance=material)
+
+    return render(
+        request, "edit_flower_material.html", {"form": form, "material": material}
+    )
 
 
 # 删除花材
@@ -96,7 +140,7 @@ def flower_material_delete(request, pk):
     return render(
         request,
         "flower_material_confirm_delete.html",
-        {"flower_material": flower_material},
+        {"flower_material": flower_material, "current_user": request.user},
     )
 
 

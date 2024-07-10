@@ -14,8 +14,8 @@ from app01.views import (
 )
 
 from app01.views import (
+    edit_flower_material,
     flower_materials_list,
-    flower_material_update,
     flower_material_delete,
 )
 
@@ -33,9 +33,9 @@ urlpatterns = [
         "add-flower-material/", views.add_flower_material, name="add_flower_material"
     ),  # 花材增
     path(
-        "flower-materials/<int:pk>/update/",
-        flower_material_update,
-        name="flower_material_update",
+        "flower_material/edit/<int:pk>/",
+        edit_flower_material,
+        name="flower_material_edit",
     ),  # 花材改
     path(
         "flower-materials/<int:pk>/delete/",

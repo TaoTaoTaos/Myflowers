@@ -19,6 +19,23 @@ class CustomAuthenticationForm(AuthenticationForm):
         fields = ("username", "password")
 
 
+from django import forms
+from django.db import models
+from .models import FlowerMaterial, CustomUser
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+
+
+class RegisterForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ("username", "password1", "password2")
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    class Meta:
+        fields = ("username", "password")
+
+
 class FlowerMaterialForm(forms.ModelForm):
     class Meta:
         model = FlowerMaterial
@@ -29,12 +46,11 @@ class FlowerMaterialForm(forms.ModelForm):
 
         # 设置中文标签
         self.fields["category"].label = "类别"
-        self.fields["model"].label = "模型"
+        self.fields["model"].label = "型号"
         self.fields["image"].label = "图片"
         self.fields["chinese_name"].label = "中文名"
         self.fields["english_name"].label = "英文名"
         self.fields["scientific_name"].label = "学名"
-        self.fields["color"].label = "颜色"
         self.fields["size"].label = "尺寸（cm）"
         self.fields["weight"].label = "重量（g）"
         self.fields["sale_spec_quantity"].label = "销售规格数量"
@@ -46,19 +62,35 @@ class FlowerMaterialForm(forms.ModelForm):
         self.fields["packing_quantity"].label = "装箱数量"
         self.fields["grade"].label = "等级"
         self.fields["supplier"].label = "供应商"
-        self.fields["price_one"].label = "价格一"
-        self.fields["price_two"].label = "价格二"
-        self.fields["stock"].label = "库存数量"
+        self.fields["price_one"].label = "采购价一"
+        self.fields["price_two"].label = "采购价二"
+        self.fields["created_by"].label = "创建者"
 
+        # 设置默认值
+        self.fields["chinese_name"].initial = "默认名"
+        self.fields["english_name"].initial = "Default Name"
+        self.fields["scientific_name"].initial = "Default Scientific Name"
+        self.fields["size"].initial = 0.0
+        self.fields["weight"].initial = 0.0
+        self.fields["sale_spec_quantity"].initial = 1
+        self.fields["outer_box_length"].initial = 0.0
+        self.fields["outer_box_width"].initial = 0.0
+        self.fields["outer_box_height"].initial = 0.0
+        self.fields["packing_quantity"].initial = 1
+
+        self.fields["price_one"].initial = 0.0
+        self.fields["price_two"].initial = 0.0
         # 设置必填字段
         self.fields["model"].required = True
-        self.fields["image"].required = True
+        self.fields["category"].required = True
+        self.fields["created_by"].required = True
 
     def clean(self):
         cleaned_data = super().clean()
-        required_fields = ["model", "image"]  # 添加所有必填字段的名称
+        required_fields = ["model", "category", "created_by"]  # 添加所有必填字段的名称
 
-        for field_name in required_fields:
-            if not cleaned_data.get(field_name):
-                self.add_error(field_name, "该字段不能为空")
+        for field in required_fields:
+            if not cleaned_data.get(field):
+                self.add_error(field, "有必填项未填。")
+
         return cleaned_data

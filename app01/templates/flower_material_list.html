@@ -63,10 +63,9 @@
                   <th>分类</th>
                   <th>型号</th>
                   <th>图片</th>
-                  <th>中文品名</th>
-                  <th>英文品名</th>
+                  <th>中文名</th>
+                  <th>英文名</th>
                   <th>学名</th>
-                  <th>颜色</th>
                   <th>尺寸(cm)</th>
                   <th>重量(g)</th>
                   <th>销售规格</th>
@@ -75,9 +74,9 @@
                   <th>装箱数量</th>
                   <th>等级</th>
                   <th>销售商</th>
-                  <th>价格一</th>
-                  <th>价格二</th>
-                  <th>库存</th>
+                  <th>采购价一</th>
+                  <th>采购价二</th>
+                  <th>添加人</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -96,7 +95,6 @@
                   <td>{{ material.chinese_name }}</td>
                   <td>{{ material.english_name }}</td>
                   <td>{{ material.scientific_name }}</td>
-                  <td>{{ material.color.name }}</td>
                   <td>{{ material.size }}</td>
                   <td>{{ material.weight }}</td>
                   <td>{{ material.sale_spec }}</td>
@@ -107,9 +105,9 @@
                   <td>{{ material.supplier.name }}</td>
                   <td>{{ material.price_one }}</td>
                   <td>{{ material.price_two }}</td>
-                  <td>{{ material.stock }}</td>
+                  <td>{{ material.created_by.name }}</td>
                   <td>
-                    <a href="{% url 'flower_material_update' material.id %}" class="btn btn-sm btn-warning">编辑</a>
+                    <a href="{% url 'flower_material_edit' material.id %}" class="btn btn-sm btn-warning">编辑</a>
                     <a href="{% url 'flower_material_delete' material.id %}" class="btn btn-sm btn-danger">删除</a>
                   </td>
                 </tr>
