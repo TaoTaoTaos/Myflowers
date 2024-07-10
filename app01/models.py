@@ -33,11 +33,13 @@ class FlowerMaterial(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
-    model = models.CharField(max_length=100, blank=False, default="")
-    image = models.ImageField(upload_to="images/", blank=True, default=None)
-    chinese_name = models.CharField(max_length=200, blank=True, default="")
-    english_name = models.CharField(max_length=200, blank=True, default="")
-    scientific_name = models.CharField(max_length=200, blank=True, default="")
+    model = models.CharField(max_length=100, null=True, blank=False, default="")
+    image = models.ImageField(upload_to="images/", null=True, blank=True, default=None)
+    chinese_name = models.CharField(max_length=200, null=True, blank=True, default="")
+    english_name = models.CharField(max_length=200, null=True, blank=True, default="")
+    scientific_name = models.CharField(
+        max_length=200, null=True, blank=True, default=""
+    )
     color = models.ForeignKey(
         Color, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
