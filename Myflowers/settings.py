@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-0&5)htj^5f!_ri%*n0f)ey%7t^4s2&ujr@nlu%$4kqhc*ea_l@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.7", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["192.168.1.7", "localhost", "127.0.0.1", "192.168.0.114"]
 
 
 # Application definition
@@ -110,13 +110,23 @@ STATICFILES_DIRS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = "zh-hans"
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
+
+LANGUAGES = [
+    ("zh-hans", "Simplified Chinese"),
+    ("en", "English"),
+    # 你可以添加更多语言
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, "locale"),
+]
 
 
 # Static files (CSS, JavaScript, Images)
@@ -129,6 +139,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "myapp/static")]
 MEDIA_URL = "/products_picture/"
 MEDIA_ROOT = "F:/Myflowers/products_picture"
 
+AUTH_USER_MODEL = "app01.CustomUser"  # 格式为app名.模型类名
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

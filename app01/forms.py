@@ -1,7 +1,22 @@
 from django import forms
-from .models import FlowerMaterial, Category, Color, Process, Supplier
-from django import forms
-from .models import FlowerMaterial, Category, Color, Process, Supplier
+from django.db import models
+from .models import FlowerMaterial
+
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser
+from django.contrib.auth.forms import AuthenticationForm
+
+
+class RegisterForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ("username", "password1", "password2")
+
+
+# 确认登录
+class CustomAuthenticationForm(AuthenticationForm):
+    class Meta:
+        fields = ("username", "password")
 
 
 class FlowerMaterialForm(forms.ModelForm):
@@ -41,5 +56,9 @@ class FlowerMaterialForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        # 在这里可以添加更多的自定义验证逻辑
+        required_fields = ["model", "image"]  # 添加所有必填字段的名称
+
+        for field_name in required_fields:
+            if not cleaned_data.get(field_name):
+                self.add_error(field_name, "该字段不能为空")
         return cleaned_data

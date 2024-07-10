@@ -4,7 +4,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from app01 import views
-from app01.views import base_view, home_view, control_panel_view
+from app01.views import (
+    base_view,
+    home_view,
+    control_panel_view,
+    login_view,
+    register_view,
+    logout_view,
+)
 
 from app01.views import (
     flower_materials_list,
@@ -14,10 +21,14 @@ from app01.views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", home_view, name="home"),  # 将根URL指向home
-    path("home/", home_view, name="home"),
     path("base/", base_view, name="base"),
+    ####################
+    path("", login_view, name="login"),  # 打开网页指向home
+    path("login/", login_view, name="login"),
+    path("logout/", logout_view, name="logout"),
+    path("home/", home_view, name="home"),
     path("control-panel/", control_panel_view, name="control-panel"),
+    path("register/", register_view, name="register"),
     path(
         "add-flower-material/", views.add_flower_material, name="add_flower_material"
     ),  # 花材增
