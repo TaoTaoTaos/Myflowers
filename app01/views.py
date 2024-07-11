@@ -3,7 +3,15 @@ from django.urls import reverse
 from .models import FlowerMaterial
 from .forms import FlowerMaterialForm
 from django.shortcuts import render, redirect
-from .models import Category, Color, Process, Supplier, FlowerMaterial, Created_by
+from .models import (
+    Category,
+    Color,
+    Process,
+    Supplier,
+    FlowerMaterial,
+    CreatedBy,
+    Grade,
+)
 from .forms import FlowerMaterialForm
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
@@ -59,10 +67,10 @@ def add_flower_material(request):
         form = FlowerMaterialForm()
 
     categories = Category.objects.all()
-    grades = grade.objects.all()
+    grades = Grade.objects.all()
     processes = Process.objects.all()
     suppliers = Supplier.objects.all()
-    Created_bys = Created_by.objects.all()
+    Created_bys = CreatedBy.objects.all()
 
     context = {
         "form": form,

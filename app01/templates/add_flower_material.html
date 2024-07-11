@@ -218,16 +218,24 @@
                   {% endif %}
                 </div>
 
+
+              </div>
+                   <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="grade" class="form-label">等级</label>
-                  <input type="text" id="grade" name="grade" class="form-control {% if form.grade.errors %}is-invalid{% endif %}" value="{{ form.grade.value|default_if_none:'' }}">
+                  <select id="supplier" name="supplier" class="form-select {% if form.supplier.errors %}is-invalid{% endif %}">
+                    <option value="">选择等级</option>
+                    {% for grade in grades %}
+                    <option value="{{ grade.id }}" {% if form.grade.value == grade.id %}selected{% endif %}>{{ grade.name }}</option>
+                    {% endfor %}
+                  </select>
                   {% if form.grade.errors %}
                   <div class="invalid-feedback">
                     {{ form.grade.errors.0 }}
                   </div>
                   {% endif %}
                 </div>
-              </div>
+
 
               <div class="form-row">
                 <div class="form-group col-md-6">
@@ -263,7 +271,7 @@
 
               <div class="form-row">
                 <div class="form-group col-md-6">
-                  <label for="price_one" class="form-label">价格一</label>
+                  <label for="price_one" class="form-label">采购价一</label>
                   <input type="number" step="0.01" id="price_one" name="price_one" class="form-control {% if form.price_one.errors %}is-invalid{% endif %}" value="{{ form.price_one.value|default_if_none:0.0 }}">
                   {% if form.price_one.errors %}
                   <div class="invalid-feedback">
@@ -273,7 +281,7 @@
                 </div>
 
                 <div class="form-group col-md-6">
-                  <label for="price_two" class="form-label">价格二</label>
+                  <label for="price_two" class="form-label">采购价二</label>
                   <input type="number" step="0.01" id="price_two" name="price_two" class="form-control {% if form.price_two.errors %}is-invalid{% endif %}" value="{{ form.price_two.value|default_if_none:0.0 }}">
                   {% if form.price_two.errors %}
                   <div class="invalid-feedback">

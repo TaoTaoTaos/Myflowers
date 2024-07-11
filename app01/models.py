@@ -1,4 +1,6 @@
+# models.py
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class Grade(models.Model):
@@ -36,7 +38,7 @@ class Supplier(models.Model):
         return self.name
 
 
-class Created_by(models.Model):
+class CreatedBy(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -55,6 +57,7 @@ class FlowerMaterial(models.Model):
     scientific_name = models.CharField(
         max_length=200, null=True, blank=True, default=""
     )
+    color = models.CharField(max_length=200, null=True, blank=True, default="")
     size = models.FloatField(help_text="单位：cm", blank=True, default=0.0)
     weight = models.FloatField(help_text="单位：g", blank=True, default=0.0)
     sale_spec_quantity = models.FloatField(help_text="数量", blank=True, default=0.0)
@@ -80,11 +83,9 @@ class FlowerMaterial(models.Model):
     packing_quantity = models.IntegerField(
         help_text="单位：qty", null=True, blank=True, default=0
     )
-
     grade = models.ForeignKey(
         Grade, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
-
     supplier = models.ForeignKey(
         Supplier, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
@@ -94,9 +95,8 @@ class FlowerMaterial(models.Model):
     price_two = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
     )
-
     created_by = models.ForeignKey(
-        Created_by, on_delete=models.SET_NULL, null=True, blank=True, default=None
+        CreatedBy, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
 
     def __str__(self):
@@ -119,13 +119,6 @@ class FlowerMaterial(models.Model):
         )
 
 
-#####################用户#####################
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-
 class CustomUser(AbstractUser):
-    # 添加自定义字段
-
     def __str__(self):
         return self.username
