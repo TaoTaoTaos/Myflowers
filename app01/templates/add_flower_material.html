@@ -37,7 +37,7 @@
         <div class="card custom-width">
           <div class="card-body">
             <h5 class="card-title">添加花材</h5>
-            <p>（类别、型号为必填项）</p>
+            <p>（类别、型号、添加人为必填项）</p>
 
             <form method="post" enctype="multipart/form-data">
               {% csrf_token %}
@@ -147,12 +147,12 @@
                 <div class="form-group col-md-3">
                   <label for="sale_spec_unit" class="form-label">销售规格单位</label>
                   <select id="sale_spec_unit" name="sale_spec_unit" class="form-select {% if form.sale_spec_unit.errors %}is-invalid{% endif %}">
-                    <option value="">选择单位</option>
-                    <option value="kg" {% if form.sale_spec_unit.value == "kg" %}selected{% endif %}>kg</option>
-                    <option value="g" {% if form.sale_spec_unit.value == "g" %}selected{% endif %}>g</option>
-                    <option value="cm" {% if form.sale_spec_unit.value == "cm" %}selected{% endif %}>cm</option>
-                    <option value="m" {% if form.sale_spec_unit.value == "m" %}selected{% endif %}>m</option>
-                  </select>
+                  <option value="">选择单位</option>
+                  <option value="pcs" {% if form.sale_spec_unit.value == "pcs" %}selected{% endif %}>pcs</option>
+                  <option value="g" {% if form.sale_spec_unit.value == "g" %}selected{% endif %}>g</option>
+                  <option value="box" {% if form.sale_spec_unit.value == "box" %}selected{% endif %}>box</option>
+                  <option value="kg" {% if form.sale_spec_unit.value == "kg" %}selected{% endif %}>kg</option>
+                </select>
                   {% if form.sale_spec_unit.errors %}
                   <div class="invalid-feedback">
                     {{ form.sale_spec_unit.errors.0 }}

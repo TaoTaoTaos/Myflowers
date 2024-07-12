@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报价单模板</title>
+    <style>
+       
+
+        .container {
+            padding: 20px;
+            width: 80%;
+            margin: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #000;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+            /* Uniform font size */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-size: 14px;
+            /* Uniform font size */
+        }
+
+        .header td {
+            text-align: center;
+            font-size: 14px;
+            /* Uniform font size */
+        }
+
+        .header p {
+            margin: 5px 0;
+        }
+
+        .remarks {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .total-row td {
+            text-align: right;
+        }
+
+        .fill-in {
+            color: #888;
+            font-style: italic;
+        }
+
+        .center {
+  display: block;
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+
+  .container {
+    padding: 20px;
+    width: 794px; /* 设置为 A4 纸的宽度 */
+    margin: auto;
+}
+}
+
+    </style>
+   
+</head>
+
+<body>
+    <div class="container">
+        <table>
+            <tr class="header">
+                <td colspan="7">
+                    
+                <img src="/static/assets/web_picture/flora logo.jpg" alt="Pulpit rock" width="300" height="300">
+
+                    <p class="center">Summer Flora Co., Ltd.</p>
+                    <p>Let life be beautiful like summer flowers</p>
+                    <p>Add.: No.320, Building 217, Guanxing Road, Guandu district, Kunming, Yunnan, China, 650200</p>
+                    <p>Tel:+86 871 67184502 Email:manager@summerflora.cn</p>
+                    <p>Mob./Whatsapp/Wechat :+8615368840472 Skype:summerflora2016 Website:
+                        www.summerflora.en.alibaba.com</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">Shipper:<br>Summer Flora.Co.,Ltd.<br>Floor 4th, Building 217, Guanxing Road, Guandu
+                    district,
+                    Kunming, Yunnan, China, 650200</td>
+                <td colspan="6" style="text-align: center;">PROFORMA INVOICE</td>
+            </tr>
+            <tr>
+                <td colspan="2">Valid date(Y-M-D):<br><span class="fill-in">YYYY-MM-DD</span></td>
+                <td colspan="2">Invoice No.:<br><span class="fill-in">Invoice Number</span></td>
+                <td colspan="3">Date(Y-M-D):<br><span class="fill-in">YYYY-MM-DD</span></td>
+            </tr>
+            <tr>
+                <td colspan="2">Buyer:<br><span class="fill-in">Buyer Name</span></td>
+                <td colspan="2">Receiver::<br><span class="fill-in">Receiver: Name</span></td>
+                <td colspan="3">Tel:<br><span class="fill-in">Contact Phone</span></td>
+            </tr>
+            <tr>
+                <th>Model</th>
+                <th>Picture</th>
+                <th>Specification</th>
+                <th>Color</th>
+                <th>QTY</th>
+                <th>Unit Price</th>
+                <th>Amount</th>
+            </tr>
+            <!-- 插入产品数据行 -->
+            <tr>
+                <td colspan="7" style="text-align: center;">这里插入产品数据行...</td>
+            </tr>
+            <tr>
+                <td colspan="7" style="text-align: center;">这里插入产品数据行...</td>
+            </tr>
+            <!-- 表尾 -->
+            <tr class="total-row">
+                <td>TFreight cost:</td>
+                <td colspan="5"></td>
+                <td><span class="fill-in">Freight cost</span></td>
+            </tr>
+            <tr class="total-row">
+                <td>Total:</td>
+                <td colspan="5"></td>
+                <td><span class="fill-in">Total Amount</span></td>
+            </tr>
+            <tr class="total-row">
+                <td>Freight:</td>
+                <td colspan="5"></td>
+                <td><span class="fill-in">Freight Cost</span></td>
+            </tr>
+            <tr class="total-row">
+                <td>Grand Total:</td>
+                <td colspan="5"></td>
+                <td><span class="fill-in">Grand Total</span></td>
+            </tr>
+            <!-- 添加备注行 -->
+            <tr>
+                <td>Payment term:</td>
+                <td colspan="6">100% payment in advance.</td>
+            </tr>
+            <tr>
+                <td>Deliver time:</td>
+                <td colspan="6">7-15 working days after confirm of payment.</td>
+            </tr>
+            <tr>
+                <td>Payment currency:</td>
+                <td colspan="6">USD</td>
+            </tr>
+            <tr>
+                <td>Beneficiary account number:</td>
+                <td colspan="6"><span class="fill-in">101417 09988447</span> View account certificate</td>
+            </tr>
+            <tr>
+                <td>Swift code:</td>
+                <td colspan="6"><span class="fill-in">CHASSGSGXXX or CHASSGSG</span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary country/region:</td>
+                <td colspan="6"><span class="fill-in">Singapore</span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary name:</td>
+                <td colspan="6"><span class="fill-in">Yunnan Summer Flora Co., Ltd.</span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary address:</td>
+                <td colspan="6"><span class="fill-in">8 Shenton Way, #45-01, AXA Tower, Singapore 068811</span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary bank:</td>
+                <td colspan="6"><span class="fill-in">JPMorgan Chase Bank N.A., Singapore Branch J.BMorgan</span></td>
+            </tr>
+            <tr>
+                <td>Beneficiary bank address:</td>
+                <td colspan="6"><span class="fill-in">168 Robinson Road, Capital Tower 17-00, Singapore 068912</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Bank code:</td>
+                <td colspan="6"><span class="fill-in">7153</span></td>
+            </tr>
+            <tr>
+                <td>Branch code:</td>
+                <td colspan="6"><span class="fill-in">1</span></td>
+            </tr>
+            <tr>
+                <td>Remark:</td>
+                <td colspan="6">Please include the order number <span class="fill-in">179316363501029559</span></td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

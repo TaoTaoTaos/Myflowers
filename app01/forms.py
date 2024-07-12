@@ -1,10 +1,8 @@
 from django import forms
 from django.db import models
-from .models import FlowerMaterial
-
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
+from .models import CustomUser, Product, ProductMaterial, FlowerMaterial
 
 
 class RegisterForm(UserCreationForm):
@@ -94,3 +92,30 @@ class FlowerMaterialForm(forms.ModelForm):
                 self.add_error(field, "有必填项未填。")
 
         return cleaned_data
+
+
+###########################################
+
+
+from django import forms
+from .models import Product, ProductMaterial
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            "description",
+            "model",
+            "chinese_name",
+            "english_name",
+            "labor_cost",
+            "loss_rate",
+            "created_by",
+        ]
+
+
+class ProductMaterialForm(forms.ModelForm):
+    class Meta:
+        model = ProductMaterial
+        fields = ["flower_material", "quantity", "ratio", "price_type"]

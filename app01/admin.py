@@ -1,4 +1,3 @@
-# admin.py
 from django.contrib import admin
 from .models import (
     Grade,
@@ -9,52 +8,66 @@ from .models import (
     CreatedBy,
     FlowerMaterial,
     CustomUser,
+    Product,
+    ProductMaterial,
 )
+
+# Register your models here.
 
 
 @admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(Process)
 class ProcessAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(CreatedBy)
 class CreatedByAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
 
 
 @admin.register(FlowerMaterial)
 class FlowerMaterialAdmin(admin.ModelAdmin):
     list_display = (
-        "category",
         "model",
+        "category",
         "chinese_name",
         "english_name",
         "scientific_name",
+        "color",
         "size",
         "weight",
-        "sale_spec",
+        "sale_spec_quantity",
+        "sale_spec_unit",
         "process",
-        "outer_box_size",
+        "outer_box_length",
+        "outer_box_width",
+        "outer_box_height",
         "packing_quantity",
         "grade",
         "supplier",
@@ -62,10 +75,40 @@ class FlowerMaterialAdmin(admin.ModelAdmin):
         "price_two",
         "created_by",
     )
-    search_fields = ("chinese_name", "english_name", "scientific_name", "model")
-    list_filter = ("category", "grade", "supplier", "process")
+    search_fields = ("model", "chinese_name", "english_name", "scientific_name")
+    list_filter = ("category", "color", "process", "grade", "supplier")
 
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ("username", "email", "first_name", "last_name", "is_staff")
+    search_fields = ("username", "email", "first_name", "last_name")
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = (
+        "model",
+        "chinese_name",
+        "english_name",
+        "labor_cost",
+        "loss_rate",
+        "created_by",
+        "cost",
+    )
+    search_fields = ("model", "chinese_name", "english_name")
+    list_filter = ("created_by",)
+
+
+@admin.register(ProductMaterial)
+class ProductMaterialAdmin(admin.ModelAdmin):
+    list_display = (
+        "product",
+        "flower_material",
+        "quantity",
+        "ratio",
+        "price_type",
+    )
+    search_fields = ("product__chinese_name", "flower_material__chinese_name")
+    list_filter = ("price_type",)

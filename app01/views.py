@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from .models import FlowerMaterial
+from .models import FlowerMaterial, Product
 from .forms import FlowerMaterialForm
 from django.shortcuts import render, redirect
 from .models import (
@@ -76,6 +76,7 @@ def add_flower_material(request):
         "form": form,
         "categories": categories,
         "processes": processes,
+        "grades": grades,
         "suppliers": suppliers,
         "Created_bys": Created_bys,
     }
@@ -108,6 +109,10 @@ def control_panel_view(request):
     return render(request, "control_panel.html", {"current_user": request.user})
 
 
+def QuoteMOD_view(request):
+    return render(request, "QuoteMOD.html", {"current_user": request.user})
+
+
 # 花材表显示
 def flower_materials_list(request):
     flower_materials = FlowerMaterial.objects.all()
@@ -118,37 +123,38 @@ def flower_materials_list(request):
     )
 
 
+def products_list(request):
+    products = Product.objects.all()
+    return render(
+        request,
+        "product_list.html",
+        {"products": products, "current_user": request.user},
+    )
+
+
 from django.shortcuts import render, redirect
 from .forms import FlowerMaterialForm
 
 
-# 编辑花材
-def edit_flower_material(request, pk):
-    material = get_object_or_404(FlowerMaterial, pk=pk)
-
+def edit_flower_material(request, model):
+    material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES, instance=material)
         if form.is_valid():
             form.save()
-            return redirect(reverse("flower_material_list"))  # 重定向到花材列表页面
+            return redirect("flower_material_list")  # 重定向到花材列表页
     else:
         form = FlowerMaterialForm(instance=material)
-
-    return render(
-        request, "edit_flower_material.html", {"form": form, "material": material}
-    )
+    return render(request, "edit_flower_material.html", {"form": form})
 
 
-# 删除花材
-def flower_material_delete(request, pk):
-    flower_material = get_object_or_404(FlowerMaterial, pk=pk)
+def delete_flower_material(request, model):
+    material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
-        flower_material.delete()
-        return redirect("flower_material_list")
+        material.delete()
+        return redirect("flower_material_list")  # 重定向到花材列表页
     return render(
-        request,
-        "flower_material_confirm_delete.html",
-        {"flower_material": flower_material, "current_user": request.user},
+        request, "flower_material_confirm_delete.html", {"material": material}
     )
 
 
@@ -191,3 +197,47 @@ def login_view(request):
         form = CustomAuthenticationForm()
 
     return render(request, "login.html", {"form": form})
+
+
+# 添加产品
+from django.shortcuts import render, redirect
+from django.forms import modelformset_factory
+from .forms import (
+    ProductForm,
+    ProductMaterialForm,
+)  # 导入 ProductForm 和 ProductMaterialForm
+from .models import ProductMaterial
+
+
+def add_product(request):
+    ProductMaterialFormSet = modelformset_factory(
+        ProductMaterial, form=ProductMaterialForm, extra=1
+    )
+
+    if request.method == "POST":
+        product_form = ProductForm(request.POST)
+        material_formset = ProductMaterialFormSet(
+            request.POST, queryset=ProductMaterial.objects.none()
+        )
+
+        if product_form.is_valid() and material_formset.is_valid():
+            product = product_form.save()
+
+            for form in material_formset:
+                material = form.save(commit=False)
+                material.product = product
+                material.save()
+
+            return redirect("product_list")  # 重定向到产品列表页面或其他页面
+    else:
+        product_form = ProductForm()
+        material_formset = ProductMaterialFormSet(
+            queryset=ProductMaterial.objects.none()
+        )
+
+    context = {
+        "product_form": product_form,
+        "material_formset": material_formset,
+    }
+
+    return render(request, "add_product.html", context)

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Add Product</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ product_form.as_p }}
+
+        <h3>Materials</h3>
+        {{ material_formset.management_form }}
+        <div id="formset">
+            {% for form in material_formset %}
+                <div class="material-form">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-material">Add Material</button>
+
+        <button type="submit">Save Product</button>
+    </form>
+
+    <script>
+        $('#add-material').click(function() {
+            const formCount = $('#id_productmaterial_set-TOTAL_FORMS').val();
+            const newFormIndex = parseInt(formCount);
+
+            const form = $('#formset .material-form:first').clone(true);
+            form.find(':input').each(function() {
+                const oldName = $(this).attr('name');
+                const newName = oldName.replace(`-${newFormIndex - 1}-`, `-${newFormIndex}-`);
+                $(this).attr('name', newName);
+                $(this).val('');
+            });
+
+            form.insertBefore($('#add-material'));
+            $('#id_productmaterial_set-TOTAL_FORMS').val(newFormIndex + 1);
+        });
+    </script>
+</body>
+</html>

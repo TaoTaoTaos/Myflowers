@@ -47,10 +47,14 @@ class CreatedBy(models.Model):
 
 # 原材料类
 class FlowerMaterial(models.Model):
-    category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True, default=None
+    model = models.CharField(
+        max_length=100, blank=False, default="Material0000", primary_key=True
     )
-    model = models.CharField(max_length=100, null=True, blank=False, default="")
+
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, default="默认类型"
+    )
+
     image = models.ImageField(upload_to="images/", null=True, blank=True, default=None)
     chinese_name = models.CharField(max_length=200, null=True, blank=True, default="")
     english_name = models.CharField(max_length=200, null=True, blank=True, default="")
@@ -119,6 +123,78 @@ class FlowerMaterial(models.Model):
         )
 
 
+##################原材料END#################
+
+
+##################用户信息#################
 class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
+
+
+##################用户信息END#################
+
+
+##################产品信息#################
+from decimal import Decimal
+
+
+class Product(models.Model):
+    model = models.CharField(
+        max_length=100, blank=False, default="Product0000", primary_key=True
+    )
+    description = models.TextField(null=True, blank=True)
+    chinese_name = models.CharField(max_length=200)
+    english_name = models.CharField(max_length=200)
+    materials = models.ManyToManyField(FlowerMaterial, through="ProductMaterial")
+
+    labor_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    loss_rate = models.FloatField(default=0.0)
+    created_by = models.ForeignKey(
+        CreatedBy, on_delete=models.SET_NULL, null=True, blank=True, default=None
+    )
+
+    def __str__(self):
+        return self.chinese_name  # 修改为返回 Chinese name
+
+    @property
+    def cost(self):
+        total_cost = Decimal(0)
+        for material in self.productmaterial_set.all():
+            if material.price_type == "price_one":
+                material_cost = (
+                    material.flower_material.price_one
+                    * Decimal(material.quantity)
+                    * Decimal(material.ratio)
+                )
+            else:
+                material_cost = (
+                    material.flower_material.price_two
+                    * Decimal(material.quantity)
+                    * Decimal(material.ratio)
+                )
+            total_cost += material_cost
+        total_cost += self.labor_cost
+        total_cost *= Decimal(1 + self.loss_rate)
+        return total_cost
+
+
+class ProductMaterial(models.Model):
+    PRICE_TYPE_CHOICES = [
+        ("price_one", "Price One"),
+        ("price_two", "Price Two"),
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    flower_material = models.ForeignKey(FlowerMaterial, on_delete=models.CASCADE)
+    quantity = models.FloatField(default=1.0)
+    ratio = models.FloatField(default=1.0)
+    price_type = models.CharField(
+        max_length=10, choices=PRICE_TYPE_CHOICES, default="price_one"
+    )
+
+    def __str__(self):
+        return f"{self.product.name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio}, Price: {self.price_type})"
+
+
+##################产品信息END#################
