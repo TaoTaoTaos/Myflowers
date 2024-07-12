@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Grade(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -12,6 +13,7 @@ class Grade(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
 
     def __str__(self):
         return self.name
@@ -19,6 +21,7 @@ class Category(models.Model):
 
 class Color(models.Model):
     name = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
 
     def __str__(self):
         return self.name
@@ -26,6 +29,7 @@ class Color(models.Model):
 
 class Process(models.Model):
     name = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
 
     def __str__(self):
         return self.name
@@ -33,6 +37,7 @@ class Process(models.Model):
 
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
 
     def __str__(self):
         return self.name
@@ -40,12 +45,13 @@ class Supplier(models.Model):
 
 class CreatedBy(models.Model):
     name = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
 
     def __str__(self):
         return self.name
 
 
-# 原材料类
+##########################花材类##########################
 class FlowerMaterial(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Material0000", primary_key=True
@@ -62,8 +68,12 @@ class FlowerMaterial(models.Model):
         max_length=200, null=True, blank=True, default=""
     )
     color = models.CharField(max_length=200, null=True, blank=True, default="")
-    size = models.FloatField(help_text="单位：cm", blank=True, default=0.0)
-    weight = models.FloatField(help_text="单位：g", blank=True, default=0.0)
+    size = models.CharField(
+        max_length=200, help_text="单位：cm", blank=True, default=""
+    )
+    weight = models.CharField(
+        max_length=200, help_text="单位：g", blank=True, default=""
+    )
     sale_spec_quantity = models.FloatField(help_text="数量", blank=True, default=0.0)
     sale_spec_unit = models.CharField(
         max_length=10,
@@ -123,7 +133,7 @@ class FlowerMaterial(models.Model):
         )
 
 
-##################原材料END#################
+##########################花材类END##########################
 
 
 ##################用户信息#################
@@ -132,7 +142,7 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-##################用户信息END#################
+##################用户信息END###############
 
 
 ##################产品信息#################
@@ -187,7 +197,7 @@ class ProductMaterial(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     flower_material = models.ForeignKey(FlowerMaterial, on_delete=models.CASCADE)
-    quantity = models.FloatField(default=1.0)
+    quantity = models.FloatField(default=1.0)  # 使用几个该原材料
     ratio = models.FloatField(default=1.0)
     price_type = models.CharField(
         max_length=10, choices=PRICE_TYPE_CHOICES, default="price_one"
