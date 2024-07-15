@@ -28,20 +28,18 @@ th, td {
               <th style="text-align: center;">图片</th>
               <th style="text-align: center;">中文名</th>
               <th style="text-align: center;">英文名</th>
-              <th style="text-align: center;">学名</th>
+              
               <th style="text-align: center;">规格</th>
-              <th style="text-align: center;">尺寸(cm)</th>
-              <th style="text-align: center;">重量(g)</th>
-              <th style="text-align: center;">销售规格</th>
-              <th style="text-align: center;">工艺</th>
-              <th style="text-align: center;">外箱尺寸(cm)</th>
-              <th style="text-align: center;" width="75">装箱数量</th>
-              <th style="text-align: center;" width="75">等级</th>
+            
+              
+            
+              <th style="text-align: center;" >装箱数量</th>
+              
               <th style="text-align: center;">销售商</th>
               <th style="text-align: center;">采购价一</th>
               <th style="text-align: center;">采购价二</th>
               <th style="text-align: center;">添加人</th>
-              <th style="text-align: center;">操作</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -59,23 +57,18 @@ th, td {
               </td>
               <td style="text-align: center;">{{ material.chinese_name }}</td>
               <td style="text-align: center;">{{ material.english_name }}</td>
-              <td style="text-align: center;">{{ material.scientific_name }}</td>
+              
               <td style="text-align: center;">{{ material.chineses_specifications }}</td>
-              <td style="text-align: center;">{{ material.size }}</td>
-              <td style="text-align: center;">{{ material.weight }}</td>
-              <td style="text-align: center;">{{ material.sale_spec }}</td>
-              <td style="text-align: center;">{{ material.process.name }}</td>
-              <td style="text-align: center;">{{ material.outer_box_size }}</td>
+            
+              
+              
               <td style="text-align: center;">{{ material.packing_quantity }}</td>
-              <td style="text-align: center;">{{ material.grade }}</td>
+            
               <td style="text-align: center;">{{ material.supplier.name }}</td>
               <td style="text-align: center;">{{ material.price_one }}</td>
               <td style="text-align: center;">{{ material.price_two }}</td>
               <td style="text-align: center;">{{ material.created_by.name }}</td>
-              <td style="text-align: center;">
-                <a href="{% url 'edit_flower_material' material.model %}" class="btn btn-sm btn-warning">编辑</a>
-                <a href="{% url 'delete_flower_material' material.model %}" class="btn btn-sm btn-danger">删除</a>
-              </td>
+             
             </tr>
             {% endfor %}
           </tbody>

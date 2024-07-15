@@ -150,18 +150,23 @@ from django.shortcuts import render, redirect
 from .forms import FlowerMaterialForm
 
 
+# 花材编辑
 def edit_flower_material(request, model):
     material = get_object_or_404(FlowerMaterial, model=model)
+
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES, instance=material)
         if form.is_valid():
             form.save()
-            return redirect("flower_material_list")  # 重定向到花材列表页
+            return redirect("flower_material_detail", model=model)
     else:
         form = FlowerMaterialForm(instance=material)
-    return render(request, "edit_flower_material.html", {"form": form})
+
+    context = {"material": material, "form": form}
+    return render(request, "flower_material_edit.html", context)
 
 
+# 花材删除
 def delete_flower_material(request, model):
     material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
