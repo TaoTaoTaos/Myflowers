@@ -23,6 +23,7 @@ from django.contrib.auth import logout
 from .forms import FlowerMaterialForm
 
 
+# 添加花材
 def add_flower_material(request):
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES)
@@ -123,6 +124,7 @@ def flower_materials_list(request):
     )
 
 
+# 花材详情页
 def flower_material_detail(request, model):
     material = get_object_or_404(FlowerMaterial, model=model)
     flower_materials = FlowerMaterial.objects.all()
@@ -137,32 +139,37 @@ def flower_material_detail(request, model):
     )
 
 
-def products_list(request):
-    products = Product.objects.all()
-    return render(
-        request,
-        "product_list.html",
-        {"products": products, "current_user": request.user},
-    )
-
-
-from django.shortcuts import render, redirect
-from .forms import FlowerMaterialForm
-
-
 # 花材编辑
 def edit_flower_material(request, model):
     material = get_object_or_404(FlowerMaterial, model=model)
-
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES, instance=material)
         if form.is_valid():
             form.save()
-            return redirect("flower_material_detail", model=model)
+            return redirect("flower_material_detail", model=material.model)
     else:
         form = FlowerMaterialForm(instance=material)
 
-    context = {"material": material, "form": form}
+    categories = Category.objects.all()
+    colors = Color.objects.all()
+    processes = Process.objects.all()
+    suppliers = Supplier.objects.all()
+    grades = Grade.objects.all()
+    created_by = CreatedBy.objects.all()
+    flower_materials = FlowerMaterial.objects.all()
+
+    context = {
+        "form": form,
+        "material": material,
+        "categories": categories,
+        "colors": colors,
+        "processes": processes,
+        "suppliers": suppliers,
+        "grades": grades,
+        "created_by": created_by,
+        "flower_materials": flower_materials,
+    }
+
     return render(request, "flower_material_edit.html", context)
 
 
@@ -175,6 +182,20 @@ def delete_flower_material(request, model):
     return render(
         request, "flower_material_confirm_delete.html", {"material": material}
     )
+
+
+# 产品列表
+def products_list(request):
+    products = Product.objects.all()
+    return render(
+        request,
+        "product_list.html",
+        {"products": products, "current_user": request.user},
+    )
+
+
+from django.shortcuts import render, redirect
+from .forms import FlowerMaterialForm
 
 
 # 注册

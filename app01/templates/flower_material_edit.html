@@ -11,9 +11,266 @@
                     <h5 class="card-title">编辑花材信息</h5>
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">保存</button>
-                        <a href="{% url 'flower_material_detail' material.model %}" class="btn btn-secondary">取消</a>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="category" class="form-label">类型</label>
+                                <select id="category" name="category" class="form-select {% if form.category.errors %}is-invalid{% endif %}">
+                                    <option value="">选择类型</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.category.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.category.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="model" class="form-label">型号</label>
+                                <input type="text" id="model" name="model" class="form-control {% if form.model.errors %}is-invalid{% endif %}" value="{{ form.model.value|default_if_none:'' }}" required>
+                                {% if form.model.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.model.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="image" class="form-label">图片</label>
+                                <input type="file" id="image" name="image" class="form-control {% if form.image.errors %}is-invalid{% endif %}">
+                                {% if form.image.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.image.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="chinese_name" class="form-label">中文名</label>
+                                <input type="text" id="chinese_name" name="chinese_name" class="form-control {% if form.chinese_name.errors %}is-invalid{% endif %}" value="{{ form.chinese_name.value|default_if_none:'' }}">
+                                {% if form.chinese_name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.chinese_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="english_name" class="form-label">英文名</label>
+                                <input type="text" id="english_name" name="english_name" class="form-control {% if form.english_name.errors %}is-invalid{% endif %}" value="{{ form.english_name.value|default_if_none:'' }}">
+                                {% if form.english_name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.english_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="scientific_name" class="form-label">学名</label>
+                                <input type="text" id="scientific_name" name="scientific_name" class="form-control {% if form.scientific_name.errors %}is-invalid{% endif %}" value="{{ form.scientific_name.value|default_if_none:'' }}">
+                                {% if form.scientific_name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.scientific_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="color" class="form-label">颜色</label>
+                                <select id="color" name="color" class="form-select {% if form.color.errors %}is-invalid{% endif %}">
+                                    <option value="">选择颜色</option>
+                                    {% for color in colors %}
+                                    <option value="{{ color.id }}" {% if form.color.value == color.id %}selected{% endif %}>{{ color.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.color.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.color.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="chineses_specifications" class="form-label">中文规格</label>
+                                <input type="text" id="chineses_specifications" name="chineses_specifications" class="form-control {% if form.chineses_specifications.errors %}is-invalid{% endif %}" value="{{ form.chineses_specifications.value|default_if_none:'' }}">
+                                {% if form.chineses_specifications.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.chineses_specifications.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="size" class="form-label">尺寸</label>
+                                <input type="text" id="size" name="size" class="form-control {% if form.size.errors %}is-invalid{% endif %}" value="{{ form.size.value|default_if_none:'' }}">
+                                {% if form.size.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.size.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="weight" class="form-label">重量</label>
+                                <input type="text" id="weight" name="weight" class="form-control {% if form.weight.errors %}is-invalid{% endif %}" value="{{ form.weight.value|default_if_none:'' }}">
+                                {% if form.weight.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.weight.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="sale_spec_quantity" class="form-label">销售规格数量</label>
+                                <input type="text" id="sale_spec_quantity" name="sale_spec_quantity" class="form-control {% if form.sale_spec_quantity.errors %}is-invalid{% endif %}" value="{{ form.sale_spec_quantity.value|default_if_none:'' }}">
+                                {% if form.sale_spec_quantity.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.sale_spec_quantity.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="sale_spec_unit" class="form-label">销售规格单位</label>
+                                <select id="sale_spec_unit" name="sale_spec_unit" class="form-select {% if form.sale_spec_unit.errors %}is-invalid{% endif %}">
+                                    <option value="">选择单位</option>
+                                    <option value="pcs" {% if form.sale_spec_unit.value == "pcs" %}selected{% endif %}>pcs</option>
+                                    <option value="g" {% if form.sale_spec_unit.value == "g" %}selected{% endif %}>g</option>
+                                    <option value="box" {% if form.sale_spec_unit.value == "box" %}selected{% endif %}>box</option>
+                                    <option value="kg" {% if form.sale_spec_unit.value == "kg" %}selected{% endif %}>kg</option>
+                                </select>
+                                {% if form.sale_spec_unit.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.sale_spec_unit.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="process" class="form-label">加工方式</label>
+                                <select id="process" name="process" class="form-select {% if form.process.errors %}is-invalid{% endif %}">
+                                    <option value="">选择加工方式</option>
+                                    {% for process in processes %}
+                                    <option value="{{ process.id }}" {% if form.process.value == process.id %}selected{% endif %}>{{ process.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.process.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.process.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="outer_box_length" class="form-label">外箱长度</label>
+                                <input type="text" id="outer_box_length" name="outer_box_length" class="form-control {% if form.outer_box_length.errors %}is-invalid{% endif %}" value="{{ form.outer_box_length.value|default_if_none:'' }}">
+                                {% if form.outer_box_length.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.outer_box_length.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="outer_box_width" class="form-label">外箱宽度</label>
+                                <input type="text" id="outer_box_width" name="outer_box_width" class="form-control {% if form.outer_box_width.errors %}is-invalid{% endif %}" value="{{ form.outer_box_width.value|default_if_none:'' }}">
+                                {% if form.outer_box_width.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.outer_box_width.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="outer_box_height" class="form-label">外箱高度</label>
+                                <input type="text" id="outer_box_height" name="outer_box_height" class="form-control {% if form.outer_box_height.errors %}is-invalid{% endif %}" value="{{ form.outer_box_height.value|default_if_none:'' }}">
+                                {% if form.outer_box_height.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.outer_box_height.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="packing_quantity" class="form-label">包装数量</label>
+                                <input type="text" id="packing_quantity" name="packing_quantity" class="form-control {% if form.packing_quantity.errors %}is-invalid{% endif %}" value="{{ form.packing_quantity.value|default_if_none:'' }}">
+                                {% if form.packing_quantity.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.packing_quantity.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="grade" class="form-label">等级</label>
+                                <select id="grade" name="grade" class="form-select {% if form.grade.errors %}is-invalid{% endif %}">
+                                    <option value="">选择等级</option>
+                                    {% for grade in grades %}
+                                    <option value="{{ grade.id }}" {% if form.grade.value == grade.id %}selected{% endif %}>{{ grade.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.grade.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.grade.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="supplier" class="form-label">供应商</label>
+                                <select id="supplier" name="supplier" class="form-select {% if form.supplier.errors %}is-invalid{% endif %}">
+                                    <option value="">选择供应商</option>
+                                    {% for supplier in suppliers %}
+                                    <option value="{{ supplier.id }}" {% if form.supplier.value == supplier.id %}selected{% endif %}>{{ supplier.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.supplier.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.supplier.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="price_one" class="form-label">价格一</label>
+                                <input type="text" id="price_one" name="price_one" class="form-control {% if form.price_one.errors %}is-invalid{% endif %}" value="{{ form.price_one.value|default_if_none:'' }}">
+                                {% if form.price_one.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.price_one.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="price_two" class="form-label">价格二</label>
+                                <input type="text" id="price_two" name="price_two" class="form-control {% if form.price_two.errors %}is-invalid{% endif %}" value="{{ form.price_two.value|default_if_none:'' }}">
+                                {% if form.price_two.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.price_two.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="created_by" class="form-label">创建者</label>
+                                <select id="created_by" name="created_by" class="form-select {% if form.created_by.errors %}is-invalid{% endif %}">
+                                    <option value="">选择创建者</option>
+                                    {% for user in created_by %}
+                                    <option value="{{ user.id }}" {% if form.created_by.value == user.id %}selected{% endif %}>{{ user.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.created_by.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.created_by.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            <a href="{% url 'flower_material_detail' material.model %}" class="btn btn-secondary">取消</a>
+                        </div>
                     </form>
                 </div>
             </div>

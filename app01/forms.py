@@ -60,8 +60,8 @@ class FlowerMaterialForm(forms.ModelForm):
         self.fields["packing_quantity"].label = "装箱数量"
         self.fields["grade"].label = "等级"
         self.fields["supplier"].label = "供应商"
-        self.fields["price_one"].label = "采购价一"
-        self.fields["price_two"].label = "采购价二"
+        self.fields["price_one"].label = "价格一"
+        self.fields["price_two"].label = "价格二"
         self.fields["created_by"].label = "创建者"
 
         # 设置默认值
