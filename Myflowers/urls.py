@@ -21,6 +21,7 @@ from app01.views import (
     flower_materials_list,
     delete_flower_material,
     products_list,
+    flower_material_detail,
 )
 
 urlpatterns = [
@@ -36,6 +37,11 @@ urlpatterns = [
     path("product_list/", products_list, name="product_list"),
     path("add_product/", add_product, name="add_product"),
     path("QuoteMOD/", views.QuoteMOD_view, name="QuoteMOD"),
+    path(
+        "flower_material/<str:model>/",
+        views.flower_material_detail,
+        name="flower_material_detail",
+    ),
     ####################花材######################
     path(
         "add-flower-material/", views.add_flower_material, name="add_flower_material"

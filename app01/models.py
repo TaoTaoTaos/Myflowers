@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
+##########################花材类##########################
 class Grade(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -51,7 +52,6 @@ class CreatedBy(models.Model):
         return self.name
 
 
-##########################花材类##########################
 class FlowerMaterial(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Material0000", primary_key=True
@@ -68,15 +68,21 @@ class FlowerMaterial(models.Model):
         max_length=200, null=True, blank=True, default=""
     )
     color = models.CharField(max_length=200, null=True, blank=True, default="")
+    chineses_specifications = models.CharField(
+        max_length=200, null=True, blank=True, default="无中文规格"
+    )
     size = models.CharField(
         max_length=200, help_text="单位：cm", blank=True, default=""
     )
     weight = models.CharField(
         max_length=200, help_text="单位：g", blank=True, default=""
     )
-    sale_spec_quantity = models.FloatField(help_text="数量", blank=True, default=0.0)
+    sale_spec_quantity = models.CharField(
+        max_length=200, help_text="销售规格的数字", blank=True, default=""
+    )
     sale_spec_unit = models.CharField(
         max_length=10,
+        help_text="销售规格的单位",
         choices=[("pcs", "pcs"), ("g", "g"), ("box", "box"), ("kg", "kg")],
         blank=True,
         null=True,

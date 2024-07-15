@@ -123,6 +123,20 @@ def flower_materials_list(request):
     )
 
 
+def flower_material_detail(request, model):
+    material = get_object_or_404(FlowerMaterial, model=model)
+    flower_materials = FlowerMaterial.objects.all()
+    return render(
+        request,
+        "flower_material_detail.html",
+        {
+            "material": material,
+            "flower_materials": flower_materials,
+            "current_user": request.user,
+        },
+    )
+
+
 def products_list(request):
     products = Product.objects.all()
     return render(
