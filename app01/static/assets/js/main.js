@@ -31,9 +31,7 @@
     el.addEventListener('scroll', listener)
   }
 
-  /**
-   * Sidebar toggle
-   */
+
 
   /**
    * Sidebar toggle

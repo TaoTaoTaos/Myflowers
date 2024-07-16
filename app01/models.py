@@ -170,9 +170,6 @@ class Product(models.Model):
         CreatedBy, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
 
-    def __str__(self):
-        return self.chinese_name  # 修改为返回 Chinese name
-
     @property
     def cost(self):
         total_cost = Decimal(0)
@@ -194,6 +191,9 @@ class Product(models.Model):
         total_cost *= Decimal(1 + self.loss_rate)
         return total_cost
 
+    def __str__(self):
+        return self.chinese_name  # 修改为返回 Chinese name
+
 
 class ProductMaterial(models.Model):
     PRICE_TYPE_CHOICES = [
@@ -204,7 +204,7 @@ class ProductMaterial(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     flower_material = models.ForeignKey(FlowerMaterial, on_delete=models.CASCADE)
     quantity = models.FloatField(default=1.0)  # 使用几个该原材料
-    ratio = models.FloatField(default=1.0)
+    ratio = models.FloatField(default=1.0)  # 使用百分比，默认为 1
     price_type = models.CharField(
         max_length=10, choices=PRICE_TYPE_CHOICES, default="price_one"
     )

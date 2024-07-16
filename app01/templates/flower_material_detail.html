@@ -1,91 +1,126 @@
 {% extends 'base.html' %}
 
-{% block title %}花材详情{% endblock %}
+{% block title %}
+  花材详情
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+  <a href="/flower-materials" class="btn btn-primary btn-lg "style="margin-left:auto
+  ">返回列表</a>
+  
+  <div class="container mt-5">
     <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-3">
-                <div class="row g-0">
-                    <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-                        {% if material.image %}
-                        <img src="{{ material.image.url }}" class="img-fluid rounded-start" alt="{{ material.chinese_name }}">
-                        {% else %}
-                        <p>无图片</p>
-                        {% endif %}
-                        <div class="mt-3">
-                            <a href="{% url 'edit_flower_material' material.model %}" class="btn btn-sm btn-warning">编辑</a>
-                            <a href="{% url 'delete_flower_material' material.model %}" class="btn btn-sm btn-danger">删除</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ material.chinese_name }} ({{ material.english_name }})</h5>
-                            <div class="row">
-                                <div class="col-6">
-                                    <p class="card-text"><strong>型号:</strong> {{ material.model }}</p>
-                                    <p class="card-text"><strong>学名:</strong> {{ material.scientific_name }}</p>
-                                    <p class="card-text"><strong>分类:</strong> {{ material.category.name }}</p>
-                                    <p class="card-text"><strong>工艺:</strong> {{ material.process.name }}</p>
-                                    <p class="card-text"><strong>颜色:</strong> {{ material.color }}</p>
-                                    <p class="card-text"><strong>中文规格:</strong> {{ material.chineses_specifications }}</p>
-                                    <p class="card-text"><strong>等级:</strong> {{ material.grade.name }}</p>
-                                    <p class="card-text"><strong>供应商:</strong> {{ material.supplier.name }}</p>
-                                </div>
-                                <div class="col-6">
-                                    <p class="card-text"><strong>尺寸:</strong> {{ material.size }}</p>
-                                    <p class="card-text"><strong>重量:</strong> {{ material.weight }}</p>
-                                    <p class="card-text"><strong>销售规格:</strong> {{ material.sale_spec }}</p>
-                                    <p class="card-text"><strong>外箱尺寸:</strong> {{ material.outer_box_size }}</p>
-                                    <p class="card-text"><strong>装箱数量:</strong> {{ material.packing_quantity }}</p>
-                                    <p class="card-text"><strong>采购价一:</strong> {{ material.price_one }}</p>
-                                    <p class="card-text"><strong>采购价二:</strong> {{ material.price_two }}</p>
-                                    <p class="card-text"><strong>添加人:</strong> {{ material.created_by.name }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <div class="col-md-8">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+              {% if material.image %}
+                <img src="{{ material.image.url }}" class="img-fluid rounded-start"  alt="{{ material.chinese_name }}" />
+              {% else %}
+                <p>无图片</p>
+              {% endif %}
+              <div class="mt-3">
+                <a href="{% url 'edit_flower_material' material.model %}" class="btn btn-sm btn-warning">编辑</a>
+                <a href="{% url 'delete_flower_material' material.model %}" class="btn btn-sm btn-danger">删除</a>
+              </div>
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="position-sticky" style="top: 1rem;">
-                <div class="card">
-                    <div class="card-header">
-                        花材列表
-                    </div>
-                    <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                        <input type="text" class="form-control mb-2" id="searchFlower" placeholder="搜索花材">
-                        <ul class="list-group list-group-flush" id="flowerList">
-                            {% for flower in flower_materials %}
-                                <li class="list-group-item">
-                                    <a href="{% url 'flower_material_detail' flower.model %}">{{ flower.chinese_name }} ({{ flower.model }})</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">{{ material.chinese_name }} ({{ material.english_name }})</h5>
+                <div class="row">
+                  <div class="col-6">
+                    <p class="card-text">
+                      <strong>型号:</strong> {{ material.model }}
+                    </p>
+                    <p class="card-text">
+                      <strong>学名:</strong> {{ material.scientific_name }}
+                    </p>
+                    <p class="card-text">
+                      <strong>分类:</strong> {{ material.category.name }}
+                    </p>
+                    <p class="card-text">
+                      <strong>工艺:</strong> {{ material.process.name }}
+                    </p>
+                    <p class="card-text">
+                      <strong>颜色:</strong> {{ material.color }}
+                    </p>
+                    <p class="card-text">
+                      <strong>中文规格:</strong> {{ material.chineses_specifications }}
+                    </p>
+                    <p class="card-text">
+                      <strong>等级:</strong> {{ material.grade.name }}
+                    </p>
+                    <p class="card-text">
+                      <strong>供应商:</strong> {{ material.supplier.name }}
+                    </p>
+                  </div>
+                  <div class="col-6">
+                    <p class="card-text">
+                      <strong>尺寸:</strong> {{ material.size }}
+                    </p>
+                    <p class="card-text">
+                      <strong>重量:</strong> {{ material.weight }}
+                    </p>
+                    <p class="card-text">
+                      <strong>销售规格:</strong> {{ material.sale_spec }}
+                    </p>
+                    <p class="card-text">
+                      <strong>外箱尺寸:</strong> {{ material.outer_box_size }}
+                    </p>
+                    <p class="card-text">
+                      <strong>装箱数量:</strong> {{ material.packing_quantity }}
+                    </p>
+                    <p class="card-text">
+                      <strong>采购价一:</strong> {{ material.price_one }}
+                    </p>
+                    <p class="card-text">
+                      <strong>采购价二:</strong> {{ material.price_two }}
+                    </p>
+                    <p class="card-text">
+                      <strong>添加人:</strong> {{ material.created_by.name }}
+                    </p>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="position-sticky" style="top: 1rem;">
+          <div class="card">
+            <div class="card-header">花材列表</div>
+            <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+              <input type="text" class="form-control mb-2" id="searchFlower" placeholder="搜索花材" />
+              <ul class="list-group list-group-flush" id="flowerList">
+                {% for flower in flower_materials %}
+                  <li class="list-group-item">
+                    <a href="{% url 'flower_material_detail' flower.model %}">{{ flower.chinese_name }} ({{ flower.model }})</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    document.getElementById('searchFlower').addEventListener('keyup', function() {
-        var searchValue = this.value.toLowerCase();
-        var flowerItems = document.getElementById('flowerList').getElementsByTagName('li');
-
-        for (var i = 0; i < flowerItems.length; i++) {
-            var flowerText = flowerItems[i].getElementsByTagName('a')[0].innerText.toLowerCase();
-            if (flowerText.indexOf(searchValue) > -1) {
-                flowerItems[i].style.display = '';
-            } else {
-                flowerItems[i].style.display = 'none';
-            }
+  <script>
+    document.getElementById('searchFlower').addEventListener('keyup', function () {
+      var searchValue = this.value.toLowerCase()
+      var flowerItems = document.getElementById('flowerList').getElementsByTagName('li')
+    
+      for (var i = 0; i < flowerItems.length; i++) {
+        var flowerText = flowerItems[i].getElementsByTagName('a')[0].innerText.toLowerCase()
+        if (flowerText.indexOf(searchValue) > -1) {
+          flowerItems[i].style.display = ''
+        } else {
+          flowerItems[i].style.display = 'none'
         }
-    });
-</script>
+      }
+    })
+  </script>
 {% endblock %}

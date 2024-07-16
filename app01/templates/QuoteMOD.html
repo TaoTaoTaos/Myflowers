@@ -4,6 +4,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成报价单页面</title>
+    <style>
+        /* 样式可以根据需要自行调整 */
+        .container {
+            padding: 20px;
+            width: 80%;
+            margin: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #000;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        .fill-in {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>选择产品生成报价单</h2>
+        <form id="quoteForm">
+            <!-- 产品选择表单 -->
+            <label for="productName">选择产品：</label>
+            <select id="productName" name="productName">
+                <option value="Product A">Product A</option>
+                <option value="Product B">Product B</option>
+                <!-- 添加更多产品选项 -->
+            </select>
+            <label for="quantity">数量：</label>
+            <input type="number" id="quantity" name="quantity" min="1">
+            <!-- 添加更多输入字段，例如颜色、规格 -->
+
+            <button type="button" onclick="addProduct()">添加产品</button>
+        </form>
+
+        <!-- 展示用户选择的产品 -->
+        <table id="productTable">
+            <tr>
+                <th>产品名称</th>
+                <th>数量</th>
+                <!-- 添加更多列来显示其他产品信息 -->
+            </tr>
+        </table>
+
+        <!-- 生成报价单按钮 -->
+        <button onclick="generateQuote()">生成报价单</button>
+
+        <!-- 展示生成的报价单 -->
+        <div id="quoteResult"></div>
+    </div>
+
+    <script>
+        function addProduct() {
+            // 获取用户输入的产品信息
+            var productName = document.getElementById("productName").value;
+            var quantity = document.getElementById("quantity").value;
+
+            // 创建新的表格行
+            var table = document.getElementById("productTable");
+            var row = table.insertRow(-1); // 插入到表格末尾
+
+            // 插入单元格并填入用户输入的数据
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = productName;
+            cell2.innerHTML = quantity;
+        }
+
+        function generateQuote() {
+            // 获取填入报价单模板的数据
+            var products = document.getElementById("productTable").rows;
+            var freightCost = "填入运费"; // 根据需要填入运费等信息
+            var totalAmount = "填入总金额";
+            var freight = "填入运费";
+            var grandTotal = "填入总计金额";
+            var orderNumber = "填入订单号";
+
+            // 生成报价单HTML代码
+            var quoteHTML = `
+                <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>报价单模板</title>
     <style>
        
@@ -119,90 +227,110 @@
                 <th>Unit Price</th>
                 <th>Amount</th>
             </tr>
-            <!-- 插入产品数据行 -->
-            <tr>
-                <td colspan="7" style="text-align: center;">这里插入产品数据行...</td>
-            </tr>
-            <tr>
-                <td colspan="7" style="text-align: center;">这里插入产品数据行...</td>
-            </tr>
-            <!-- 表尾 -->
-            <tr class="total-row">
-                <td>TFreight cost:</td>
-                <td colspan="5"></td>
-                <td><span class="fill-in">Freight cost</span></td>
-            </tr>
-            <tr class="total-row">
-                <td>Total:</td>
-                <td colspan="5"></td>
-                <td><span class="fill-in">Total Amount</span></td>
-            </tr>
-            <tr class="total-row">
-                <td>Freight:</td>
-                <td colspan="5"></td>
-                <td><span class="fill-in">Freight Cost</span></td>
-            </tr>
-            <tr class="total-row">
-                <td>Grand Total:</td>
-                <td colspan="5"></td>
-                <td><span class="fill-in">Grand Total</span></td>
-            </tr>
-            <!-- 添加备注行 -->
-            <tr>
-                <td>Payment term:</td>
-                <td colspan="6">100% payment in advance.</td>
-            </tr>
-            <tr>
-                <td>Deliver time:</td>
-                <td colspan="6">7-15 working days after confirm of payment.</td>
-            </tr>
-            <tr>
-                <td>Payment currency:</td>
-                <td colspan="6">USD</td>
-            </tr>
-            <tr>
-                <td>Beneficiary account number:</td>
-                <td colspan="6"><span class="fill-in">101417 09988447</span> View account certificate</td>
-            </tr>
-            <tr>
-                <td>Swift code:</td>
-                <td colspan="6"><span class="fill-in">CHASSGSGXXX or CHASSGSG</span></td>
-            </tr>
-            <tr>
-                <td>Beneficiary country/region:</td>
-                <td colspan="6"><span class="fill-in">Singapore</span></td>
-            </tr>
-            <tr>
-                <td>Beneficiary name:</td>
-                <td colspan="6"><span class="fill-in">Yunnan Summer Flora Co., Ltd.</span></td>
-            </tr>
-            <tr>
-                <td>Beneficiary address:</td>
-                <td colspan="6"><span class="fill-in">8 Shenton Way, #45-01, AXA Tower, Singapore 068811</span></td>
-            </tr>
-            <tr>
-                <td>Beneficiary bank:</td>
-                <td colspan="6"><span class="fill-in">JPMorgan Chase Bank N.A., Singapore Branch J.BMorgan</span></td>
-            </tr>
-            <tr>
-                <td>Beneficiary bank address:</td>
-                <td colspan="6"><span class="fill-in">168 Robinson Road, Capital Tower 17-00, Singapore 068912</span>
-                </td>
-            </tr>
-            <tr>
-                <td>Bank code:</td>
-                <td colspan="6"><span class="fill-in">7153</span></td>
-            </tr>
-            <tr>
-                <td>Branch code:</td>
-                <td colspan="6"><span class="fill-in">1</span></td>
-            </tr>
-            <tr>
-                <td>Remark:</td>
-                <td colspan="6">Please include the order number <span class="fill-in">179316363501029559</span></td>
-            </tr>
-        </table>
-    </div>
+`;
+
+            // 添加产品数据行
+            for (var i = 1; i < products.length; i++) {
+                var productName = products[i].cells[0].innerHTML;
+                var quantity = products[i].cells[1].innerHTML;
+
+                quoteHTML += `
+                    <tr>
+                        <td>${productName}</td>
+                        <td></td> <!-- Picture -->
+                        <td></td> <!-- Specification -->
+                        <td></td> <!-- Color -->
+                        <td>${quantity}</td>
+                        <td></td> <!-- Unit Price -->
+                        <td></td> <!-- Amount -->
+                    </tr>
+                `;
+            }
+
+            // 添加表尾和备注行
+            quoteHTML += `
+                <tr class="total-row">
+                    <td>TFreight cost:</td>
+                    <td colspan="5"></td>
+                    <td>${freightCost}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Total:</td>
+                    <td colspan="5"></td>
+                    <td>${totalAmount}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Freight:</td>
+                    <td colspan="5"></td>
+                    <td>${freight}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Grand Total:</td>
+                    <td colspan="5"></td>
+                    <td>${grandTotal}</td>
+                </tr>
+                <tr>
+                    <td>Payment term:</td>
+                    <td colspan="6">100% payment in advance.</td>
+                </tr>
+                <tr>
+                    <td>Deliver time:</td>
+                    <td colspan="6">7-15 working days after confirm of payment.</td>
+                </tr>
+                <tr>
+                    <td>Payment currency:</td>
+                    <td colspan="6">USD</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary account number:</td>
+                    <td colspan="6"><span class="fill-in">101417 09988447</span> View account certificate</td>
+                </tr>
+                <tr>
+                    <td>Swift code:</td>
+                    <td colspan="6"><span class="fill-in">CHASSGSGXXX or CHASSGSG</span></td>
+                </tr>
+                <tr>
+                    <td>Beneficiary country/region:</td>
+                    <td colspan="6"><span class="fill-in">Singapore</span></td>
+                </tr>
+                <tr>
+                    <td>Beneficiary name:</td>
+                    <td colspan="6"><span class="fill-in">Yunnan Summer Flora Co., Ltd.</span></td>
+                </tr>
+                <tr>
+                    <td>Beneficiary address:</td>
+                    <td colspan="6"><span class="fill-in">8 Shenton Way, #45-01, AXA Tower, Singapore 068811</span></td>
+                </tr>
+                <tr>
+                    <td>Beneficiary bank:</td>
+                    <td colspan="6"><span class="fill-in">JPMorgan Chase Bank N.A., Singapore Branch J.BMorgan</span></td>
+                </tr>
+                <tr>
+                    <td>Beneficiary bank address:</td>
+                    <td colspan="6"><span class="fill-in">168 Robinson Road, Capital Tower 17-00, Singapore 068912</span></td>
+                </tr>
+                <tr>
+                    <td>Bank code:</td>
+                    <td colspan="6"><span class="fill-in">7153</span></td>
+                </tr>
+                <tr>
+                    <td>Branch code:</td>
+                    <td colspan="6"><span class="fill-in">1</span></td>
+                </tr>
+                <tr>
+                    <td>Remark:</td>
+                    <td colspan="6">Please include the order number <span class="fill-in">${orderNumber}</span></td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+            `;
+            
+            // 将生成的报价单显示在页面上
+            document.getElementById("quoteResult").innerHTML = quoteHTML;
+        }
+    </script>
 </body>
 
 </html>

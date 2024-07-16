@@ -9,15 +9,18 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">编辑花材信息</h5>
+                   
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <label for="category" class="form-label">类型</label>
-                                <select id="category" name="category" class="form-select {% if form.category.errors %}is-invalid{% endif %}">
+                                <select id="category" name="category" class="form-select" >{% if form.category.errors %}is-invalid{% endif %}">
                                     <option value="">选择类型</option>
                                     {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}</option>
+                                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}
+                                        
+                                    </option>
                                     {% endfor %}
                                 </select>
                                 {% if form.category.errors %}
