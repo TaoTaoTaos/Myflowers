@@ -5,10 +5,21 @@
 {% endblock %}
 
 {% block extra_css %}
-  th, td { text-align: center; }
+  th {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .fixed-image-cell img {
-    height: 100px;
-    width: 100px;
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
   }
 {% endblock %}
 
@@ -18,54 +29,52 @@
       <div class="col-lg-12">
         <a href="{% url 'add_flower_material' %}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">添加花材</a>
         <button id="export-button" class="btn btn-secondary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">导出为Excel</button>
-        
-
 
         <div class="table-responsive">
-          <table class="table table-hover table-fixed align-middle" id="flower-materials-table">
+          <table class="table table-hover table-fixed" id="flower-materials-table">
             <thead>
               <tr>
-                <th style="text-align: center;">
+                <th style="text-align: center; vertical-align: middle;">
                   <input type="checkbox" id="select-all">
                 </th>
-                <th style="text-align: center;">编号</th>
-                <th style="text-align: center;">分类</th>
-                <th style="text-align: center;">型号</th>
-                <th style="text-align: center;">图片</th>
-                <th style="text-align: center;">中文名</th>
-                <th style="text-align: center;">英文名</th>
-                <th style="text-align: center;">规格</th>
-                <th style="text-align: center;">装箱数量</th>
-                <th style="text-align: center;">销售商</th>
-                <th style="text-align: center;">采购价一</th>
-                <th style="text-align: center;">采购价二</th>
-                <th style="text-align: center;">添加人</th>
+                <th style="text-align: center; vertical-align: middle;">编号</th>
+                <th style="text-align: center; vertical-align: middle;">分类</th>
+                <th style="text-align: center; vertical-align: middle;">型号</th>
+                <th style="text-align: center; vertical-align: middle;">图片</th>
+                <th style="text-align: center; vertical-align: middle;">中文名</th>
+                <th style="text-align: center; vertical-align: middle;">英文名</th>
+                <th style="text-align: center; vertical-align: middle;">规格</th>
+                <th style="text-align: center; vertical-align: middle;">装箱数量</th>
+                <th style="text-align: center; vertical-align: middle;">销售商</th>
+                <th style="text-align: center; vertical-align: middle;">采购价一</th>
+                <th style="text-align: center; vertical-align: middle;">采购价二</th>
+                <th style="text-align: center; vertical-align: middle;">添加人</th>
               </tr>
             </thead>
             <tbody>
               {% for material in flower_materials %}
-                 <tr >
-                  <td style="text-align: center;">
+                <tr>
+                  <td style="text-align: center; vertical-align: middle;">
                     <input type="checkbox" class="select-item">
                   </td>
-                  <td style="text-align: center;width: 80px; height: 80px;">{{ forloop.counter }}</td>
-                  <td style="text-align: center;">{{ material.category.name }}</td>
-                  <td style="text-align: center;"onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
-                  <td style="text-align: center;" class="fixed-image-cell">
+                  <td style="text-align: center; height: 90px ;vertical-align: middle;"/>{{ forloop.counter }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.category.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
+                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell" >
                     {% if material.image %}
-                      <img src="{{ material.image.url }}" alt="图片" style="width: 80px; height: 80px; object-fit: cover;" />
+                      <img src="{{ material.image.url }}" alt="图片" style="width: 85px; height: 85px;"/>
                     {% else %}
                       无图片
                     {% endif %}
                   </td>
-                  <td style="text-align: center;"onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.chinese_name }}</td>
-                  <td style="text-align: center;"onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.english_name }}</td>
-                  <td style="text-align: center;">{{ material.chineses_specifications }}</td>
-                  <td style="text-align: center;">{{ material.packing_quantity }}</td>
-                  <td style="text-align: center;">{{ material.supplier.name }}</td>
-                  <td style="text-align: center;">{{ material.price_one }}</td>
-                  <td style="text-align: center;">{{ material.price_two }}</td>
-                  <td style="text-align: center;">{{ material.created_by.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.chinese_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.english_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.chineses_specifications }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.packing_quantity }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.supplier.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.price_one }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.price_two }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.created_by.name }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -74,11 +83,10 @@
       </div>
     </div>
   </section>
+
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
-
-
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -86,7 +94,7 @@
         searchable: true,
         fixedHeight: true,
         perPageSelect: [5, 10, 15, 20, 30, 500],
-        perPage: 5,
+        perPage: 10,
         labels: {
           placeholder: '搜索...',
           perPage: '/条记录每页     （点击型号、中文名、英文名查看详情）',
@@ -134,41 +142,20 @@
         XLSX.writeFile(wb, '花材记录.xlsx');
       });
     });
-document.getElementById('export-pdf-button').addEventListener('click', function() {
-  const selectedMaterials = Array.from(document.querySelectorAll('.select-item:checked')).map(checkbox => {
-    return checkbox.parentElement.parentElement.innerText;
-  });
 
-  if (selectedMaterials.length === 0) {
-    alert('请选择至少一条记录进行导出');
-    return;
-  }
-
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '/export_flower_materials/', true);
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));  // Django 需要这个头来处理 POST 请求
-  xhr.responseType = 'blob';
-  xhr.onload = function(e) {
-    if (this.status == 200) {
-      const blob = new Blob([this.response], {type: 'application/pdf'});
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = 'flower_materials.pdf';
-      link.click();
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
     }
-  };
-  xhr.send('selected_materials=' + encodeURIComponent(JSON.stringify(selectedMaterials)));
-});
-
-
-
-
-
-
-
-
-
-    
   </script>
 {% endblock %}
