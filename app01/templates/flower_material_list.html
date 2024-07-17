@@ -102,11 +102,10 @@
           info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
         },
         columns: [
-          { select: [0], sortable: false }, // Disable sorting on the first column (checkbox)
+          { select: [0], sortable: false },
         ]
       });
 
-      // Select/Deselect all checkboxes
       document.getElementById('select-all').addEventListener('change', function() {
         const checkboxes = document.querySelectorAll('.select-item');
         checkboxes.forEach(checkbox => {
@@ -128,7 +127,7 @@
 
         const exportData = [];
         const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
-        exportData.push(headers.slice(1)); // Exclude the checkbox header
+        exportData.push(headers.slice(1));
 
         for (const row of selectedRows) {
           const rowData = [];
@@ -148,8 +147,20 @@
 
         const ws = XLSX.utils.aoa_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, '花材');
 
+        for (let i = 1; i < exportData.length; i++) {
+          const row = exportData[i];
+          for (let j = 0; j < row.length; j++) {
+            if (imageDataUrls.includes(row[j])) {
+              const image = row[j];
+              const cellAddress = XLSX.utils.encode_cell({ r: i, c: j });
+              ws[cellAddress] = { t: 's', v: '', l: { Target: image } };
+              addImageToSheet(ws, image, cellAddress);
+            }
+          }
+        }
+
+        XLSX.utils.book_append_sheet(wb, ws, '花材');
         XLSX.writeFile(wb, '花材记录.xlsx');
       });
 
