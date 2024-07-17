@@ -105,14 +105,20 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            "description",
             "model",
             "chinese_name",
             "english_name",
             "labor_cost",
             "loss_rate",
-            "created_by",
+            "description",
         ]
+
+    flower_materials = forms.ModelMultipleChoiceField(
+        queryset=FlowerMaterial.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="选择花材",
+    )
 
 
 class ProductMaterialForm(forms.ModelForm):

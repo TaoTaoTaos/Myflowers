@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
 
-##########################普通视图##############################
+##########################普通视图#############################
 @login_required(login_url="/login/")
 def home_view(request):
     return render(request, "home.html", {"current_user": request.user})
@@ -224,11 +224,14 @@ def edit_flower_material(request, model):
 
 
 # 花材删除
+from django.shortcuts import get_object_or_404, redirect, render
+
+
 def delete_flower_material(request, model):
     material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
         material.delete()
-        return redirect("flower-materials")  # 重定向到花材列表页
+        return redirect("flower_material_list")  # 重定向到花材列表页
     return render(
         request, "flower_material_confirm_delete.html", {"material": material}
     )
@@ -276,58 +279,22 @@ from .models import Product, FlowerMaterial, CreatedBy
 
 def add_product(request):
     if request.method == "POST":
-        model = request.POST.get("model")
-        chinese_name = request.POST.get("chinese_name")
-        english_name = request.POST.get("english_name")
-        description = request.POST.get("description")
-        labor_cost = request.POST.get("labor_cost")
-        loss_rate = request.POST.get("loss_rate")
-        created_by_id = request.POST.get("created_by")
-
-        created_by = None
-        if created_by_id:
-            created_by = CreatedBy.objects.get(id=created_by_id)
-
-        # Create new product
-        new_product = Product(
-            model=model,
-            chinese_name=chinese_name,
-            english_name=english_name,
-            description=description,
-            labor_cost=labor_cost,
-            loss_rate=loss_rate,
-            created_by=created_by,
-        )
-        new_product.save()
-
-        # Process selected flower materials
-        selected_materials = request.POST.getlist("flower_materials")
-        for material_id in selected_materials:
-            material = FlowerMaterial.objects.get(id=material_id)
-            quantity = request.POST.get(f"quantity_{material_id}")
-            ratio = request.POST.get(f"ratio_{material_id}")
-            price_type = request.POST.get(f"price_type_{material_id}")
-
-            product_material = ProductMaterial(
-                product=new_product,
-                flower_material=material,
-                quantity=quantity,
-                ratio=ratio,
-                price_type=price_type,
-            )
-            product_material.save()
-
-        return redirect("product_list")  # Redirect to product list page after saving
-
-    # Fetch all flower materials and creators for selection
-    flower_materials = FlowerMaterial.objects.all()
-    creators = CreatedBy.objects.all()
-
-    context = {
-        "flower_materials": flower_materials,
-        "creators": creators,
-    }
-    return render(request, "add_product.html", context)
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.save()
+            for material in form.cleaned_data["flower_materials"]:
+                ProductMaterial.objects.create(
+                    product=product,
+                    flower_material=material,
+                    quantity=1.0,  # 这里可以根据需要修改
+                    ratio=1.0,  # 这里可以根据需要修改
+                    price_type="price_one",  # 这里可以根据需要修改
+                )
+            return redirect("product_list")  # 跳转到产品列表或其他页面
+    else:
+        form = ProductForm()
+    return render(request, "add_product.html", {"form": form})
 
 
 ##########################产品END#######################

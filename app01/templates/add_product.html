@@ -1,69 +1,43 @@
-<!-- create_product.html -->
+<!-- templates/create_product.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Product</title>
-    <!-- Include Bootstrap CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建产品</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-4">
-        <h2>Create Product</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <div class="form-group">
-                <label for="modle">Model</label>
-                <input type="text" class="form-control" id="model" name="model" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="chinese_name">Chinese Name</label>
-                <input type="text" class="form-control" id="chinese_name" name="chinese_name" required>
-            </div>
-            <div class="form-group">
-                <label for="english_name">English Name</label>
-                <input type="text" class="form-control" id="english_name" name="english_name" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="labor_cost">Labor Cost</label>
-                <input type="text" class="form-control" id="labor_cost" name="labor_cost" required>
-            </div>
-            <div class="form-group">
-                <label for="loss_rate">Loss Rate</label>
-                <input type="text" class="form-control" id="loss_rate" name="loss_rate" required>
-            </div>
-            <div class="form-group">
-                <label for="created_by">Created By</label>
-                <select class="form-control" id="created_by" name="created_by">
-                    <option value="">Select Created By</option>
-                    {% for creator in Created_bys %}
-                        <option value="{{ creator.id }}">{{ creator.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Choose Flower Materials</label><br>
-                {% for material in flower_materials %}
-                    <input type="checkbox" id="flower_material_{{ material.id }}" name="flower_materials" value="{{ material.id }}">
-                    <label for="flower_material_{{ material.id }}">{{ material.chinese_name }} - Price One: {{ material.price_one }}, Price Two: {{ material.price_two }}</label><br>
-                    <input type="text" class="form-control" id="quantity_{{ material.id }}" name="quantity_{{ material.id }}" placeholder="Quantity">
-                    <input type="text" class="form-control" id="ratio_{{ material.id }}" name="ratio_{{ material.id }}" placeholder="Ratio">
-                    <select class="form-control" id="price_type_{{ material.id }}" name="price_type_{{ material.id }}">
-                        <option value="price_one">Price One</option>
-                        <option value="price_two">Price Two</option>
-                    </select><br><br>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary">Save Product</button>
-        </form>
-    </div>
-    <!-- Include Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div class="container mt-5">
+    <h2>创建产品</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_chinese_name">中文名:</label>
+            {{ form.chinese_name }}
+        </div>
+        <div class="form-group">
+            <label for="id_english_name">英文名:</label>
+            {{ form.english_name }}
+        </div>
+        <div class="form-group">
+            <label for="id_description">描述:</label>
+            {{ form.description }}
+        </div>
+        <div class="form-group">
+            <label for="id_labor_cost">人力成本:</label>
+            {{ form.labor_cost }}
+        </div>
+        <div class="form-group">
+            <label for="id_loss_rate">损耗率:</label>
+            {{ form.loss_rate }}
+        </div>
+        <div class="form-group">
+            <label for="id_flower_materials">选择花材:</label>
+            {{ form.flower_materials }}
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+    </form>
+</div>
 </body>
 </html>
