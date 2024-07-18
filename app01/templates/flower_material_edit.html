@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <label for="category" class="form-label">类型</label>
-                                <select id="category" name="category" class="form-select" >{% if form.category.errors %}is-invalid{% endif %}">
+                                <select id="category" name="category" class="form-select" >{% if form.category.errors %}is-invalid{% endif %}"
                                     <option value="">选择类型</option>
                                     {% for category in categories %}
                                     <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}
@@ -256,18 +256,8 @@
                                 {% endif %}
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="created_by" class="form-label">创建者</label>
-                                <select id="created_by" name="created_by" class="form-select {% if form.created_by.errors %}is-invalid{% endif %}">
-                                    <option value="">选择创建者</option>
-                                    {% for user in created_by %}
-                                    <option value="{{ user.id }}" {% if form.created_by.value == user.id %}selected{% endif %}>{{ user.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                {% if form.created_by.errors %}
-                                <div class="invalid-feedback">
-                                    {{ form.created_by.errors.0 }}
-                                </div>
-                                {% endif %}
+                              
+                               
                             </div>
                         </div>
                         <div class="mt-3">

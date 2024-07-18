@@ -1,106 +1,79 @@
 from django import forms
 from django.db import models
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, Product, ProductMaterial, FlowerMaterial
 
 
+# 用户注册表单
 class RegisterForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
         fields = ("username", "password1", "password2")
 
 
-# 确认登录
+# 用户登录表单
 class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         fields = ("username", "password")
 
 
+# 花材表单
 from django import forms
-from django.db import models
-from .models import FlowerMaterial, CustomUser
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-
-
-class RegisterForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = CustomUser
-        fields = ("username", "password1", "password2")
-
-
-class CustomAuthenticationForm(AuthenticationForm):
-    class Meta:
-        fields = ("username", "password")
+from .models import FlowerMaterial
 
 
 class FlowerMaterialForm(forms.ModelForm):
     class Meta:
         model = FlowerMaterial
-        fields = "__all__"  # 或者手动列出你想要的字段
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # 设置中文标签
-        self.fields["category"].label = "类别"
-        self.fields["model"].label = "型号"
-        self.fields["image"].label = "图片"
-        self.fields["chinese_name"].label = "中文名"
-        self.fields["english_name"].label = "英文名"
-        self.fields["scientific_name"].label = "学名"
-        self.fields["size"].label = "尺寸（cm）"
-        self.fields["weight"].label = "重量（g）"
-        self.fields["sale_spec_quantity"].label = "销售规格数量"
-        self.fields["sale_spec_unit"].label = "销售规格单位"
-        self.fields["process"].label = "加工方式"
-        self.fields["outer_box_length"].label = "外箱长度（cm）"
-        self.fields["outer_box_width"].label = "外箱宽度（cm）"
-        self.fields["outer_box_height"].label = "外箱高度（cm）"
-        self.fields["packing_quantity"].label = "装箱数量"
-        self.fields["grade"].label = "等级"
-        self.fields["supplier"].label = "供应商"
-        self.fields["price_one"].label = "价格一"
-        self.fields["price_two"].label = "价格二"
-        self.fields["created_by"].label = "创建者"
-
-        # 设置默认值
-        self.fields["chinese_name"].initial = "默认名"
-        self.fields["english_name"].initial = "Default Name"
-        self.fields["scientific_name"].initial = "Default Scientific Name"
-        self.fields["size"].initial = 0.0
-        self.fields["weight"].initial = 0.0
-        self.fields["sale_spec_quantity"].initial = 1
-        self.fields["outer_box_length"].initial = 0.0
-        self.fields["outer_box_width"].initial = 0.0
-        self.fields["outer_box_height"].initial = 0.0
-        self.fields["packing_quantity"].initial = 1
-
-        self.fields["price_one"].initial = 0.0
-        self.fields["price_two"].initial = 0.0
-        # 设置必填字段
-        self.fields["model"].required = True
-        self.fields["category"].required = True
-        self.fields["created_by"].required = True
-
-    def clean(self):
-        cleaned_data = super().clean()
-        required_fields = ["model", "category", "created_by"]  # 添加所有必填字段的名称
-
-        for field in required_fields:
-            if not cleaned_data.get(field):
-                self.add_error(field, "有必填项未填。")
-
-        return cleaned_data
+        fields = [
+            "model",
+            "category",
+            "image",
+            "chinese_name",
+            "english_name",
+            "scientific_name",
+            "color",
+            "chineses_specifications",
+            "size",
+            "weight",
+            "sale_spec_quantity",
+            "sale_spec_unit",
+            "process",
+            "outer_box_length",
+            "outer_box_width",
+            "outer_box_height",
+            "packing_quantity",
+            "grade",
+            "supplier",
+            "price_one",
+            "price_two",
+        ]
+        widgets = {
+            "model": forms.TextInput(attrs={"class": "form-control"}),
+            "category": forms.Select(attrs={"class": "form-control"}),
+            "image": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "chinese_name": forms.TextInput(attrs={"class": "form-control"}),
+            "english_name": forms.TextInput(attrs={"class": "form-control"}),
+            "scientific_name": forms.TextInput(attrs={"class": "form-control"}),
+            "color": forms.TextInput(attrs={"class": "form-control"}),
+            "chineses_specifications": forms.TextInput(attrs={"class": "form-control"}),
+            "size": forms.TextInput(attrs={"class": "form-control"}),
+            "weight": forms.TextInput(attrs={"class": "form-control"}),
+            "sale_spec_quantity": forms.TextInput(attrs={"class": "form-control"}),
+            "sale_spec_unit": forms.Select(attrs={"class": "form-control"}),
+            "process": forms.Select(attrs={"class": "form-control"}),
+            "outer_box_length": forms.NumberInput(attrs={"class": "form-control"}),
+            "outer_box_width": forms.NumberInput(attrs={"class": "form-control"}),
+            "outer_box_height": forms.NumberInput(attrs={"class": "form-control"}),
+            "packing_quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "grade": forms.Select(attrs={"class": "form-control"}),
+            "supplier": forms.Select(attrs={"class": "form-control"}),
+            "price_one": forms.NumberInput(attrs={"class": "form-control"}),
+            "price_two": forms.NumberInput(attrs={"class": "form-control"}),
+        }
 
 
-###########################################
-
-
-from django import forms
-from .models import Product, ProductMaterial
-
-
+# 产品表单
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -112,6 +85,7 @@ class ProductForm(forms.ModelForm):
             "loss_rate",
             "description",
         ]
+        exclude = ("created_by",)  # 排除created_by字段
 
     flower_materials = forms.ModelMultipleChoiceField(
         queryset=FlowerMaterial.objects.all(),
@@ -121,6 +95,7 @@ class ProductForm(forms.ModelForm):
     )
 
 
+# 产品材料表单
 class ProductMaterialForm(forms.ModelForm):
     class Meta:
         model = ProductMaterial

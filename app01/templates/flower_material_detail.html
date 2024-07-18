@@ -5,9 +5,8 @@
 {% endblock %}
 
 {% block content %}
-  <a href="/flower-materials" class="btn btn-primary btn-lg "style="margin-left:auto
-  ">返回列表</a>
-  
+  <a href="/flower-materials" class="btn btn-primary btn-lg" style="margin-left:auto">返回列表</a>
+
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-8">
@@ -15,7 +14,7 @@
           <div class="row g-0">
             <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
               {% if material.image %}
-                <img src="{{ material.image.url }}" class="img-fluid rounded-start"  alt="{{ material.chinese_name }}" />
+                <img src="{{ material.image.url }}" class="img-fluid rounded-start" alt="{{ material.chinese_name }}" />
               {% else %}
                 <p>无图片</p>
               {% endif %}
@@ -54,6 +53,9 @@
                     <p class="card-text">
                       <strong>供应商:</strong> {{ material.supplier.name }}
                     </p>
+                    <p class="card-text">
+                      <strong>创建时间:</strong> {{ material.created_at }}
+                    </p>
                   </div>
                   <div class="col-6">
                     <p class="card-text">
@@ -78,7 +80,11 @@
                       <strong>采购价二:</strong> {{ material.price_two }}
                     </p>
                     <p class="card-text">
-                      <strong>添加人:</strong> {{ material.created_by.name }}
+                      <strong>最后修改人:</strong> {{ material.created_by.username }}
+                    </p>
+                    
+                    <p class="card-text">
+                      <strong>最后修改时间:</strong> {{ material.updated_at }}
                     </p>
                   </div>
                 </div>
@@ -110,17 +116,17 @@
 
   <script>
     document.getElementById('searchFlower').addEventListener('keyup', function () {
-      var searchValue = this.value.toLowerCase()
-      var flowerItems = document.getElementById('flowerList').getElementsByTagName('li')
+      var searchValue = this.value.toLowerCase();
+      var flowerItems = document.getElementById('flowerList').getElementsByTagName('li');
     
       for (var i = 0; i < flowerItems.length; i++) {
-        var flowerText = flowerItems[i].getElementsByTagName('a')[0].innerText.toLowerCase()
+        var flowerText = flowerItems[i].getElementsByTagName('a')[0].innerText.toLowerCase();
         if (flowerText.indexOf(searchValue) > -1) {
-          flowerItems[i].style.display = ''
+          flowerItems[i].style.display = '';
         } else {
-          flowerItems[i].style.display = 'none'
+          flowerItems[i].style.display = 'none';
         }
       }
-    })
+    });
   </script>
 {% endblock %}

@@ -9,7 +9,6 @@ from .models import (
     Process,
     Supplier,
     FlowerMaterial,
-    CreatedBy,
     Grade,
 )
 from .forms import FlowerMaterialForm
@@ -97,70 +96,18 @@ def login_view(request):
 from .forms import FlowerMaterialForm
 
 
-# 添加花材
+@login_required
 def add_flower_material(request):
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES)
         if form.is_valid():
             flower_material = form.save(commit=False)
-
-            # 设置默认值
-
-            if not flower_material.chinese_name:
-                flower_material.chinese_name = "默认名"
-            if not flower_material.english_name:
-                flower_material.english_name = "Default Name"
-            if not flower_material.scientific_name:
-                flower_material.scientific_name = "Default Scientific Name"
-
-            if not flower_material.size:
-                flower_material.size = 0.0
-            if not flower_material.weight:
-                flower_material.weight = 0.0
-            if not flower_material.sale_spec_quantity:
-                flower_material.sale_spec_quantity = 1
-            if not flower_material.outer_box_length:
-                flower_material.outer_box_length = 0.0
-            if not flower_material.outer_box_width:
-                flower_material.outer_box_width = 0.0
-            if not flower_material.outer_box_height:
-                flower_material.outer_box_height = 0.0
-            if not flower_material.packing_quantity:
-                flower_material.packing_quantity = 1
-
-            if not flower_material.price_one:
-                flower_material.price_one = 0.0
-            if not flower_material.price_two:
-                flower_material.price_two = 0.0
-
-            form.save()
-            messages.success(request, "花材添加成功")
-            return redirect("flower_material_list")
-        else:
-            messages.error(request, "花材添加失败，（类别、型号、操作人；为必填项）")
+            flower_material.created_by = request.user  # 将创建者设置为当前用户
+            flower_material.save()
+            return redirect("flower_material_list")  # 替换为你的重定向URL
     else:
         form = FlowerMaterialForm()
-
-    categories = Category.objects.all()
-    grades = Grade.objects.all()
-    processes = Process.objects.all()
-    suppliers = Supplier.objects.all()
-    Created_bys = CreatedBy.objects.all()
-
-    context = {
-        "form": form,
-        "categories": categories,
-        "processes": processes,
-        "grades": grades,
-        "suppliers": suppliers,
-        "Created_bys": Created_bys,
-        "current_user": request.user,
-    }
-    return render(
-        request,
-        "add_flower_material.html",
-        context,
-    )
+    return render(request, "add_flower_material.html", {"form": form})
 
 
 # 花材表显示
@@ -204,7 +151,7 @@ def edit_flower_material(request, model):
     processes = Process.objects.all()
     suppliers = Supplier.objects.all()
     grades = Grade.objects.all()
-    created_by = CreatedBy.objects.all()
+
     flower_materials = FlowerMaterial.objects.all()
 
     context = {
@@ -215,7 +162,6 @@ def edit_flower_material(request, model):
         "processes": processes,
         "suppliers": suppliers,
         "grades": grades,
-        "created_by": created_by,
         "flower_materials": flower_materials,
         "current_user": request.user,
     }
@@ -274,7 +220,7 @@ from .models import ProductMaterial
 
 # views.py
 from django.shortcuts import render, redirect
-from .models import Product, FlowerMaterial, CreatedBy
+from .models import Product, FlowerMaterial
 
 
 def add_product(request):

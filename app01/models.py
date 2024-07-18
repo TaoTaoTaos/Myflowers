@@ -1,9 +1,10 @@
-# models.py
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from decimal import Decimal
+from django.conf import settings
 
 
-##########################花材类##########################
 class Grade(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -44,23 +45,16 @@ class Supplier(models.Model):
         return self.name
 
 
-class CreatedBy(models.Model):
-    name = models.CharField(max_length=100)
-    id = models.AutoField(primary_key=True)
-
-    def __str__(self):
-        return self.name
+from datetime import datetime
 
 
 class FlowerMaterial(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Material0000", primary_key=True
     )
-
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, default="默认类型"
     )
-
     image = models.ImageField(upload_to="images/", null=True, blank=True, default=None)
     chinese_name = models.CharField(max_length=200, null=True, blank=True, default="")
     english_name = models.CharField(max_length=200, null=True, blank=True, default="")
@@ -116,8 +110,20 @@ class FlowerMaterial(models.Model):
         max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
     )
     created_by = models.ForeignKey(
-        CreatedBy, on_delete=models.SET_NULL, null=True, blank=True, default=None
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
     )
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.chinese_name if self.chinese_name else self.model
@@ -139,20 +145,9 @@ class FlowerMaterial(models.Model):
         )
 
 
-##########################花材类END##########################
-
-
-##################用户信息#################
 class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
-
-
-##################用户信息END###############
-
-
-##################产品信息#################
-from decimal import Decimal
 
 
 class Product(models.Model):
@@ -167,8 +162,20 @@ class Product(models.Model):
     labor_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     loss_rate = models.FloatField(default=0.0)
     created_by = models.ForeignKey(
-        CreatedBy, on_delete=models.SET_NULL, null=True, blank=True, default=None
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
     )
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
 
     @property
     def cost(self):
@@ -192,7 +199,7 @@ class Product(models.Model):
         return total_cost
 
     def __str__(self):
-        return self.chinese_name  # 修改为返回 Chinese name
+        return self.chinese_name
 
 
 class ProductMaterial(models.Model):
@@ -203,14 +210,11 @@ class ProductMaterial(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     flower_material = models.ForeignKey(FlowerMaterial, on_delete=models.CASCADE)
-    quantity = models.FloatField(default=1.0)  # 使用几个该原材料
-    ratio = models.FloatField(default=1.0)  # 使用百分比，默认为 1
+    quantity = models.FloatField(default=1.0)
+    ratio = models.FloatField(default=1.0)
     price_type = models.CharField(
         max_length=10, choices=PRICE_TYPE_CHOICES, default="price_one"
     )
 
     def __str__(self):
-        return f"{self.product.name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio}, Price: {self.price_type})"
-
-
-##################产品信息END#################
+        return f"{self.product.chinese_name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio}, Price: {self.price_type})"

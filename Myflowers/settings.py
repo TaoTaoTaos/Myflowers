@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+USE_TZ = True  # 确保启用时区支持
+
+TIME_ZONE = "Asia/Shanghai"  # 设置为你所在的时区
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,7 +54,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "app01.middleware.CurrentUserMiddleware",
 ]
+
 
 ROOT_URLCONF = "Myflowers.urls"
 

@@ -10,14 +10,6 @@
     vertical-align: middle;
   }
 
-  .column-toggle {
-  transform: scale(1.5); /* 1.5 是放大的倍数，可以根据需要调整 */
-}
-
-#select-all {
-  transform: scale(1.5);
-}
-
   .align-middle {
     display: flex;
     align-items: center;
@@ -28,6 +20,10 @@
     height: 80px;
     width: 80px;
     object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px; /* 调整列宽度，比图片宽一点 */
   }
 {% endblock %}
 
@@ -41,13 +37,7 @@
           <label>选择要显示的列：</label>
           <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
           <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
-          <label><input type="checkbox" class="column-toggle" data-column="4" checked disabled> 中文名</label>
-          <label><input type="checkbox" class="column-toggle" data-column="5" checked disabled> 英文名</label>
-          
-      
           <label><input type="checkbox" class="column-toggle" data-column="7" checked> 学名</label>
-          <label><input type="checkbox" class="column-toggle" data-column="8" checked> 采购价一</label>
-          <label><input type="checkbox" class="column-toggle" data-column="9" checked> 采购价二</label>
           <label><input type="checkbox" class="column-toggle" data-column="10" checked> 规格</label>
           <label><input type="checkbox" class="column-toggle" data-column="11" checked> 装箱数量</label>
           <label><input type="checkbox" class="column-toggle" data-column="12" checked> 销售商</label>
@@ -71,10 +61,9 @@
                 <th style="text-align: center; vertical-align: middle;">编号</th>
                 <th style="text-align: center; vertical-align: middle;">分类</th>
                 <th style="text-align: center; vertical-align: middle;">型号</th>
-               <th style="text-align: center; vertical-align: middle; width: 120px;">图片</th>
+                <th style="text-align: center; vertical-align: middle;">图片</th>
                 <th style="text-align: center; vertical-align: middle;">中文名</th>
                 <th style="text-align: center; vertical-align: middle;">英文名</th>
-               
                 <th style="text-align: center; vertical-align: middle;">学名</th>
                 <th style="text-align: center; vertical-align: middle;">采购价一</th>
                 <th style="text-align: center; vertical-align: middle;">采购价二</th>
@@ -89,7 +78,8 @@
                 <th style="text-align: center; vertical-align: middle;">处理过程</th>
                 <th style="text-align: center; vertical-align: middle;">外箱尺寸</th>
                 <th style="text-align: center; vertical-align: middle;">等级</th>
-                <th style="text-align: center; vertical-align: middle;">添加人</th>
+                <th style="text-align: center; vertical-align: middle;">最后修改人</th>
+                <th style="text-align: center; vertical-align: middle;">修改时间</th>
               </tr>
             </thead>
             <tbody>
@@ -100,18 +90,16 @@
                   </td>
                   <td style="text-align: center; height: 90px ;vertical-align: middle;"/>{{ forloop.counter }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.category.name }}</td>
-                 
                   <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
-                    <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell" >
+                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
                     {% if material.image %}
-                      <img src="{{ material.image.url }}" alt="图片" style="width: 85px; height: 85px;"/>
+                      <img src="{{ material.image.url }}" alt="图片" style="width: 100px; height: 100px;"/>
                     {% else %}
                       无图片
                     {% endif %}
                   </td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.chinese_name }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.english_name }}</td>
-                 
                   <td style="text-align: center; vertical-align: middle;">{{ material.scientific_name }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.price_one }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.price_two }}</td>
@@ -126,7 +114,8 @@
                   <td style="text-align: center; vertical-align: middle;">{{ material.process.name }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.outer_box_size }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.grade.name }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ material.created_by.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.created_by.username }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.updated_at }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -147,7 +136,7 @@
         searchable: true,
         fixedHeight: true,
         perPageSelect: [5, 10, 15, 20, 30, 500],
-        perPage: 5,
+        perPage: 20,
         labels: {
           placeholder: '搜索...',
           perPage: '/条记录每页     （点击型号、中文名、英文名查看详情）',
@@ -155,12 +144,64 @@
           info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
         },
         columns: [
-          { select: [0], sortable: false }, // Disable sorting on the first column (checkbox)
+          { select: [0], sortable: false } // Disable sorting on the first column (checkbox)
         ]
       });
 
+      const toggleColumnVisibility = () => {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          const column = parseInt(checkbox.dataset.column, 10) + 1;
+          const th = table.querySelector(`th:nth-child(${column})`);
+          const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
+
+          if (checkbox.checked) {
+            th.style.display = '';
+            tds.forEach(td => td.style.display = '');
+          } else {
+            th.style.display = 'none';
+            tds.forEach(td => td.style.display = 'none');
+          }
+        });
+      };
+
+      const saveColumnVisibility = () => {
+        const visibilityState = {};
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          visibilityState[checkbox.dataset.column] = checkbox.checked;
+        });
+        localStorage.setItem('columnVisibility', JSON.stringify(visibilityState));
+      };
+
+      const loadColumnVisibility = () => {
+        const visibilityState = JSON.parse(localStorage.getItem('columnVisibility'));
+        if (visibilityState) {
+          document.querySelectorAll('.column-toggle').forEach(checkbox => {
+            checkbox.checked = visibilityState[checkbox.dataset.column];
+          });
+          toggleColumnVisibility();
+        } else {
+          // 默认显示所有列
+          document.querySelectorAll('.column-toggle').forEach(checkbox => {
+            checkbox.checked = true;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          });
+        }
+      };
+
+      // Initial load of column visibility settings
+      loadColumnVisibility();
+
+      // Update column visibility on change
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          toggleColumnVisibility();
+          saveColumnVisibility();
+        });
+      });
+
       // Select/Deselect all checkboxes
-      document.getElementById('select-all').addEventListener('change', function() {
+      document.getElementById('select-all').addEventListener('change', function () {
         const checkboxes = document.querySelectorAll('.select-item');
         checkboxes.forEach(checkbox => {
           checkbox.checked = this.checked;
@@ -168,7 +209,7 @@
       });
 
       // Export selected rows to Excel
-      document.getElementById('export-button').addEventListener('click', function() {
+      document.getElementById('export-button').addEventListener('click', function () {
         const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
           return row.querySelector('.select-item').checked;
         });
@@ -196,23 +237,14 @@
 
       // Column toggle functionality
       document.querySelectorAll('.column-toggle').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-          const column = parseInt(this.dataset.column, 10) + 1;
-          const th = table.querySelector(`th:nth-child(${column})`);
-          const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
-          
-          if (this.checked) {
-            th.style.display = '';
-            tds.forEach(td => td.style.display = '');
-          } else {
-            th.style.display = 'none';
-            tds.forEach(td => td.style.display = 'none');
-          }
+        checkbox.addEventListener('change', function () {
+          toggleColumnVisibility();
+          saveColumnVisibility();
         });
       });
 
       // Show all/hide all functionality
-      document.getElementById('show-all').addEventListener('click', function() {
+      document.getElementById('show-all').addEventListener('click', function () {
         document.querySelectorAll('.column-toggle').forEach(checkbox => {
           if (!checkbox.disabled) {
             checkbox.checked = true;
@@ -222,7 +254,7 @@
         });
       });
 
-      document.getElementById('hide-all').addEventListener('click', function() {
+      document.getElementById('hide-all').addEventListener('click', function () {
         document.querySelectorAll('.column-toggle').forEach(checkbox => {
           if (!checkbox.disabled) {
             checkbox.checked = false;
@@ -235,28 +267,29 @@
       // Ensure the Chinese and English names are always visible
       document.querySelectorAll('.column-toggle').forEach(checkbox => {
         const column = parseInt(checkbox.dataset.column, 10);
-        if (column === 4 || column === 5 || column === 6 || column ==8 ||column ==9) {
+        if (column === 4 || column === 5 || column === 6 || column === 8 || column === 9 || column === 21|| column === 22) {
           checkbox.disabled = true;
         }
       });
 
-      // Hide all columns except the always visible ones on page load
-      document.getElementById('hide-all').click();
+      // Ensure column visibility on table redraw
+      const applyVisibilityAfterRender = () => {
+        dataTable.on('datatable.page', toggleColumnVisibility);
+        dataTable.on('datatable.search', toggleColumnVisibility);
+        dataTable.on('datatable.sort', toggleColumnVisibility);
+      };
+
+      applyVisibilityAfterRender();
 
       // Reapply column visibility settings on window resize
-      window.addEventListener('resize', function() {
-        document.querySelectorAll('.column-toggle').forEach(checkbox => {
-          const event = new Event('change');
-          checkbox.dispatchEvent(event);
-        });
-      });
+      window.addEventListener('resize', toggleColumnVisibility);
     });
 
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
+        for (let i = 0; cookies.length > i; i++) {
           const cookie = cookies[i].trim();
           if (cookie.substring(0, name.length + 1) === (name + '=')) {
             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));

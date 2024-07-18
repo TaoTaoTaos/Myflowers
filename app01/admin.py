@@ -5,7 +5,6 @@ from .models import (
     Color,
     Process,
     Supplier,
-    CreatedBy,
     FlowerMaterial,
     CustomUser,
     Product,
@@ -41,12 +40,6 @@ class ProcessAdmin(admin.ModelAdmin):
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
-
-
-@admin.register(CreatedBy)
-class CreatedByAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
 
