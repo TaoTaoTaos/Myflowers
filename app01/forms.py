@@ -73,30 +73,33 @@ class FlowerMaterialForm(forms.ModelForm):
         }
 
 
-# 产品表单
+##################################################
+from django.forms import inlineformset_factory
+from .models import Product, ProductMaterial, FlowerMaterial
+
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
             "model",
+            "description",
             "chinese_name",
             "english_name",
             "labor_cost",
             "loss_rate",
-            "description",
         ]
-        exclude = ("created_by",)  # 排除created_by字段
-
-    flower_materials = forms.ModelMultipleChoiceField(
-        queryset=FlowerMaterial.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=True,
-        label="选择花材",
-    )
 
 
-# 产品材料表单
 class ProductMaterialForm(forms.ModelForm):
     class Meta:
         model = ProductMaterial
         fields = ["flower_material", "quantity", "ratio", "price_type"]
+
+
+ProductMaterialFormSet = inlineformset_factory(
+    Product,
+    ProductMaterial,
+    fields=["flower_material", "quantity", "ratio", "price_type"],
+    extra=1,
+)

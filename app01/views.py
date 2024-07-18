@@ -209,38 +209,53 @@ from .forms import FlowerMaterialForm
 
 
 # 添加产品
-from django.shortcuts import render, redirect
-from django.forms import modelformset_factory
-from .forms import (
-    ProductForm,
-    ProductMaterialForm,
-)  # 导入 ProductForm 和 ProductMaterialForm
-from .models import ProductMaterial
 
 
-# views.py
+from django.db import transaction
 from django.shortcuts import render, redirect
-from .models import Product, FlowerMaterial
+from django.contrib import messages
+from .forms import ProductForm, ProductMaterialFormSet
 
 
 def add_product(request):
     if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.save()
-            for material in form.cleaned_data["flower_materials"]:
-                ProductMaterial.objects.create(
-                    product=product,
-                    flower_material=material,
-                    quantity=1.0,  # 这里可以根据需要修改
-                    ratio=1.0,  # 这里可以根据需要修改
-                    price_type="price_one",  # 这里可以根据需要修改
-                )
-            return redirect("product_list")  # 跳转到产品列表或其他页面
+        product_form = ProductForm(request.POST)
+        material_formset = ProductMaterialFormSet(request.POST)
+
+        if product_form.is_valid() and material_formset.is_valid():
+            try:
+                with transaction.atomic():
+                    # 先保存 Product 实例
+                    product = product_form.save(commit=False)
+                    product.created_by = request.user
+                    product.save()
+
+                    # 打印调试信息以确保 Product 已保存
+                    print(f"Product saved: {product}")
+
+                    # 保存 ProductMaterial 实例
+                    material_formset.instance = product
+                    material_formset.save()
+
+                    messages.success(request, "Product added successfully!")
+                    return redirect("product_list")  # 假设你有一个产品列表页面
+            except Exception as e:
+                print(f"Error during save: {e}")
+                messages.error(request, "An error occurred while saving the product.")
+        else:
+            # 打印表单错误
+            print("Product Form Errors:", product_form.errors)
+            print("Material Formset Errors:", material_formset.errors)
+            messages.error(request, "Please correct the errors below.")
     else:
-        form = ProductForm()
-    return render(request, "add_product.html", {"form": form})
+        product_form = ProductForm()
+        material_formset = ProductMaterialFormSet()
+
+    return render(
+        request,
+        "add_product.html",
+        {"product_form": product_form, "material_formset": material_formset},
+    )
 
 
 ##########################产品END#######################
