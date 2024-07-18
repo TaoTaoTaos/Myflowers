@@ -10,6 +10,14 @@
     vertical-align: middle;
   }
 
+  .column-toggle {
+  transform: scale(1.5); /* 1.5 是放大的倍数，可以根据需要调整 */
+}
+
+#select-all {
+  transform: scale(1.5);
+}
+
   .align-middle {
     display: flex;
     align-items: center;
@@ -29,6 +37,29 @@
       <div class="col-lg-12">
         <a href="{% url 'add_flower_material' %}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">添加花材</a>
         <button id="export-button" class="btn btn-secondary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">导出为Excel</button>
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+          <label>选择要显示的列：</label>
+          <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
+          <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
+          <label><input type="checkbox" class="column-toggle" data-column="4" checked disabled> 中文名</label>
+          <label><input type="checkbox" class="column-toggle" data-column="5" checked disabled> 英文名</label>
+          
+      
+          <label><input type="checkbox" class="column-toggle" data-column="7" checked> 学名</label>
+          <label><input type="checkbox" class="column-toggle" data-column="8" checked> 采购价一</label>
+          <label><input type="checkbox" class="column-toggle" data-column="9" checked> 采购价二</label>
+          <label><input type="checkbox" class="column-toggle" data-column="10" checked> 规格</label>
+          <label><input type="checkbox" class="column-toggle" data-column="11" checked> 装箱数量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="12" checked> 销售商</label>
+          <label><input type="checkbox" class="column-toggle" data-column="13" checked> 颜色</label>
+          <label><input type="checkbox" class="column-toggle" data-column="14" checked> 尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="15" checked> 重量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="16" checked> 销售规格数量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="17" checked> 销售规格单位</label>
+          <label><input type="checkbox" class="column-toggle" data-column="18" checked> 处理过程</label>
+          <label><input type="checkbox" class="column-toggle" data-column="19" checked> 外箱尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="20" checked> 等级</label>
+        </div>
 
         <div class="table-responsive">
           <table class="table table-hover table-fixed" id="flower-materials-table">
@@ -40,14 +71,24 @@
                 <th style="text-align: center; vertical-align: middle;">编号</th>
                 <th style="text-align: center; vertical-align: middle;">分类</th>
                 <th style="text-align: center; vertical-align: middle;">型号</th>
-                <th style="text-align: center; vertical-align: middle;">图片</th>
+               <th style="text-align: center; vertical-align: middle; width: 120px;">图片</th>
                 <th style="text-align: center; vertical-align: middle;">中文名</th>
                 <th style="text-align: center; vertical-align: middle;">英文名</th>
+               
+                <th style="text-align: center; vertical-align: middle;">学名</th>
+                <th style="text-align: center; vertical-align: middle;">采购价一</th>
+                <th style="text-align: center; vertical-align: middle;">采购价二</th>
                 <th style="text-align: center; vertical-align: middle;">规格</th>
                 <th style="text-align: center; vertical-align: middle;">装箱数量</th>
                 <th style="text-align: center; vertical-align: middle;">销售商</th>
-                <th style="text-align: center; vertical-align: middle;">采购价一</th>
-                <th style="text-align: center; vertical-align: middle;">采购价二</th>
+                <th style="text-align: center; vertical-align: middle;">颜色</th>
+                <th style="text-align: center; vertical-align: middle;">尺寸</th>
+                <th style="text-align: center; vertical-align: middle;">重量</th>
+                <th style="text-align: center; vertical-align: middle;">销售规格数量</th>
+                <th style="text-align: center; vertical-align: middle;">销售规格单位</th>
+                <th style="text-align: center; vertical-align: middle;">处理过程</th>
+                <th style="text-align: center; vertical-align: middle;">外箱尺寸</th>
+                <th style="text-align: center; vertical-align: middle;">等级</th>
                 <th style="text-align: center; vertical-align: middle;">添加人</th>
               </tr>
             </thead>
@@ -59,21 +100,32 @@
                   </td>
                   <td style="text-align: center; height: 90px ;vertical-align: middle;"/>{{ forloop.counter }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.category.name }}</td>
+                 
                   <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
-                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell" >
+                    <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell" >
                     {% if material.image %}
                       <img src="{{ material.image.url }}" alt="图片" style="width: 85px; height: 85px;"/>
                     {% else %}
                       无图片
                     {% endif %}
                   </td>
-                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.chinese_name }}</td>
-                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.english_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.chinese_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.english_name }}</td>
+                 
+                  <td style="text-align: center; vertical-align: middle;">{{ material.scientific_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.price_one }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.price_two }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.chineses_specifications }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.packing_quantity }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.supplier.name }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ material.price_one }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ material.price_two }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.color }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.size }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.weight }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.sale_spec_quantity }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.sale_spec_unit }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.process.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.outer_box_size }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.grade.name }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.created_by.name }}</td>
                 </tr>
               {% endfor %}
@@ -90,7 +142,8 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const dataTable = new simpleDatatables.DataTable('#flower-materials-table', {
+      const table = document.getElementById('flower-materials-table');
+      const dataTable = new simpleDatatables.DataTable(table, {
         searchable: true,
         fixedHeight: true,
         perPageSelect: [5, 10, 15, 20, 30, 500],
@@ -116,7 +169,6 @@
 
       // Export selected rows to Excel
       document.getElementById('export-button').addEventListener('click', function() {
-        const table = document.getElementById('flower-materials-table');
         const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
           return row.querySelector('.select-item').checked;
         });
@@ -140,6 +192,63 @@
         XLSX.utils.book_append_sheet(wb, ws, '花材');
 
         XLSX.writeFile(wb, '花材记录.xlsx');
+      });
+
+      // Column toggle functionality
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const column = parseInt(this.dataset.column, 10) + 1;
+          const th = table.querySelector(`th:nth-child(${column})`);
+          const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
+          
+          if (this.checked) {
+            th.style.display = '';
+            tds.forEach(td => td.style.display = '');
+          } else {
+            th.style.display = 'none';
+            tds.forEach(td => td.style.display = 'none');
+          }
+        });
+      });
+
+      // Show all/hide all functionality
+      document.getElementById('show-all').addEventListener('click', function() {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = true;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+        });
+      });
+
+      document.getElementById('hide-all').addEventListener('click', function() {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = false;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+        });
+      });
+
+      // Ensure the Chinese and English names are always visible
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        const column = parseInt(checkbox.dataset.column, 10);
+        if (column === 4 || column === 5 || column === 6 || column ==8 ||column ==9) {
+          checkbox.disabled = true;
+        }
+      });
+
+      // Hide all columns except the always visible ones on page load
+      document.getElementById('hide-all').click();
+
+      // Reapply column visibility settings on window resize
+      window.addEventListener('resize', function() {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          const event = new Event('change');
+          checkbox.dispatchEvent(event);
+        });
       });
     });
 
