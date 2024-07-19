@@ -45,6 +45,10 @@ def QuoteMOD_view(request):
     return render(request, "QuoteMOD.html", {"current_user": request.user})
 
 
+def success_page(request):
+    return render(request, "success.html")
+
+
 ##########################普通视图END##############################
 
 #########################注册登录############################
@@ -136,7 +140,6 @@ def flower_material_detail(request, model):
 
 
 # 花材编辑
-# 花材编辑
 def edit_flower_material(request, model):
     material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
@@ -193,58 +196,76 @@ def delete_flower_material(request, model):
 
 ###############################产品####################################
 
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.forms import modelform_factory
+from .models import Product, FlowerMaterial, ProductMaterial
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
-from django.http import FileResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, landscape
 
-
-# 产品列表
-def products_list(request):
-    products = Product.objects.all()
-    return render(
-        request,
-        "product_list.html",
-        {"products": products, "current_user": request.user},
+@login_required
+def add_product(request):
+    # 使用 modelform_factory 创建 Product 表单，不包含 'materials', 'created_by', 'created_at', 'updated_at'
+    ProductForm = modelform_factory(
+        Product, exclude=["materials", "created_by", "created_at", "updated_at"]
     )
 
-
-from django.shortcuts import render, redirect
-from .forms import FlowerMaterialForm
-
-
-# 添加产品
-
-
-from django.db import transaction
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import ProductForm, ProductMaterialFormSet
-
-
-def add_product(request):
     if request.method == "POST":
-        product_form = ProductForm(request.POST)
-        formset = ProductMaterialFormSet(request.POST, request.FILES)
-
-        if product_form.is_valid() and formset.is_valid():
-            product = product_form.save(commit=False)
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.created_by = request.user
+            product.created_at = timezone.now()
+            product.updated_at = timezone.now()
             product.save()
-            formset.instance = product
-            formset.save()
-            return redirect("product_list")
+
+            # 处理花材信息
+            flower_materials = request.POST.get("flower_materials", "").split(";")
+            for fm in flower_materials:
+                flower_material_id, quantity, ratio, price_type = fm.split(",")
+                ProductMaterial.objects.create(
+                    product=product,
+                    flower_material_id=flower_material_id,
+                    quantity=quantity,
+                    ratio=ratio,
+                    price_type=price_type,
+                )
+
+            return redirect("success_page")  # 重定向到一个成功页面
     else:
-        product_form = ProductForm()
-        formset = ProductMaterialFormSet()
+        form = ProductForm()
+        flower_materials = FlowerMaterial.objects.all()
 
     return render(
         request,
         "add_product.html",
-        {
-            "product_form": product_form,
-            "formset": formset,
-        },
+        {"form": form, "flower_materials": flower_materials},
     )
+
+
+########################
+def success_page(request):
+    return render(request, "success.html")
+
+
+#################
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Product
+
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, "product_list.html", {"products": products})
+
+
+def product_details(request, model):
+    product = get_object_or_404(Product, model=model)
+    materials = product.productmaterial_set.all()
+
+    context = {"product": product, "materials": materials}
+    return render(request, "product_details.html", context)
 
 
 ##########################产品END#######################

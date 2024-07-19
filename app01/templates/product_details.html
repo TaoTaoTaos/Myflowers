@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  产品详情
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h2 class="mb-4">产品详情</h2>
+    <div class="card">
+      <div class="card-body">
+        <h4>产品信息</h4>
+        <dl class="row">
+          <dt class="col-sm-3">型号</dt>
+          <dd class="col-sm-9">{{ product.model }}</dd>
+          <dt class="col-sm-3">中文名</dt>
+          <dd class="col-sm-9">{{ product.chinese_name }}</dd>
+          <dt class="col-sm-3">英文名</dt>
+          <dd class="col-sm-9">{{ product.english_name }}</dd>
+          <dt class="col-sm-3">尺寸</dt>
+          <dd class="col-sm-9">{{ product.size }}</dd>
+          <dt class="col-sm-3">重量</dt>
+          <dd class="col-sm-9">{{ product.weight }}</dd>
+          <!-- Add more fields as needed -->
+        </dl>
+
+        <h4 class="mt-4">产品组成</h4>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>花材型号</th>
+              <th>花材名称</th>
+              <th>数量</th>
+              <th>比例</th>
+              <th>价格类型</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for material in materials %}
+            <tr>
+              <td>{{ material.flower_material.model }}</td>
+              <td>{{ material.flower_material.chinese_name }}</td>
+              <td>{{ material.quantity }}</td>
+              <td>{{ material.ratio }}</td>
+              <td>{{ material.price_type }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

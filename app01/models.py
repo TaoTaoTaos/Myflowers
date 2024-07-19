@@ -150,32 +150,54 @@ class CustomUser(AbstractUser):
         return self.username
 
 
+##############################产品#####################################
 class Product(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Product0000", primary_key=True
     )
-    description = models.TextField(null=True, blank=True)
+    materials = models.ManyToManyField(FlowerMaterial, through="ProductMaterial")
     chinese_name = models.CharField(max_length=200)
     english_name = models.CharField(max_length=200)
-    materials = models.ManyToManyField(FlowerMaterial, through="ProductMaterial")
 
+    ######################
+    size = models.CharField(max_length=200, blank=True, default="0")
+    weight = models.CharField(max_length=200, blank=True, default="0")
+    color = models.CharField(max_length=200, blank=True, default="默认颜色")
+    Package = models.CharField(max_length=200, blank=True, default="默认包装")
+    sale_spec_quantity = models.CharField(
+        max_length=200, help_text="销售规格的数字", blank=True, default=""
+    )
+    sale_spec_unit = models.CharField(
+        max_length=10,
+        help_text="销售规格的单位",
+        choices=[("box", "box"), ("pcs", "pcs"), ("g", "g"), ("kg", "kg")],
+        blank=True,
+        null=True,
+        default="box",
+    )
+    ###########################################################
+    inner_box_long = models.FloatField(
+        help_text="长度，单位：cm", null=True, blank=True, default=0.0
+    )
+    inner_box_width = models.FloatField(
+        help_text="长度，单位：cm", null=True, blank=True, default=0.0
+    )
+    inner_box_height = models.FloatField(
+        help_text="长度，单位：cm", null=True, blank=True, default=0.0
+    )
+    ##########################################################
+    outer_box_length = models.FloatField(
+        help_text="长度，单位：cm", null=True, blank=True, default=0.0
+    )
+    outer_box_width = models.FloatField(
+        help_text="宽度，单位：cm", null=True, blank=True, default=0.0
+    )
+    outer_box_height = models.FloatField(
+        help_text="高度，单位：cm", null=True, blank=True, default=0.0
+    )
+    ##########################################################
     labor_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     loss_rate = models.FloatField(default=0.0)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        default=None,
-    )
-    created_at = models.DateTimeField(editable=False)
-    updated_at = models.DateTimeField()
-
-    def save(self, *args, **kwargs):
-        if not self.created_at:
-            self.created_at = timezone.now()
-        self.updated_at = timezone.now()
-        super().save(*args, **kwargs)
 
     @property
     def cost(self):
@@ -197,6 +219,40 @@ class Product(models.Model):
         total_cost += self.labor_cost
         total_cost *= Decimal(1 + self.loss_rate)
         return total_cost
+
+    ##############################################################
+    description = models.TextField(null=True, blank=True)  # 备注信息
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=None,
+    )
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    @property
+    def inner_box_size(self):
+        return (
+            f"{self.inner_box_length} * {self.inner_box_width} * {self.inner_box_height} cm"
+            if self.inner_box_length and self.inner_box_width and self.inner_box_height
+            else ""
+        )
+
+    @property
+    def outer_box_size(self):
+        return (
+            f"{self.outer_box_length} * {self.outer_box_width} * {self.outer_box_height} cm"
+            if self.outer_box_length and self.outer_box_width and self.outer_box_height
+            else ""
+        )
 
     def __str__(self):
         return self.chinese_name

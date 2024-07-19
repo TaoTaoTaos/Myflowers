@@ -81,14 +81,27 @@ from .models import Product, ProductMaterial, FlowerMaterial
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = [
-            "model",
-            "description",
-            "chinese_name",
-            "english_name",
-            "labor_cost",
-            "loss_rate",
-        ]
+        fields = "__all__"
+        widgets = {
+            "model": forms.TextInput(attrs={"class": "form-control"}),
+            "chinese_name": forms.TextInput(attrs={"class": "form-control"}),
+            "english_name": forms.TextInput(attrs={"class": "form-control"}),
+            "size": forms.TextInput(attrs={"class": "form-control"}),
+            "weight": forms.TextInput(attrs={"class": "form-control"}),
+            "color": forms.TextInput(attrs={"class": "form-control"}),
+            "Package": forms.TextInput(attrs={"class": "form-control"}),
+            "sale_spec_quantity": forms.TextInput(attrs={"class": "form-control"}),
+            "sale_spec_unit": forms.Select(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control"}),
+            "inner_box_long": forms.NumberInput(attrs={"class": "form-control"}),
+            "inner_box_width": forms.NumberInput(attrs={"class": "form-control"}),
+            "inner_box_height": forms.NumberInput(attrs={"class": "form-control"}),
+            "outer_box_length": forms.NumberInput(attrs={"class": "form-control"}),
+            "outer_box_width": forms.NumberInput(attrs={"class": "form-control"}),
+            "outer_box_height": forms.NumberInput(attrs={"class": "form-control"}),
+            "labor_cost": forms.NumberInput(attrs={"class": "form-control"}),
+            "loss_rate": forms.NumberInput(attrs={"class": "form-control"}),
+        }
 
 
 class ProductMaterialForm(forms.ModelForm):

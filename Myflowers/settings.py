@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "app01",
     "simpleui",
     "crispy_forms",
+    "widget_tweaks",
 ]
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 

@@ -1,26 +1,68 @@
-<!-- product_list.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Product List</title>
-</head>
-<body>
-    <h1>Product List</h1>
-    <ul>
-        {% for product in products %}
-            <li>
-                <h2>{{ product.chinese_name }}</h2>
-                <p>{{ product.description }}</p>
-                <p>Labor Cost: {{ product.labor_cost }}</p>
-                <p>Loss Rate: {{ product.loss_rate }}</p>
-                <p>Cost: {{ product.cost }}</p>
-                <ul>
-                    {% for pm in product.productmaterial_set.all %}
-                        <li>{{ pm.flower_material.chinese_name }} - Quantity: {{ pm.quantity }} - Ratio: {{ pm.ratio }} - Price Type: {{ pm.get_price_type_display }}</li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  产品列表
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h2 class="mb-4">产品列表</h2>
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <input type="text" id="search-box" class="form-control" placeholder="搜索产品">
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>产品型号</th>
+            <th>中文名</th>
+            <th>英文名</th>
+            <th>尺寸</th>
+            <th>重量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="product-list">
+          {% for product in products %}
+          <tr>
+            <td>{{ product.model }}</td>
+            <td>{{ product.chinese_name }}</td>
+            <td>{{ product.english_name }}</td>
+            <td>{{ product.size }}</td>
+            <td>{{ product.weight }}</td>
+            <td>
+              <a href="{% url 'product_details' product.model %}" class="btn btn-info">查看详情</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('#search-box').on('input', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('#product-list tr').each(function(){
+        var model = $(this).find('td:eq(0)').text().toLowerCase();
+        var chineseName = $(this).find('td:eq(1)').text().toLowerCase();
+        if (model.includes(searchTerm) || chineseName.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

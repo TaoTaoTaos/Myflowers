@@ -1,113 +1,310 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Flower Material</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2 class="mb-4">Add Flower Material</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-row">
+{% extends 'base.html' %}
+
+{% block title %}添加花材 - SummerFlora{% endblock %}
+
+{% block extra_styles %}
+<style>
+  .main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section {
+    flex: 1;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<main id="main" class="main">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="card custom-width">
+          <div class="card-body">
+            <h5 class="card-title">添加花材</h5>
+            <p>（类别、型号、添加人为必填项）</p>
+
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row">
                 <div class="form-group col-md-6">
-                    <label for="model">Model</label>
-                    {{ form.model }}
+                  <label for="category" class="form-label">类型</label>
+                  <select id="category" name="category" class="form-select {% if form.category.errors %}is-invalid{% endif %}">
+                    <option value="">选择类型</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if form.category.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.category.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-6">
+                  <label for="model" class="form-label">型号</label>
+                  <input type="text" id="model" name="model" class="form-control {% if form.model.errors %}is-invalid{% endif %}" value="{{ form.model.value|default_if_none:'' }}" required>
+                  {% if form.model.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.model.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="image" class="form-label">图片</label>
+                  <input type="file" id="image" name="image" class="form-control {% if form.image.errors %}is-invalid{% endif %}">
+                  {% if form.image.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.image.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="category">Category</label>
-                    {{ form.category }}
+                  <label for="supplier" class="form-label">供应商</label>
+                  <select id="supplier" name="supplier" class="form-select {% if form.supplier.errors %}is-invalid{% endif %}">
+                    <option value="">选择供应商</option>
+                    {% for supplier in suppliers %}
+                    <option value="{{ supplier.id }}" {% if form.supplier.value == supplier.id %}selected{% endif %}>{{ supplier.name }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if form.supplier.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.supplier.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-            </div>
-            <div class="form-row">
+
+
+                
+              </div>
+
+              <div class="row">
                 <div class="form-group col-md-6">
-                    <label for="chinese_name">Chinese Name</label>
-                    {{ form.chinese_name }}
+                  <label for="chinese_name" class="form-label">中文品名</label>
+                  <input type="text" id="chinese_name" name="chinese_name" class="form-control {% if form.chinese_name.errors %}is-invalid{% endif %}" value="{{ form.chinese_name.value|default_if_none:'' }}">
+                  {% if form.chinese_name.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.chinese_name.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="english_name">English Name</label>
-                    {{ form.english_name }}
+                  <label for="english_name" class="form-label">英文品名</label>
+                  <input type="text" id="english_name" name="english_name" class="form-control {% if form.english_name.errors %}is-invalid{% endif %}" value="{{ form.english_name.value|default_if_none:'' }}">
+                  {% if form.english_name.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.english_name.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="image">Image</label>
-                {{ form.image }}
-            </div>
-            <div class="form-group">
-                <label for="scientific_name">Scientific Name</label>
-                {{ form.scientific_name }}
-            </div>
-            <div class="form-group">
-                <label for="color">Color</label>
-                {{ form.color }}
-            </div>
-            <div class="form-group">
-                <label for="chineses_specifications">Chinese Specifications</label>
-                {{ form.chineses_specifications }}
-            </div>
-            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                  <label for="scientific_name" class="form-label">学名</label>
+                  <input type="text" id="scientific_name" name="scientific_name" class="form-control {% if form.scientific_name.errors %}is-invalid{% endif %}" value="{{ form.scientific_name.value|default_if_none:'' }}">
+                  {% if form.scientific_name.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.scientific_name.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="size" class="form-label">尺寸 (cm)</label>
+                  <input type="text"  id="size" name="size" class="form-control {% if form.size.errors %}is-invalid{% endif %}" value="{{ form.size.value|default_if_none:0.0 }}">
+                  {% if form.size.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.size.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-6">
+                  <label for="weight" class="form-label">重量 (g)</label>
+                  <input type="text"  id="weight" name="weight" class="form-control {% if form.weight.errors %}is-invalid{% endif %}" value="{{ form.weight.value|default_if_none:0.0 }}">
+                  {% if form.weight.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.weight.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-3">
+                  <label for="sale_spec_quantity" class="form-label">销售规格数量</label>
+                  <input type="number" step="0.01" id="sale_spec_quantity" name="sale_spec_quantity" class="form-control {% if form.sale_spec_quantity.errors %}is-invalid{% endif %}" value="{{ form.sale_spec_quantity.value|default_if_none:1 }}">
+                  {% if form.sale_spec_quantity.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.sale_spec_quantity.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="sale_spec_unit" class="form-label">销售规格单位</label>
+                  <select id="sale_spec_unit" name="sale_spec_unit" class="form-select {% if form.sale_spec_unit.errors %}is-invalid{% endif %}">
+                  <option value="">选择单位</option>
+                  <option value="pcs" {% if form.sale_spec_unit.value == "pcs" %}selected{% endif %}>pcs</option>
+                  <option value="g" {% if form.sale_spec_unit.value == "g" %}selected{% endif %}>g</option>
+                  <option value="box" {% if form.sale_spec_unit.value == "box" %}selected{% endif %}>box</option>
+                  <option value="kg" {% if form.sale_spec_unit.value == "kg" %}selected{% endif %}>kg</option>
+                </select>
+                  {% if form.sale_spec_unit.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.sale_spec_unit.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="process" class="form-label">工艺</label>
+                  <select id="process" name="process" class="form-select {% if form.process.errors %}is-invalid{% endif %}">
+                    <option value="">选择工艺</option>
+                    {% for process in processes %}
+                    <option value="{{ process.id }}" {% if form.process.value == process.id %}selected{% endif %}>{{ process.name }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if form.process.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.process.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row">
                 <div class="form-group col-md-4">
-                    <label for="size">Size</label>
-                    {{ form.size }}
+                  <label for="outer_box_length" class="form-label">外箱长 (cm)</label>
+                  <input type="number" step="0.01" id="outer_box_length" name="outer_box_length" class="form-control {% if form.outer_box_length.errors %}is-invalid{% endif %}" value="{{ form.outer_box_length.value|default_if_none:0.0 }}">
+                  {% if form.outer_box_length.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.outer_box_length.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
+
                 <div class="form-group col-md-4">
-                    <label for="weight">Weight</label>
-                    {{ form.weight }}
+                  <label for="outer_box_width" class="form-label">外箱宽 (cm)</label>
+                  <input type="number" step="0.01" id="outer_box_width" name="outer_box_width" class="form-control {% if form.outer_box_width.errors %}is-invalid{% endif %}" value="{{ form.outer_box_width.value|default_if_none:0.0 }}">
+                  {% if form.outer_box_width.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.outer_box_width.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
+
                 <div class="form-group col-md-4">
-                    <label for="sale_spec_quantity">Sale Specification Quantity</label>
-                    {{ form.sale_spec_quantity }}
+                  <label for="outer_box_height" class="form-label">外箱高 (cm)</label>
+                  <input type="number" step="0.01" id="outer_box_height" name="outer_box_height" class="form-control {% if form.outer_box_height.errors %}is-invalid{% endif %}" value="{{ form.outer_box_height.value|default_if_none:0.0 }}">
+                  {% if form.outer_box_height.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.outer_box_height.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="sale_spec_unit">Sale Specification Unit</label>
-                    {{ form.sale_spec_unit }}
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="packing_quantity" class="form-label">包装数量</label>
+                  <input type="number" step="0.01" id="packing_quantity" name="packing_quantity" class="form-control {% if form.packing_quantity.errors %}is-invalid{% endif %}" value="{{ form.packing_quantity.value|default_if_none:1 }}">
+                  {% if form.packing_quantity.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.packing_quantity.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-4">
-                    <label for="outer_box_length">Outer Box Length</label>
-                    {{ form.outer_box_length }}
+                  <div class="form-group col-md-6">
+                  <label for="grade" class="form-label">等级</label>
+                  <select id="supplier" name="supplier" class="form-select {% if form.supplier.errors %}is-invalid{% endif %}">
+                    <option value="">选择等级</option>
+                    {% for grade in grades %}
+                    <option value="{{ grade.id }}" {% if form.grade.value == grade.id %}selected{% endif %}>{{ grade.name }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if form.grade.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.grade.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-4">
-                    <label for="outer_box_width">Outer Box Width</label>
-                    {{ form.outer_box_width }}
+
+              </div>
+                
+                
+              <div class="row">
+                
+
+               
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="price_one" class="form-label">采购价一</label>
+                  <input type="number" step="0.01" id="price_one" name="price_one" class="form-control {% if form.price_one.errors %}is-invalid{% endif %}" value="{{ form.price_one.value|default_if_none:0.0 }}">
+                  {% if form.price_one.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.price_one.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="outer_box_height">Outer Box Height</label>
-                    {{ form.outer_box_height }}
+
+                <div class="form-group col-md-6">
+                  <label for="price_two" class="form-label">采购价二</label>
+                  <input type="number" step="0.01" id="price_two" name="price_two" class="form-control {% if form.price_two.errors %}is-invalid{% endif %}" value="{{ form.price_two.value|default_if_none:0.0 }}">
+                  {% if form.price_two.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.price_two.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-4">
-                    <label for="packing_quantity">Packing Quantity</label>
-                    {{ form.packing_quantity }}
+              </div>
+
+               <div class="form-group col-md-6">
+                  <label for="created_by" class="form-label">创建者</label>
+                  <select id="created_by" name="created_by" class="form-select {% if form.created_by.errors %}is-invalid{% endif %}">
+                    <option value="">选择创建者</option>
+                    {% for creator in Created_bys %}
+                    <option value="{{ creator.id }}" {% if form.created_by.value == creator.id %}selected{% endif %}>{{ creator.name }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if form.created_by.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.created_by.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-4">
-                    <label for="grade">Grade</label>
-                    {{ form.grade }}
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="supplier">Supplier</label>
-                    {{ form.supplier }}
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="price_one">Price One</label>
-                    {{ form.price_one }}
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="price_two">Price Two</label>
-                    {{ form.price_two }}
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Flower Material</button>
-        </form>
+              <div class="mt-3">
+                <button type="submit" class="btn btn-primary">提交</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        
+      </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+  </section>
+
+</main>
+{% endblock %}

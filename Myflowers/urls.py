@@ -12,17 +12,16 @@ from app01.views import (
     register_view,
     logout_view,
     add_product,
-    products_list,
     QuoteMOD_view,
-)
-
-from app01.views import (
+    success_page,
+    product_list,
     edit_flower_material,
     flower_materials_list,
     delete_flower_material,
-    products_list,
     flower_material_detail,
+    product_details,
 )
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -34,9 +33,11 @@ urlpatterns = [
     path("home/", home_view, name="home"),
     path("control-panel/", control_panel_view, name="control-panel"),
     path("register/", register_view, name="register"),
-    path("product_list/", products_list, name="product_list"),
     path("add_product/", add_product, name="add_product"),
     path("QuoteMOD/", views.QuoteMOD_view, name="QuoteMOD"),
+    path("success/", success_page, name="success_page"),
+    path("product_list/", product_list, name="product_list"),
+    path("product_details/<str:model>/", views.product_details, name="product_details"),
     ####################花材######################
     path(
         "add-flower-material/", views.add_flower_material, name="add_flower_material"
