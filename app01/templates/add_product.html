@@ -1,119 +1,36 @@
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>添加产品</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-        .form-section {
-            background: #f7f7f7;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .form-section h3 {
-            margin-bottom: 20px;
-        }
-        .table-container {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Create Product</title>
 </head>
 <body>
-    <div class="container">
-        <h1>添加产品</h1>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-section">
-                <h3>产品信息</h3>
-                {{ product_form.as_p }}
+    <h1>Create Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ product_form|crispy }}
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="form-group">
+                {{ form|crispy }}
+                <button type="button" class="remove-form">Remove</button>
             </div>
-            <div class="form-section">
-                <h3>花材信息</h3>
-                {{ material_formset.management_form }}
-                <div id="material-form-container">
-                    {% for form in material_formset %}
-                        <div class="form-row">
-                            {{ form.id }}  <!-- 添加隐藏的ID字段 -->
-                            <div class="col">
-                                {{ form.flower_material.label_tag }} {{ form.flower_material }}
-                            </div>
-                            <div class="col">
-                                {{ form.quantity.label_tag }} {{ form.quantity }}
-                            </div>
-                            <div class="col">
-                                {{ form.ratio.label_tag }} {{ form.ratio }}
-                            </div>
-                            <div class="col">
-                                {{ form.price_type.label_tag }} {{ form.price_type }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <button type="button" class="btn btn-primary mt-3" id="add-material">添加花材</button>
-            </div>
-            <div class="table-container">
-                <h3>已添加的花材信息</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>花材</th>
-                            <th>数量</th>
-                            <th>比例</th>
-                            <th>价格类型</th>
-                        </tr>
-                    </thead>
-                    <tbody id="material-table-body">
-                        <!-- 动态填充花材信息 -->
-                    </tbody>
-                </table>
-            </div>
-            <button type="submit" class="btn btn-success mt-3">保存</button>
-        </form>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        {% endfor %}
+        <button type="button" class="add-form">Add another flower material</button>
+        <button type="submit">Save</button>
+    </form>
+
     <script>
-        $(document).ready(function() {
-            $('#add-material').click(function() {
-                var form_idx = $('#id_productmaterial_set-TOTAL_FORMS').val();
-                $('#id_productmaterial_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-                var form_html = '{{ material_formset.empty_form.as_p|escapejs }}'.replace(/__prefix__/g, form_idx);
-                $('#material-form-container').append('<div class="form-row">' + form_html + '</div>');
-                updateMaterialTable();
+        // JavaScript to dynamically add/remove forms
+        document.querySelector('.add-form').addEventListener('click', function() {
+            var newForm = document.querySelector('.form-group:last-of-type').cloneNode(true);
+            document.querySelector('form').insertBefore(newForm, this);
+        });
+
+        document.querySelectorAll('.remove-form').forEach(function(button) {
+            button.addEventListener('click', function() {
+                this.closest('.form-group').remove();
             });
-
-            $('form').on('change', 'input, select', function() {
-                updateMaterialTable();
-            });
-
-            function updateMaterialTable() {
-                var materials = [];
-                $('#material-form-container .form-row').each(function() {
-                    var material = {};
-                    $(this).find('input, select').each(function() {
-                        var name = $(this).attr('name').split('-').pop();
-                        material[name] = $(this).val();
-                    });
-                    materials.push(material);
-                });
-
-                var table_body = $('#material-table-body');
-                table_body.empty();
-                $.each(materials, function(i, material) {
-                    var row = '<tr>';
-                    row += '<td>' + material['flower_material'] + '</td>';
-                    row += '<td>' + material['quantity'] + '</td>';
-                    row += '<td>' + material['ratio'] + '</td>';
-                    row += '<td>' + material['price_type'] + '</td>';
-                    row += '</tr>';
-                    table_body.append(row);
-                });
-            }
-
-            // Initial table update
-            updateMaterialTable();
         });
     </script>
 </body>

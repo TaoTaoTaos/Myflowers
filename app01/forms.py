@@ -97,9 +97,6 @@ class ProductMaterialForm(forms.ModelForm):
         fields = ["flower_material", "quantity", "ratio", "price_type"]
 
 
-ProductMaterialFormSet = inlineformset_factory(
-    Product,
-    ProductMaterial,
-    fields=["flower_material", "quantity", "ratio", "price_type"],
-    extra=1,
+ProductMaterialFormSet = forms.inlineformset_factory(
+    Product, ProductMaterial, form=ProductMaterialForm, extra=1, can_delete=True
 )
