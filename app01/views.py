@@ -205,7 +205,6 @@ from django.utils import timezone
 
 
 @login_required
-@login_required
 def add_product(request):
     # 使用 modelform_factory 创建 Product 表单，不包含 'materials', 'created_by', 'created_at', 'updated_at'
     ProductForm = modelform_factory(
@@ -213,7 +212,7 @@ def add_product(request):
     )
 
     if request.method == "POST":
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST, request.FILES)  # 添加 request.FILES
         if form.is_valid():
             try:
                 with transaction.atomic():
@@ -228,19 +227,20 @@ def add_product(request):
                         ";"
                     )
                     for fm in flower_materials:
-                        flower_material_model, quantity, ratio, price_type = fm.split(
-                            ","
-                        )
-                        flower_material = FlowerMaterial.objects.get(
-                            model=flower_material_model
-                        )
-                        ProductMaterial.objects.create(
-                            product=product,
-                            flower_material=flower_material,
-                            quantity=quantity,
-                            ratio=ratio,
-                            price_type=price_type,
-                        )
+                        if fm:  # 检查 fm 是否为空字符串
+                            flower_material_model, quantity, ratio, price_type = (
+                                fm.split(",")
+                            )
+                            flower_material = FlowerMaterial.objects.get(
+                                model=flower_material_model
+                            )
+                            ProductMaterial.objects.create(
+                                product=product,
+                                flower_material=flower_material,
+                                quantity=quantity,
+                                ratio=ratio,
+                                price_type=price_type,
+                            )
 
                     return redirect("product_list")  # 重定向到一个成功页面
             except IntegrityError:

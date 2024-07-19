@@ -23,7 +23,32 @@
           <dd class="col-sm-9">{{ product.size }}</dd>
           <dt class="col-sm-3">重量</dt>
           <dd class="col-sm-9">{{ product.weight }}</dd>
-          <!-- Add more fields as needed -->
+          <dt class="col-sm-3">颜色</dt>
+          <dd class="col-sm-9">{{ product.color }}</dd>
+          <dt class="col-sm-3">包装</dt>
+          <dd class="col-sm-9">{{ product.Package }}</dd>
+          <dt class="col-sm-3">销售规格数量</dt>
+          <dd class="col-sm-9">{{ product.sale_spec_quantity }}</dd>
+          <dt class="col-sm-3">销售规格单位</dt>
+          <dd class="col-sm-9">{{ product.get_sale_spec_unit_display }}</dd>
+          <dt class="col-sm-3">内箱尺寸</dt>
+          <dd class="col-sm-9">{{ product.inner_box_size }}</dd>
+          <dt class="col-sm-3">外箱尺寸</dt>
+          <dd class="col-sm-9">{{ product.outer_box_size }}</dd>
+          <dt class="col-sm-3">人工成本</dt>
+          <dd class="col-sm-9">{{ product.labor_cost }}</dd>
+          <dt class="col-sm-3">损耗率</dt>
+          <dd class="col-sm-9">{{ product.loss_rate }}</dd>
+          <dt class="col-sm-3">总成本</dt>
+          <dd class="col-sm-9">{{ product.cost }}</dd>
+          <dt class="col-sm-3">备注信息</dt>
+          <dd class="col-sm-9">{{ product.description }}</dd>
+          <dt class="col-sm-3">创建者</dt>
+          <dd class="col-sm-9">{{ product.created_by }}</dd>
+          <dt class="col-sm-3">创建时间</dt>
+          <dd class="col-sm-9">{{ product.created_at }}</dd>
+          <dt class="col-sm-3">更新时间</dt>
+          <dd class="col-sm-9">{{ product.updated_at }}</dd>
         </dl>
 
         <h4 class="mt-4">产品组成</h4>
@@ -44,7 +69,7 @@
               <td>{{ material.flower_material.chinese_name }}</td>
               <td>{{ material.quantity }}</td>
               <td>{{ material.ratio }}</td>
-              <td>{{ material.price_type }}</td>
+              <td>{{ material.get_price_type_display }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -53,5 +78,4 @@
     </div>
   </div>
 </section>
-
 {% endblock %}

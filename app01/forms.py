@@ -101,6 +101,7 @@ class ProductForm(forms.ModelForm):
             "outer_box_height": forms.NumberInput(attrs={"class": "form-control"}),
             "labor_cost": forms.NumberInput(attrs={"class": "form-control"}),
             "loss_rate": forms.NumberInput(attrs={"class": "form-control"}),
+            "image": forms.ClearableFileInput(attrs={"class": "form-control-file"}),
         }
 
 

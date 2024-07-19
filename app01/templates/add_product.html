@@ -39,11 +39,11 @@
 {% block content %}
   <section class="section">
     <div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-6">
         <div class="card custom-width">
           <div class="card-body">
             <h2 class="card-title">创建产品</h2>
-            <form method="post" id="product-form">
+            <form method="post" id="product-form" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="form-section">
                 <div class="row">
@@ -127,11 +127,17 @@
                 <div class="row">
                   <div class="form-group col-md-6">
                     <label for="labor_cost">人工成本</label>
-                    {{ form.labor_cost|add_class:"form-control" }}
+                    {{ form.labor_cost|add_class:"form-control labor-cost-input" }}
                   </div>
                   <div class="form-group col-md-6">
                     <label for="loss_rate">损耗率</label>
-                    {{ form.loss_rate|add_class:"form-control" }}
+                    {{ form.loss_rate|add_class:"form-control loss-rate-input" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-12">
+                    <label for="image">产品图片</label>
+                    {{ form.image|add_class:"form-control-file" }}
                   </div>
                 </div>
               </div>
@@ -140,9 +146,31 @@
           </div>
         </div>
       </div>
+      <div class="col-lg-6">
+        <div class="card custom-width mb-4">
+          <div class="card-body">
+            <h3 class="card-title">已选择的花材</h3>
+            <table class="table table-bordered" id="selected-materials-table">
+              <thead>
+                <tr>
+                  <th>型号</th>
+                  <th>名称</th>
+                  <th>数量</th>
+                  <th>比例</th>
+                  <th>价格类型</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="selected-materials-list">
+              </tbody>
+            </table>
+            <p>总价: <span id="total-price">0</span> 元</p>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="row mt-4">
-      <div class="col-lg-6">
+      <div class="col-lg-12">
         <div class="card custom-width">
           <div class="card-body">
             <h3 class="card-title">花材列表</h3>
@@ -190,27 +218,6 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <div class="card custom-width">
-          <div class="card-body">
-            <h3 class="card-title">已选择的花材</h3>
-            <table class="table table-bordered" id="selected-materials-table">
-              <thead>
-                <tr>
-                  <th>型号</th>
-                  <th>名称</th>
-                  <th>数量</th>
-                  <th>比例</th>
-                  <th>价格类型</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="selected-materials-list">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -229,7 +236,7 @@
         var priceTwo = $(this).data('price-two');
 
         var newRow = `
-          <tr data-id="${id}">
+          <tr data-id="${id}" data-price-one="${priceOne}" data-price-two="${priceTwo}">
             <td>${model}</td>
             <td>${name}</td>
             <td><input type="number" name="quantity" class="form-control" value="1"></td>
@@ -244,11 +251,13 @@
           </tr>
         `;
         $('#selected-materials-list').append(newRow);
+        updateTotalPrice();
       });
 
       $('#selected-materials-list').on('click', '.remove-material-btn', function(){
         console.log("Remove button clicked");
         $(this).closest('tr').remove();
+        updateTotalPrice();
       });
 
       $('#product-form').submit(function(){
@@ -280,6 +289,31 @@
           }
         });
       });
+
+      $('#selected-materials-list').on('change', 'input[name="quantity"], input[name="ratio"], select[name="price_type"]', function(){
+        updateTotalPrice();
+      });
+
+      // Ensure these event listeners are also set up for labor cost and loss rate inputs
+      $(document).on('input', '.labor-cost-input, .loss-rate-input', function(){
+        updateTotalPrice();
+      });
+
+      function updateTotalPrice() {
+        var totalCost = 0;
+        $('#selected-materials-list tr').each(function(){
+          var quantity = parseFloat($(this).find('input[name="quantity"]').val());
+          var ratio = parseFloat($(this).find('input[name="ratio"]').val());
+          var priceType = $(this).find('select[name="price_type"]').val();
+          var price = parseFloat(priceType === 'price_one' ? $(this).data('price-one') : $(this).data('price-two'));
+          totalCost += quantity * ratio * price;
+        });
+        var laborCost = parseFloat($('.labor-cost-input').val()) || 0;
+        var lossRate = parseFloat($('.loss-rate-input').val()) || 0;
+        totalCost += laborCost;
+        totalCost *= (1 + lossRate);
+        $('#total-price').text(totalCost.toFixed(2));
+      }
     });
   </script>
 {% endblock %}

@@ -5,64 +5,276 @@
   产品列表
 {% endblock %}
 
+{% block extra_css %}
+<style>
+  th {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fixed-image-cell img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px; /* 调整列宽度，比图片宽一点 */
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="section">
   <div class="container">
-    <h2 class="mb-4">产品列表</h2>
     <div class="row mb-4">
-      <div class="col-md-6">
-        <input type="text" id="search-box" class="form-control" placeholder="搜索产品">
+      <div class="col-lg-12">
+        <a href="{% url 'add_product' %}" class="btn btn-primary btn-lg mb-2">添加产品</a>
+        <button id="export-button" class="btn btn-secondary btn-lg mb-2">导出为Excel</button>
+        <div class="mb-2">
+          <label>选择要显示的列：</label>
+          <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
+          <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
+          <label><input type="checkbox" class="column-toggle" data-column="4" checked> 中文名</label>
+          <label><input type="checkbox" class="column-toggle" data-column="5" checked> 英文名</label>
+          <label><input type="checkbox" class="column-toggle" data-column="6" checked> 尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="7" checked> 重量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="8" checked> 颜色</label>
+          <label><input type="checkbox" class="column-toggle" data-column="9" checked> 包装</label>
+          <label><input type="checkbox" class="column-toggle" data-column="10" checked> 销售规格数量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="11" checked> 销售规格单位</label>
+          <label><input type="checkbox" class="column-toggle" data-column="12" checked> 内箱尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="13" checked> 外箱尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="14" checked> 劳动成本</label>
+          <label><input type="checkbox" class="column-toggle" data-column="15" checked> 损耗率</label>
+          <label><input type="checkbox" class="column-toggle" data-column="16" checked> 备注</label>
+          <label><input type="checkbox" class="column-toggle" data-column="17" checked> 创建人</label>
+          <label><input type="checkbox" class="column-toggle" data-column="18" checked> 创建时间</label>
+          <label><input type="checkbox" class="column-toggle" data-column="19" checked> 修改时间</label>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover table-fixed" id="products-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>编号</th>
+                <th>型号</th>
+                <th>图片</th>
+                <th>中文名</th>
+                <th>英文名</th>
+                <th>尺寸</th>
+                <th>重量</th>
+                <th>颜色</th>
+                <th>包装</th>
+                <th>销售规格数量</th>
+                <th>销售规格单位</th>
+                <th>内箱尺寸</th>
+                <th>外箱尺寸</th>
+                <th>劳动成本</th>
+                <th>损耗率</th>
+                <th>备注</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>修改时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr>
+                <td><input type="checkbox" class="select-item"></td>
+                <td>{{ forloop.counter }}</td>
+                <td onclick="window.location.href='{% url 'product_details' product.model %}'">{{ product.model }}</td>
+                <td class="fixed-image-cell">
+                  {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="图片">
+                  {% else %}
+                  无图片
+                  {% endif %}
+                </td>
+                <td>{{ product.chinese_name }}</td>
+                <td>{{ product.english_name }}</td>
+                <td>{{ product.size }}</td>
+                <td>{{ product.weight }}</td>
+                <td>{{ product.color }}</td>
+                <td>{{ product.Package }}</td>
+                <td>{{ product.sale_spec_quantity }}</td>
+                <td>{{ product.sale_spec_unit }}</td>
+                <td>{{ product.inner_box_size }}</td>
+                <td>{{ product.outer_box_size }}</td>
+                <td>{{ product.labor_cost }}</td>
+                <td>{{ product.loss_rate }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.created_by.username }}</td>
+                <td>{{ product.created_at }}</td>
+                <td>{{ product.updated_at }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>产品型号</th>
-            <th>中文名</th>
-            <th>英文名</th>
-            <th>尺寸</th>
-            <th>重量</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody id="product-list">
-          {% for product in products %}
-          <tr>
-            <td>{{ product.model }}</td>
-            <td>{{ product.chinese_name }}</td>
-            <td>{{ product.english_name }}</td>
-            <td>{{ product.size }}</td>
-            <td>{{ product.weight }}</td>
-            <td>
-              <a href="{% url 'product_details' product.model %}" class="btn btn-info">查看详情</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
   </div>
 </section>
-
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
 <script>
-  $(document).ready(function(){
-    $('#search-box').on('input', function(){
-      var searchTerm = $(this).val().toLowerCase();
-      $('#product-list tr').each(function(){
-        var model = $(this).find('td:eq(0)').text().toLowerCase();
-        var chineseName = $(this).find('td:eq(1)').text().toLowerCase();
-        if (model.includes(searchTerm) || chineseName.includes(searchTerm)) {
-          $(this).show();
+  document.addEventListener('DOMContentLoaded', function () {
+    const table = document.getElementById('products-table');
+    const dataTable = new simpleDatatables.DataTable(table, {
+      searchable: true,
+      fixedHeight: true,
+      perPageSelect: [5, 10, 15, 20, 30, 500],
+      perPage: 20,
+      labels: {
+        placeholder: '搜索...',
+        perPage: '/条记录每页     （点击型号、中文名、英文名查看详情）',
+        noRows: '没有找到符合条件的记录',
+        info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
+      },
+      columns: [
+        { select: [0], sortable: false } // Disable sorting on the first column (checkbox)
+      ]
+    });
+
+    const toggleColumnVisibility = () => {
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        const column = parseInt(checkbox.dataset.column, 10) + 1;
+        const th = table.querySelector(`th:nth-child(${column})`);
+        const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
+
+        if (checkbox.checked) {
+          th.style.display = '';
+          tds.forEach(td => td.style.display = '');
         } else {
-          $(this).hide();
+          th.style.display = 'none';
+          tds.forEach(td => td.style.display = 'none');
+        }
+      });
+    };
+
+    const saveColumnVisibility = () => {
+      const visibilityState = {};
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        visibilityState[checkbox.dataset.column] = checkbox.checked;
+      });
+      localStorage.setItem('columnVisibility', JSON.stringify(visibilityState));
+    };
+
+    const loadColumnVisibility = () => {
+      const visibilityState = JSON.parse(localStorage.getItem('columnVisibility'));
+      if (visibilityState) {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          checkbox.checked = visibilityState[checkbox.dataset.column];
+        });
+        toggleColumnVisibility();
+      } else {
+        // 默认显示所有列
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          checkbox.checked = true;
+          const event = new Event('change');
+          checkbox.dispatchEvent(event);
+        });
+      }
+    };
+
+    // Initial load of column visibility settings
+    loadColumnVisibility();
+
+    // Update column visibility on change
+    document.querySelectorAll('.column-toggle').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        toggleColumnVisibility();
+        saveColumnVisibility();
+      });
+    });
+
+    // Select/Deselect all checkboxes
+    document.getElementById('select-all').addEventListener('change', function () {
+      const checkboxes = document.querySelectorAll('.select-item');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
+
+    // Export selected rows to Excel
+    document.getElementById('export-button').addEventListener('click', function () {
+      const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
+        return row.querySelector('.select-item').checked;
+      });
+
+      if (selectedRows.length === 0) {
+        alert('请选择至少一条记录进行导出');
+        return;
+      }
+
+      const exportData = [];
+      const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      exportData.push(headers.slice(1)); // Exclude the checkbox header
+
+      selectedRows.forEach(row => {
+        const rowData = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+        exportData.push(rowData.slice(1)); // Exclude the checkbox column
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, '产品记录');
+
+      XLSX.writeFile(wb, '产品记录.xlsx');
+    });
+
+    // Show all/hide all functionality
+    document.getElementById('show-all').addEventListener('click', function () {
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        if (!checkbox.disabled) {
+          checkbox.checked = true;
+          const event = new Event('change');
+          checkbox.dispatchEvent(event);
         }
       });
     });
+
+    document.getElementById('hide-all').addEventListener('click', function () {
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        if (!checkbox.disabled) {
+          checkbox.checked = false;
+          const event = new Event('change');
+          checkbox.dispatchEvent(event);
+        }
+      });
+    });
+
+    // Ensure certain columns are always visible
+    document.querySelectorAll('.column-toggle').forEach(checkbox => {
+      const column = parseInt(checkbox.dataset.column, 10);
+      if ([2, 4, 5].includes(column)) { // Ensure columns for model, chinese_name, english_name are always visible
+        checkbox.disabled = true;
+      }
+    });
+
+    // Ensure column visibility on table redraw
+    const applyVisibilityAfterRender = () => {
+      dataTable.on('datatable.page', toggleColumnVisibility);
+      dataTable.on('datatable.search', toggleColumnVisibility);
+      dataTable.on('datatable.sort', toggleColumnVisibility);
+    };
+
+    applyVisibilityAfterRender();
+
+    // Reapply column visibility settings on window resize
+    window.addEventListener('resize', toggleColumnVisibility);
   });
 </script>
 {% endblock %}
