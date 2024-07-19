@@ -195,7 +195,7 @@ def delete_flower_material(request, model):
 
 
 ###############################产品####################################
-
+from django.db import transaction, IntegrityError
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.forms import modelform_factory
@@ -204,6 +204,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 
+@login_required
 @login_required
 def add_product(request):
     # 使用 modelform_factory 创建 Product 表单，不包含 'materials', 'created_by', 'created_at', 'updated_at'
@@ -214,25 +215,38 @@ def add_product(request):
     if request.method == "POST":
         form = ProductForm(request.POST)
         if form.is_valid():
-            product = form.save(commit=False)
-            product.created_by = request.user
-            product.created_at = timezone.now()
-            product.updated_at = timezone.now()
-            product.save()
+            try:
+                with transaction.atomic():
+                    product = form.save(commit=False)
+                    product.created_by = request.user
+                    product.created_at = timezone.now()
+                    product.updated_at = timezone.now()
+                    product.save()
 
-            # 处理花材信息
-            flower_materials = request.POST.get("flower_materials", "").split(";")
-            for fm in flower_materials:
-                flower_material_id, quantity, ratio, price_type = fm.split(",")
-                ProductMaterial.objects.create(
-                    product=product,
-                    flower_material_id=flower_material_id,
-                    quantity=quantity,
-                    ratio=ratio,
-                    price_type=price_type,
-                )
+                    # 处理花材信息
+                    flower_materials = request.POST.get("flower_materials", "").split(
+                        ";"
+                    )
+                    for fm in flower_materials:
+                        flower_material_model, quantity, ratio, price_type = fm.split(
+                            ","
+                        )
+                        flower_material = FlowerMaterial.objects.get(
+                            model=flower_material_model
+                        )
+                        ProductMaterial.objects.create(
+                            product=product,
+                            flower_material=flower_material,
+                            quantity=quantity,
+                            ratio=ratio,
+                            price_type=price_type,
+                        )
 
-            return redirect("success_page")  # 重定向到一个成功页面
+                    return redirect("product_list")  # 重定向到一个成功页面
+            except IntegrityError:
+                form.add_error(None, "保存产品时出现错误，请重试。")
+            except FlowerMaterial.DoesNotExist:
+                form.add_error(None, "指定的花材不存在，请检查输入。")
     else:
         form = ProductForm()
         flower_materials = FlowerMaterial.objects.all()
