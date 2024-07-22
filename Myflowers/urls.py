@@ -39,6 +39,11 @@ urlpatterns = [
     path("success/", success_page, name="success_page"),
     path("product_list/", product_list, name="product_list"),
     path("product_details/<str:model>/", views.product_details, name="product_details"),
+    path(
+        "flower_material/<str:model>/",
+        views.flower_material_detail,
+        name="flower_material_detail",
+    ),
     #########
     path("add_quote_item", add_quote_item, name="add_quote_item"),
     path("save_quote/", save_quote, name="save_quote"),
@@ -57,11 +62,6 @@ urlpatterns = [
     path(
         "flower-materials/", flower_materials_list, name="flower_material_list"
     ),  # 花材查
-    path(
-        "flower_material/<str:model>/",
-        views.flower_material_detail,
-        name="flower_material_detail",
-    ),
     ####################花材END######################
 ]
 

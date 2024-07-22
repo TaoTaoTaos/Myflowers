@@ -129,16 +129,15 @@ def save_quote(request):
             specification = product["specification"]
             color = product["color"]
             qty = int(product["qty"])
+            cost_price = Decimal(product["costPrice"])
             unit_price = Decimal(product["unitPrice"])
             amount = Decimal(product["amount"])
-            cost_price = unit_price / Decimal(
-                1 + Decimal(product["profitMargin"]) / 100
-            )
             profit_margin = Decimal(product["profitMargin"])
 
             quote_item = QuoteItem(
                 quote=quote,
                 model=model,
+                picture=picture,
                 specification=specification,
                 color=color,
                 qty=qty,

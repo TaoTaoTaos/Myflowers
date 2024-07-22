@@ -129,7 +129,7 @@
                 <label for="productName" class="mr-2">选择产品：</label>
                 <select id="productName" name="productName" class="form-control mb-3">
                     {% for product in products %}
-                    <option value="{{ product.model }}" data-model="{{ product.model }}" data-picture="{% if product.image %}{{ product.image.url }}{% else %}#{% endif %}" data-size="{{ product.size }}" data-color="{{ product.color }}" data-unit-price="{{ product.cost|floatformat:2 }}" data-profit-margin="{{ product.profit_margin|floatformat:2 }}">
+                    <option value="{{ product.model }}" data-model="{{ product.model }}" data-picture="{% if product.image %}{{ product.image.url }}{% else %}#{% endif %}" data-size="{{ product.size }}" data-color="{{ product.color }}" data-cost-price="{{ product.cost|floatformat:2 }}" data-profit-margin="{{ product.profit_margin|floatformat:2 }}">
                         {{ product.chinese_name }}
                     </option>
                     {% endfor %}
@@ -146,6 +146,8 @@
                     <th>Specification</th>
                     <th>Color</th>
                     <th>QTY</th>
+                    <th>Cost Price</th>
+                    <th>Profit Margin (%)</th>
                     <th>Unit Price</th>
                     <th>Amount</th>
                 </tr>
@@ -168,8 +170,9 @@
             var picture = selectedOption.getAttribute("data-picture");
             var specification = selectedOption.getAttribute("data-size");
             var color = selectedOption.getAttribute("data-color");
-            var unitPrice = parseFloat(selectedOption.getAttribute("data-unit-price")).toFixed(2);
+            var costPrice = parseFloat(selectedOption.getAttribute("data-cost-price")).toFixed(2);
             var profitMargin = parseFloat(selectedOption.getAttribute("data-profit-margin")).toFixed(2);
+            var unitPrice = (costPrice * (1 + profitMargin / 100)).toFixed(2);
 
             var table = document.getElementById("productTable").getElementsByTagName('tbody')[0];
             var row = table.insertRow();
@@ -181,31 +184,50 @@
             var cell5 = row.insertCell(4);
             var cell6 = row.insertCell(5);
             var cell7 = row.insertCell(6);
+            var cell8 = row.insertCell(7);
+            var cell9 = row.insertCell(8);
 
             cell1.innerHTML = model;
             cell2.innerHTML = picture !== '#' ? `<img src="${picture}" alt="${model}" width="50" height="50">` : 'No Image';
             cell3.innerHTML = specification;
             cell4.innerHTML = `<input type="text" value="${color}" class="form-control">`;
             cell5.innerHTML = `<input type="number" min="1" value="1" class="form-control" onchange="updateAmount(this)">`;
-            cell6.innerHTML = unitPrice;
-            cell7.innerHTML = unitPrice;
+            cell6.innerHTML = costPrice;
+            cell7.innerHTML = `<input type="number" min="0" step="0.01" value="${profitMargin}" class="form-control" onchange="updateUnitPrice(this)">`;
+            cell8.innerHTML = unitPrice;
+            cell9.innerHTML = unitPrice;
 
             row.setAttribute("data-model", model);
             row.setAttribute("data-picture", picture);
             row.setAttribute("data-specification", specification);
             row.setAttribute("data-color", color);
+            row.setAttribute("data-cost-price", costPrice);
+            row.setAttribute("data-profit-margin", profitMargin);
             row.setAttribute("data-unit-price", unitPrice);
             row.setAttribute("data-qty", 1);
             row.setAttribute("data-amount", unitPrice);
-            row.setAttribute("data-profit-margin", profitMargin);
+        }
+
+        function updateUnitPrice(input) {
+            var row = input.parentElement.parentElement;
+            var costPriceInput = row.cells[5].innerText;
+            var qtyInput = row.cells[4].getElementsByTagName('input')[0];
+            var profitMarginInput = row.cells[6].getElementsByTagName('input')[0];
+            var costPrice = parseFloat(costPriceInput);
+            var qty = parseInt(qtyInput.value);
+            var profitMargin = parseFloat(profitMarginInput.value);
+            var unitPrice = (costPrice * qty * (1 + profitMargin / 100)).toFixed(2);
+            row.cells[7].innerText = unitPrice;
+            row.setAttribute("data-unit-price", unitPrice);
+            updateAmount(qtyInput);
         }
 
         function updateAmount(qtyInput) {
             var row = qtyInput.parentElement.parentElement;
-            var unitPrice = parseFloat(row.cells[5].innerText);
+            var unitPrice = parseFloat(row.getAttribute("data-unit-price"));
             var qty = parseInt(qtyInput.value);
             var amount = (unitPrice * qty).toFixed(2);
-            row.cells[6].innerText = amount;
+            row.cells[8].innerText = amount;
             row.setAttribute("data-qty", qty);
             row.setAttribute("data-amount", amount);
         }
@@ -241,23 +263,25 @@
                 var picture = row.getAttribute("data-picture");
                 var specification = row.getAttribute("data-specification");
                 var color = row.getAttribute("data-color");
+                var costPrice = parseFloat(row.getAttribute("data-cost-price"));
+                var unitPrice = parseFloat(row.getAttribute("data-unit-price"));
                 var qty = parseInt(row.getAttribute("data-qty"));
-                var unitPrice = parseFloat(row.getAttribute("data-unit-price")).toFixed(2);
-                var amount = parseFloat(row.getAttribute("data-amount")).toFixed(2);
-                var profitMargin = parseFloat(row.getAttribute("data-profit-margin")).toFixed(2);
+                var amount = parseFloat(row.getAttribute("data-amount"));
+                var profitMargin = parseFloat(row.getAttribute("data-profit-margin"));
 
                 quoteItems.push({
                     model: model,
                     picture: picture,
                     specification: specification,
                     color: color,
+                    costPrice: costPrice.toFixed(2),
+                    unitPrice: unitPrice.toFixed(2),
                     qty: qty,
-                    unitPrice: unitPrice,
-                    amount: amount,
-                    profitMargin: profitMargin
+                    amount: amount.toFixed(2),
+                    profitMargin: profitMargin.toFixed(2)
                 });
 
-                totalAmount += parseFloat(amount);
+                totalAmount += amount;
             }
 
             grandTotal = (totalAmount + parseFloat(freightCost)).toFixed(2);
@@ -308,7 +332,7 @@
                     <div class="container">
                         <table>
                             <tr class="header">
-                                <td colspan="7">
+                                <td colspan="9">
                                     <img src="/static/assets/web_picture/flora logo.jpg" alt="Pulpit rock" width="200" height="200">
                                     <p class="center">Summer Flora Co., Ltd.</p>
                                     <p>Let life be beautiful like summer flowers</p>
@@ -319,17 +343,17 @@
                             </tr>
                             <tr>
                                 <td colspan="3">Shipper:<br>${shipper}<br>Floor 4th, Building 217, Guanxing Road, Guandu district, Kunming, Yunnan, China, 650200</td>
-                                <td colspan="4" style="text-align: center;">PROFORMA INVOICE</td>
+                                <td colspan="6" style="text-align: center;">PROFORMA INVOICE</td>
                             </tr>
                             <tr>
                                 <td colspan="2">Valid date(Y-M-D):<br><span class="fill-in">YYYY-MM-DD</span></td>
                                 <td colspan="2">Invoice No.:<br><span class="fill-in">${invoiceNo}</span></td>
-                                <td colspan="3">Date(Y-M-D):<br><span class="fill-in">${new Date().toISOString().split('T')[0]}</span></td>
+                                <td colspan="5">Date(Y-M-D):<br><span class="fill-in">${new Date().toISOString().split('T')[0]}</span></td>
                             </tr>
                             <tr>
                                 <td colspan="2">Buyer:<br><span class="fill-in">${buyer}</span></td>
                                 <td colspan="2">Receiver:<br><span class="fill-in">${receiver}</span></td>
-                                <td colspan="3">Tel:<br><span class="fill-in">${tel}</span></td>
+                                <td colspan="5">Tel:<br><span class="fill-in">${tel}</span></td>
                             </tr>
                             <tr>
                                 <th>Model</th>
@@ -337,6 +361,8 @@
                                 <th>Specification</th>
                                 <th>Color</th>
                                 <th>QTY</th>
+                                <th>Cost Price</th>
+                                <th>Profit Margin (%)</th>
                                 <th>Unit Price</th>
                                 <th>Amount</th>
                             </tr>`;
@@ -350,6 +376,8 @@
                         <td>${item.specification}</td>
                         <td>${item.color}</td>
                         <td>${item.qty}</td>
+                        <td>${item.costPrice}</td>
+                        <td>${item.profitMargin}</td>
                         <td>${item.unitPrice}</td>
                         <td>${item.amount}</td>
                     </tr>`;
@@ -358,70 +386,70 @@
             quoteHTML += `
                 <tr class="total-row">
                     <td>Freight cost:</td>
-                    <td colspan="5"></td>
+                    <td colspan="7"></td>
                     <td>${freightCost}</td>
                 </tr>
                 <tr class="total-row">
                     <td>Total:</td>
-                    <td colspan="5"></td>
+                    <td colspan="7"></td>
                     <td>${totalAmount.toFixed(2)}</td>
                 </tr>
                 <tr class="total-row">
                     <td>Grand Total:</td>
-                    <td colspan="5"></td>
+                    <td colspan="7"></td>
                     <td>${grandTotal}</td>
                 </tr>
                 <tr>
                     <td>Payment term:</td>
-                    <td colspan="6">${paymentTerm}</td>
+                    <td colspan="8">${paymentTerm}</td>
                 </tr>
                 <tr>
                     <td>Deliver time:</td>
-                    <td colspan="6">${deliverTime}</td>
+                    <td colspan="8">${deliverTime}</td>
                 </tr>
                 <tr>
                     <td>Payment currency:</td>
-                    <td colspan="6">${paymentCurrency}</td>
+                    <td colspan="8">${paymentCurrency}</td>
                 </tr>
                 <tr>
                     <td>Beneficiary account number:</td>
-                    <td colspan="6">${beneficiaryAccountNumber}</td>
+                    <td colspan="8">${beneficiaryAccountNumber}</td>
                 </tr>
                 <tr>
                     <td>Swift code:</td>
-                    <td colspan="6">${swiftCode}</td>
+                    <td colspan="8">${swiftCode}</td>
                 </tr>
                 <tr>
                     <td>Beneficiary country/region:</td>
-                    <td colspan="6">${beneficiaryCountry}</td>
+                    <td colspan="8">${beneficiaryCountry}</td>
                 </tr>
                 <tr>
                     <td>Beneficiary name:</td>
-                    <td colspan="6">${beneficiaryName}</td>
+                    <td colspan="8">${beneficiaryName}</td>
                 </tr>
                 <tr>
                     <td>Beneficiary address:</td>
-                    <td colspan="6">${beneficiaryAddress}</td>
+                    <td colspan="8">${beneficiaryAddress}</td>
                 </tr>
                 <tr>
                     <td>Beneficiary bank:</td>
-                    <td colspan="6">${beneficiaryBank}</td>
+                    <td colspan="8">${beneficiaryBank}</td>
                 </tr>
                 <tr>
                     <td>Beneficiary bank address:</td>
-                    <td colspan="6">${beneficiaryBankAddress}</td>
+                    <td colspan="8">${beneficiaryBankAddress}</td>
                 </tr>
                 <tr>
                     <td>Bank code:</td>
-                    <td colspan="6">${bankCode}</td>
+                    <td colspan="8">${bankCode}</td>
                 </tr>
                 <tr>
                     <td>Branch code:</td>
-                    <td colspan="6">${branchCode}</td>
+                    <td colspan="8">${branchCode}</td>
                 </tr>
                 <tr>
                     <td>Remark:</td>
-                    <td colspan="6">${remark}</td>
+                    <td colspan="8">${remark}</td>
                 </tr>
             </table>
         </div>
