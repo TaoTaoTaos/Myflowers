@@ -270,3 +270,91 @@ class ProductMaterial(models.Model):
 
     def __str__(self):
         return f"{self.product.chinese_name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio}, Price: {self.price_type})"
+
+
+#########################################报价单###############################################
+from django.db import models
+from django.utils import timezone
+from django.conf import settings
+
+
+class Quote(models.Model):
+    id = models.AutoField(primary_key=True)  # 自增的报价单单号
+    shipper = models.CharField(max_length=255, default="Summer Flora.Co.,Ltd.")
+    buyer = models.CharField(max_length=255)
+    receiver = models.CharField(max_length=255)
+    tel = models.CharField(max_length=20)
+    invoice_no = models.CharField(max_length=50)
+    date = models.DateField(default=timezone.now)
+    valid_date = models.DateField()
+    freight_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    grand_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    payment_term = models.CharField(max_length=100, default=" ")
+    deliver_time = models.CharField(max_length=100, default=" ")
+    payment_currency = models.CharField(max_length=10, default="USD")
+    beneficiary_account_number = models.CharField(max_length=50, default=" ")
+    swift_code = models.CharField(max_length=11, default=" ")
+    beneficiary_country = models.CharField(max_length=50, default=" ")
+    beneficiary_name = models.CharField(
+        max_length=100, default="Yunnan Summer Flora Co., Ltd."
+    )
+    beneficiary_address = models.CharField(max_length=255, default=" ")
+    beneficiary_bank = models.CharField(
+        max_length=100,
+        default="",
+    )
+    beneficiary_bank_address = models.CharField(
+        max_length=255,
+        default=" ",
+    )
+    bank_code = models.CharField(max_length=10, default=" ")
+    branch_code = models.CharField(max_length=10, default=" ")
+    remark = models.TextField(blank=True, default=" ")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Quote #{self.id} - {self.buyer}"
+
+
+from django.db import models
+from decimal import Decimal
+
+
+class QuoteItem(models.Model):
+    quote = models.ForeignKey(Quote, related_name="items", on_delete=models.CASCADE)
+    model = models.CharField(max_length=100)
+    picture = models.ImageField(upload_to="quote_items/", null=True, blank=True)
+    specification = models.CharField(max_length=200)
+    color = models.CharField(max_length=100)
+    qty = models.PositiveIntegerField(default=1)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2)  # 成本价
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)  # 客单价
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    profit_margin = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.0
+    )  # 利润率
+
+    def save(self, *args, **kwargs):
+        # 计算客户单价
+        self.unit_price = (
+            self.cost_price * Decimal(1 + self.profit_margin / 100)
+        ).quantize(Decimal("0.01"))
+        self.amount = self.unit_price * Decimal(self.qty)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.model} - {self.qty} x {self.unit_price}"
+
+
+#########################################报价单end###############################################

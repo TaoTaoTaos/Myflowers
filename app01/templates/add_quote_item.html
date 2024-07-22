@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成报价单页面</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            padding: 20px;
+            width: 80%;
+            margin: auto;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .header td {
+            text-align: center;
+        }
+
+        .total-row td {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>选择产品生成报价单</h2>
+        <form id="quoteForm" class="mb-4">
+            <div class="card">
+                <div class="card-header">发送方信息</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="shipper">Shipper:</label>
+                        <input type="text" class="form-control" id="shipper" name="shipper" value="Summer Flora.Co.,Ltd." required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">接收方信息</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="buyer">Buyer:</label>
+                        <input type="text" class="form-control" id="buyer" name="buyer" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="receiver">Receiver:</label>
+                        <input type="text" class="form-control" id="receiver" name="receiver" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tel">Tel:</label>
+                        <input type="text" class="form-control" id="tel" name="tel" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice_no">Invoice No.:</label>
+                        <input type="text" class="form-control" id="invoice_no" name="invoice_no" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">其他信息</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="freight_cost">Freight Cost:</label>
+                        <input type="number" class="form-control" id="freight_cost" name="freight_cost" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_term">Payment Term:</label>
+                        <input type="text" class="form-control" id="payment_term" name="payment_term" value="100% payment in advance." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="deliver_time">Deliver Time:</label>
+                        <input type="text" class="form-control" id="deliver_time" name="deliver_time" value="7-15 working days after confirm of payment." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_currency">Payment Currency:</label>
+                        <input type="text" class="form-control" id="payment_currency" name="payment_currency" value="USD" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiary_account_number">Beneficiary Account Number:</label>
+                        <input type="text" class="form-control" id="beneficiary_account_number" name="beneficiary_account_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="swift_code">Swift Code:</label>
+                        <input type="text" class="form-control" id="swift_code" name="swift_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiary_country">Beneficiary Country/Region:</label>
+                        <input type="text" class="form-control" id="beneficiary_country" name="beneficiary_country" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiary_name">Beneficiary Name:</label>
+                        <input type="text" class="form-control" id="beneficiary_name" name="beneficiary_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiary_address">Beneficiary Address:</label>
+                        <input type="text" class="form-control" id="beneficiary_address" name="beneficiary_address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiary_bank">Beneficiary Bank:</label>
+                        <input type="text" class="form-control" id="beneficiary_bank" name="beneficiary_bank" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="beneficiary_bank_address">Beneficiary Bank Address:</label>
+                        <input type="text" class="form-control" id="beneficiary_bank_address" name="beneficiary_bank_address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bank_code">Bank Code:</label>
+                        <input type="text" class="form-control" id="bank_code" name="bank_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="branch_code">Branch Code:</label>
+                        <input type="text" class="form-control" id="branch_code" name="branch_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark">Remark:</label>
+                        <textarea class="form-control" id="remark" name="remark"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="productName" class="mr-2">选择产品：</label>
+                <select id="productName" name="productName" class="form-control mb-3">
+                    {% for product in products %}
+                    <option value="{{ product.model }}" data-model="{{ product.model }}" data-picture="{% if product.image %}{{ product.image.url }}{% else %}#{% endif %}" data-size="{{ product.size }}" data-color="{{ product.color }}" data-unit-price="{{ product.cost|floatformat:2 }}" data-profit-margin="{{ product.profit_margin|floatformat:2 }}">
+                        {{ product.chinese_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn btn-primary mb-3" onclick="addProduct()">添加产品</button>
+            </div>
+        </form>
+
+        <table id="productTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Picture</th>
+                    <th>Specification</th>
+                    <th>Color</th>
+                    <th>QTY</th>
+                    <th>Unit Price</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 动态生成的产品行将插入到这里 -->
+            </tbody>
+        </table>
+
+        <button class="btn btn-success" onclick="generateQuote()">生成报价单</button>
+
+        <div id="quoteResult" class="mt-4"></div>
+    </div>
+
+    <script>
+        function addProduct() {
+            var select = document.getElementById("productName");
+            var selectedOption = select.options[select.selectedIndex];
+            var model = selectedOption.getAttribute("data-model");
+            var picture = selectedOption.getAttribute("data-picture");
+            var specification = selectedOption.getAttribute("data-size");
+            var color = selectedOption.getAttribute("data-color");
+            var unitPrice = parseFloat(selectedOption.getAttribute("data-unit-price")).toFixed(2);
+            var profitMargin = parseFloat(selectedOption.getAttribute("data-profit-margin")).toFixed(2);
+
+            var table = document.getElementById("productTable").getElementsByTagName('tbody')[0];
+            var row = table.insertRow();
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
+            var cell6 = row.insertCell(5);
+            var cell7 = row.insertCell(6);
+
+            cell1.innerHTML = model;
+            cell2.innerHTML = picture !== '#' ? `<img src="${picture}" alt="${model}" width="50" height="50">` : 'No Image';
+            cell3.innerHTML = specification;
+            cell4.innerHTML = `<input type="text" value="${color}" class="form-control">`;
+            cell5.innerHTML = `<input type="number" min="1" value="1" class="form-control" onchange="updateAmount(this)">`;
+            cell6.innerHTML = unitPrice;
+            cell7.innerHTML = unitPrice;
+
+            row.setAttribute("data-model", model);
+            row.setAttribute("data-picture", picture);
+            row.setAttribute("data-specification", specification);
+            row.setAttribute("data-color", color);
+            row.setAttribute("data-unit-price", unitPrice);
+            row.setAttribute("data-qty", 1);
+            row.setAttribute("data-amount", unitPrice);
+            row.setAttribute("data-profit-margin", profitMargin);
+        }
+
+        function updateAmount(qtyInput) {
+            var row = qtyInput.parentElement.parentElement;
+            var unitPrice = parseFloat(row.cells[5].innerText);
+            var qty = parseInt(qtyInput.value);
+            var amount = (unitPrice * qty).toFixed(2);
+            row.cells[6].innerText = amount;
+            row.setAttribute("data-qty", qty);
+            row.setAttribute("data-amount", amount);
+        }
+
+        function generateQuote() {
+            var products = document.getElementById("productTable").rows;
+            var shipper = document.getElementById("shipper").value;
+            var buyer = document.getElementById("buyer").value;
+            var receiver = document.getElementById("receiver").value;
+            var tel = document.getElementById("tel").value;
+            var invoiceNo = document.getElementById("invoice_no").value;
+            var freightCost = parseFloat(document.getElementById("freight_cost").value).toFixed(2);
+            var paymentTerm = document.getElementById("payment_term").value;
+            var deliverTime = document.getElementById("deliver_time").value;
+            var paymentCurrency = document.getElementById("payment_currency").value;
+            var beneficiaryAccountNumber = document.getElementById("beneficiary_account_number").value;
+            var swiftCode = document.getElementById("swift_code").value;
+            var beneficiaryCountry = document.getElementById("beneficiary_country").value;
+            var beneficiaryName = document.getElementById("beneficiary_name").value;
+            var beneficiaryAddress = document.getElementById("beneficiary_address").value;
+            var beneficiaryBank = document.getElementById("beneficiary_bank").value;
+            var beneficiaryBankAddress = document.getElementById("beneficiary_bank_address").value;
+            var bankCode = document.getElementById("bank_code").value;
+            var branchCode = document.getElementById("branch_code").value;
+            var remark = document.getElementById("remark").value;
+            var totalAmount = 0;
+            var grandTotal = 0;
+
+            var quoteItems = [];
+            for (var i = 1; i < products.length; i++) {
+                var row = products[i];
+                var model = row.getAttribute("data-model");
+                var picture = row.getAttribute("data-picture");
+                var specification = row.getAttribute("data-specification");
+                var color = row.getAttribute("data-color");
+                var qty = parseInt(row.getAttribute("data-qty"));
+                var unitPrice = parseFloat(row.getAttribute("data-unit-price")).toFixed(2);
+                var amount = parseFloat(row.getAttribute("data-amount")).toFixed(2);
+                var profitMargin = parseFloat(row.getAttribute("data-profit-margin")).toFixed(2);
+
+                quoteItems.push({
+                    model: model,
+                    picture: picture,
+                    specification: specification,
+                    color: color,
+                    qty: qty,
+                    unitPrice: unitPrice,
+                    amount: amount,
+                    profitMargin: profitMargin
+                });
+
+                totalAmount += parseFloat(amount);
+            }
+
+            grandTotal = (totalAmount + parseFloat(freightCost)).toFixed(2);
+
+            var quoteHTML = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>报价单模板</title>
+                    <style>
+                        .container {
+                            padding: 20px;
+                            width: 80%;
+                            margin: auto;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 20px;
+                        }
+                        table, th, td {
+                            border: 1px solid #000;
+                        }
+                        th, td {
+                            padding: 8px;
+                            text-align: left;
+                            font-size: 14px;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                            text-align: center;
+                        }
+                        .fill-in {
+                            color: #888;
+                            font-style: italic;
+                        }
+                        .center {
+                            display: block;
+                            text-align: center;
+                            font-size: 30px;
+                            font-weight: bold;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <table>
+                            <tr class="header">
+                                <td colspan="7">
+                                    <img src="/static/assets/web_picture/flora logo.jpg" alt="Pulpit rock" width="200" height="200">
+                                    <p class="center">Summer Flora Co., Ltd.</p>
+                                    <p>Let life be beautiful like summer flowers</p>
+                                    <p>Add.: No.320, Building 217, Guanxing Road, Guandu district, Kunming, Yunnan, China, 650200</p>
+                                    <p>Tel:+86 871 67184502 Email:manager@summerflora.cn</p>
+                                    <p>Mob./Whatsapp/Wechat :+8615368840472 Skype:summerflora2016 Website: www.summerflora.en.alibaba.com</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">Shipper:<br>${shipper}<br>Floor 4th, Building 217, Guanxing Road, Guandu district, Kunming, Yunnan, China, 650200</td>
+                                <td colspan="4" style="text-align: center;">PROFORMA INVOICE</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Valid date(Y-M-D):<br><span class="fill-in">YYYY-MM-DD</span></td>
+                                <td colspan="2">Invoice No.:<br><span class="fill-in">${invoiceNo}</span></td>
+                                <td colspan="3">Date(Y-M-D):<br><span class="fill-in">${new Date().toISOString().split('T')[0]}</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Buyer:<br><span class="fill-in">${buyer}</span></td>
+                                <td colspan="2">Receiver:<br><span class="fill-in">${receiver}</span></td>
+                                <td colspan="3">Tel:<br><span class="fill-in">${tel}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Model</th>
+                                <th>Picture</th>
+                                <th>Specification</th>
+                                <th>Color</th>
+                                <th>QTY</th>
+                                <th>Unit Price</th>
+                                <th>Amount</th>
+                            </tr>`;
+
+            for (var i = 0; i < quoteItems.length; i++) {
+                var item = quoteItems[i];
+                quoteHTML += `
+                    <tr>
+                        <td>${item.model}</td>
+                        <td>${item.picture}</td>
+                        <td>${item.specification}</td>
+                        <td>${item.color}</td>
+                        <td>${item.qty}</td>
+                        <td>${item.unitPrice}</td>
+                        <td>${item.amount}</td>
+                    </tr>`;
+            }
+
+            quoteHTML += `
+                <tr class="total-row">
+                    <td>Freight cost:</td>
+                    <td colspan="5"></td>
+                    <td>${freightCost}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Total:</td>
+                    <td colspan="5"></td>
+                    <td>${totalAmount.toFixed(2)}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Grand Total:</td>
+                    <td colspan="5"></td>
+                    <td>${grandTotal}</td>
+                </tr>
+                <tr>
+                    <td>Payment term:</td>
+                    <td colspan="6">${paymentTerm}</td>
+                </tr>
+                <tr>
+                    <td>Deliver time:</td>
+                    <td colspan="6">${deliverTime}</td>
+                </tr>
+                <tr>
+                    <td>Payment currency:</td>
+                    <td colspan="6">${paymentCurrency}</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary account number:</td>
+                    <td colspan="6">${beneficiaryAccountNumber}</td>
+                </tr>
+                <tr>
+                    <td>Swift code:</td>
+                    <td colspan="6">${swiftCode}</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary country/region:</td>
+                    <td colspan="6">${beneficiaryCountry}</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary name:</td>
+                    <td colspan="6">${beneficiaryName}</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary address:</td>
+                    <td colspan="6">${beneficiaryAddress}</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary bank:</td>
+                    <td colspan="6">${beneficiaryBank}</td>
+                </tr>
+                <tr>
+                    <td>Beneficiary bank address:</td>
+                    <td colspan="6">${beneficiaryBankAddress}</td>
+                </tr>
+                <tr>
+                    <td>Bank code:</td>
+                    <td colspan="6">${bankCode}</td>
+                </tr>
+                <tr>
+                    <td>Branch code:</td>
+                    <td colspan="6">${branchCode}</td>
+                </tr>
+                <tr>
+                    <td>Remark:</td>
+                    <td colspan="6">${remark}</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>`;
+
+            document.getElementById("quoteResult").innerHTML = quoteHTML;
+
+            // 发送数据到服务器以保存到数据库
+            saveQuoteToDatabase({
+                shipper,
+                buyer,
+                receiver,
+                tel,
+                invoiceNo,
+                paymentTerm,
+                deliverTime,
+                paymentCurrency,
+                beneficiaryAccountNumber,
+                swiftCode,
+                beneficiaryCountry,
+                beneficiaryName,
+                beneficiaryAddress,
+                beneficiaryBank,
+                beneficiaryBankAddress,
+                bankCode,
+                branchCode,
+                remark,
+                products: quoteItems,
+                totalAmount,
+                grandTotal,
+                freightCost
+            });
+        }
+
+        function saveQuoteToDatabase(quoteData) {
+            // 使用 Fetch API 发送数据到服务器
+            fetch('{% url "save_quote" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(quoteData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -51,6 +51,112 @@ def success_page(request):
 
 ##########################普通视图END##############################
 
+
+###############################报价单##############################
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from .models import Product, Quote, QuoteItem
+import json
+from decimal import Decimal
+
+
+def add_quote_item(request):
+    products = Product.objects.all()
+    return render(request, "add_quote_item.html", {"products": products})
+
+
+@csrf_exempt
+def save_quote(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        products = data["products"]
+        total_amount = Decimal(data["totalAmount"])
+        grand_total = Decimal(data["grandTotal"])
+        freight_cost = Decimal(data["freightCost"])
+        shipper = data["shipper"]
+        buyer = data["buyer"]
+        receiver = data["receiver"]
+        tel = data["tel"]
+        invoice_no = data["invoiceNo"]
+        payment_term = data["paymentTerm"]
+        deliver_time = data["deliverTime"]
+        payment_currency = data["paymentCurrency"]
+        beneficiary_account_number = data["beneficiaryAccountNumber"]
+        swift_code = data["swiftCode"]
+        beneficiary_country = data["beneficiaryCountry"]
+        beneficiary_name = data["beneficiaryName"]
+        beneficiary_address = data["beneficiaryAddress"]
+        beneficiary_bank = data["beneficiaryBank"]
+        beneficiary_bank_address = data["beneficiaryBankAddress"]
+        bank_code = data["bankCode"]
+        branch_code = data["branchCode"]
+        remark = data["remark"]
+
+        # Create Quote instance
+        quote = Quote(
+            shipper=shipper,
+            buyer=buyer,
+            receiver=receiver,
+            tel=tel,
+            invoice_no=invoice_no,
+            valid_date=timezone.now() + timezone.timedelta(days=30),
+            freight_cost=freight_cost,
+            total=total_amount,
+            grand_total=grand_total,
+            payment_term=payment_term,
+            deliver_time=deliver_time,
+            payment_currency=payment_currency,
+            beneficiary_account_number=beneficiary_account_number,
+            swift_code=swift_code,
+            beneficiary_country=beneficiary_country,
+            beneficiary_name=beneficiary_name,
+            beneficiary_address=beneficiary_address,
+            beneficiary_bank=beneficiary_bank,
+            beneficiary_bank_address=beneficiary_bank_address,
+            bank_code=bank_code,
+            branch_code=branch_code,
+            remark=remark,
+            created_by=request.user,
+        )
+        quote.save()
+
+        # Create QuoteItem instances
+        for product in products:
+            model = product["model"]
+            picture = product["picture"]
+            specification = product["specification"]
+            color = product["color"]
+            qty = int(product["qty"])
+            unit_price = Decimal(product["unitPrice"])
+            amount = Decimal(product["amount"])
+            cost_price = unit_price / Decimal(
+                1 + Decimal(product["profitMargin"]) / 100
+            )
+            profit_margin = Decimal(product["profitMargin"])
+
+            quote_item = QuoteItem(
+                quote=quote,
+                model=model,
+                specification=specification,
+                color=color,
+                qty=qty,
+                cost_price=cost_price,
+                unit_price=unit_price,
+                amount=amount,
+                profit_margin=profit_margin,
+            )
+            quote_item.save()
+
+        return JsonResponse({"status": "success", "quote_id": quote.id})
+    return JsonResponse(
+        {"status": "error", "message": "Invalid request method"}, status=400
+    )
+
+
+###############################报价单end############################
+
 #########################注册登录############################
 # 注册
 from django.shortcuts import render, redirect

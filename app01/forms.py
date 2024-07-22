@@ -114,3 +114,33 @@ class ProductMaterialForm(forms.ModelForm):
 ProductMaterialFormSet = forms.inlineformset_factory(
     Product, ProductMaterial, form=ProductMaterialForm, extra=1, can_delete=True
 )
+
+###############报价单################
+from django import forms
+from .models import QuoteItem
+
+
+class QuoteItemForm(forms.ModelForm):
+    class Meta:
+        model = QuoteItem
+        fields = [
+            "model",
+            "picture",
+            "specification",
+            "color",
+            "qty",
+            "cost_price",
+            "profit_margin",
+        ]
+        widgets = {
+            "model": forms.TextInput(attrs={"class": "form-control"}),
+            "picture": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "specification": forms.TextInput(attrs={"class": "form-control"}),
+            "color": forms.TextInput(attrs={"class": "form-control"}),
+            "qty": forms.NumberInput(attrs={"class": "form-control"}),
+            "cost_price": forms.NumberInput(attrs={"class": "form-control"}),
+            "profit_margin": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+
+###############报价单end################
