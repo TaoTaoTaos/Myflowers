@@ -202,7 +202,10 @@ def login_view(request):
 #########################注册登录END############################
 ##########################花材###############################
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from .forms import FlowerMaterialForm
+from .models import Category, Supplier, Process, Grade
 
 
 @login_required
@@ -216,7 +219,25 @@ def add_flower_material(request):
             return redirect("flower_material_list")  # 替换为你的重定向URL
     else:
         form = FlowerMaterialForm()
-    return render(request, "add_flower_material.html", {"form": form})
+
+    categories = Category.objects.all()
+    suppliers = Supplier.objects.all()
+    processes = Process.objects.all()
+    grades = Grade.objects.all()
+
+    return render(
+        request,
+        "add_flower_material.html",
+        {
+            "form": form,
+            "categories": categories,
+            "suppliers": suppliers,
+            "processes": processes,
+            "grades": grades,
+            "created_by": request.user,
+            "current_user": request.user,
+        },
+    )
 
 
 # 花材表显示
@@ -250,11 +271,8 @@ def edit_flower_material(request, model):
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES, instance=material)
         if form.is_valid():
-            # 首先，使用 commit=False 保存表单，以获取更新但尚未保存的实例
             flower_material = form.save(commit=False)
-            # 更新创建者字段
             flower_material.created_by = request.user
-            # 最后，将更新的实例保存到数据库
             flower_material.save()
             return redirect("flower_material_detail", model=material.model)
     else:

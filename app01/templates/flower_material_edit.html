@@ -15,12 +15,10 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <label for="category" class="form-label">类型</label>
-                                <select id="category" name="category" class="form-select" >{% if form.category.errors %}is-invalid{% endif %}"
+                                <select id="category" name="category" class="form-select {% if form.category.errors %}is-invalid{% endif %}">
                                     <option value="">选择类型</option>
                                     {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}
-                                        
-                                    </option>
+                                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>{{ category.name }}</option>
                                     {% endfor %}
                                 </select>
                                 {% if form.category.errors %}
@@ -236,6 +234,17 @@
                                 {% endif %}
                             </div>
                             <div class="form-group col-md-6">
+                                <label for="cost_price" class="form-label">成本</label>
+                                <input type="text" id="cost_price" name="cost_price" class="form-control {% if form.cost_price.errors %}is-invalid{% endif %}" value="{{ form.cost_price.value|default_if_none:'' }}">
+                                {% if form.cost_price.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.cost_price.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
                                 <label for="price_one" class="form-label">价格一</label>
                                 <input type="text" id="price_one" name="price_one" class="form-control {% if form.price_one.errors %}is-invalid{% endif %}" value="{{ form.price_one.value|default_if_none:'' }}">
                                 {% if form.price_one.errors %}
@@ -244,8 +253,6 @@
                                 </div>
                                 {% endif %}
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="form-group col-md-6">
                                 <label for="price_two" class="form-label">价格二</label>
                                 <input type="text" id="price_two" name="price_two" class="form-control {% if form.price_two.errors %}is-invalid{% endif %}" value="{{ form.price_two.value|default_if_none:'' }}">
@@ -254,10 +261,6 @@
                                     {{ form.price_two.errors.0 }}
                                 </div>
                                 {% endif %}
-                            </div>
-                            <div class="form-group col-md-6">
-                              
-                               
                             </div>
                         </div>
                         <div class="mt-3">

@@ -38,16 +38,16 @@
           <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
           <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
           <label><input type="checkbox" class="column-toggle" data-column="7" checked> 学名</label>
-          <label><input type="checkbox" class="column-toggle" data-column="10" checked> 成本价</label>
+         
            <label><input type="checkbox" class="column-toggle" data-column="11" checked> 规格</label>
           <label><input type="checkbox" class="column-toggle" data-column="12" checked> 装箱数量</label>
           <label><input type="checkbox" class="column-toggle" data-column="13" checked> 销售商</label>
           <label><input type="checkbox" class="column-toggle" data-column="14" checked> 颜色</label>
           <label><input type="checkbox" class="column-toggle" data-column="15" checked> 尺寸</label>
           <label><input type="checkbox" class="column-toggle" data-column="16" checked> 重量</label>
-          <label><input type="checkbox" class="column-toggle" data-column="17" checked> 销售规格数量</label>
-          <label><input type="checkbox" class="column-toggle" data-column="18" checked> 销售规格单位</label>
-          <label><input type="checkbox" class="column-toggle" data-column="19" checked> 处理过程</label>
+          <label><input type="checkbox" class="column-toggle" data-column="17" checked> 装箱数量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="18" checked> 装箱单位</label>
+          <label><input type="checkbox" class="column-toggle" data-column="19" checked> 工艺</label>
           <label><input type="checkbox" class="column-toggle" data-column="20" checked> 外箱尺寸</label>
           <label><input type="checkbox" class="column-toggle" data-column="21" checked> 等级</label>
         </div>
@@ -75,9 +75,9 @@
                 <th style="text-align: center; vertical-align: middle;">颜色</th>
                 <th style="text-align: center; vertical-align: middle;">尺寸</th>
                 <th style="text-align: center; vertical-align: middle;">重量</th>
-                <th style="text-align: center; vertical-align: middle;">销售规格数量</th>
-                <th style="text-align: center; vertical-align: middle;">销售规格单位</th>
-                <th style="text-align: center; vertical-align: middle;">处理过程</th>
+                <th style="text-align: center; vertical-align: middle;">装箱数量</th>
+                <th style="text-align: center; vertical-align: middle;">装箱单位</th>
+                <th style="text-align: center; vertical-align: middle;">工艺</th>
                 <th style="text-align: center; vertical-align: middle;">外箱尺寸</th>
                 <th style="text-align: center; vertical-align: middle;">等级</th>
                 <th style="text-align: center; vertical-align: middle;">最后修改人</th>
@@ -100,8 +100,8 @@
                       无图片
                     {% endif %}
                   </td>
-                  <td style="text-align: center; vertical-align: middle;">{{ material.chinese_name }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ material.english_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;"onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.chinese_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;"onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.english_name }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.scientific_name }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.price_one }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.price_two }}</td>
@@ -270,7 +270,7 @@
       // Ensure the Chinese and English names are always visible
       document.querySelectorAll('.column-toggle').forEach(checkbox => {
         const column = parseInt(checkbox.dataset.column, 10);
-        if (column === 4 || column === 5 || column === 6 || column === 8 || column === 9 || column === 21|| column === 22) {
+        if (column === 4 || column === 5 || column === 6 || column === 8 || column === 9 || column === 10||column === 21|| column === 22) {
           checkbox.disabled = true;
         }
       });
