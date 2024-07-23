@@ -41,22 +41,9 @@
           <label>选择要显示的列：</label>
           <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
           <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
-          <label><input type="checkbox" class="column-toggle" data-column="4" checked> 中文名</label>
-          <label><input type="checkbox" class="column-toggle" data-column="5" checked> 英文名</label>
-          <label><input type="checkbox" class="column-toggle" data-column="6" checked> 尺寸</label>
-          <label><input type="checkbox" class="column-toggle" data-column="7" checked> 重量</label>
-          <label><input type="checkbox" class="column-toggle" data-column="8" checked> 颜色</label>
-          <label><input type="checkbox" class="column-toggle" data-column="9" checked> 包装</label>
-          <label><input type="checkbox" class="column-toggle" data-column="10" checked> 销售规格数量</label>
-          <label><input type="checkbox" class="column-toggle" data-column="11" checked> 销售规格单位</label>
-          <label><input type="checkbox" class="column-toggle" data-column="12" checked> 内箱尺寸</label>
-          <label><input type="checkbox" class="column-toggle" data-column="13" checked> 外箱尺寸</label>
-          <label><input type="checkbox" class="column-toggle" data-column="14" checked> 劳动成本</label>
-          <label><input type="checkbox" class="column-toggle" data-column="15" checked> 损耗率</label>
-          <label><input type="checkbox" class="column-toggle" data-column="16" checked> 备注</label>
-          <label><input type="checkbox" class="column-toggle" data-column="17" checked> 创建人</label>
-          <label><input type="checkbox" class="column-toggle" data-column="18" checked> 创建时间</label>
-          <label><input type="checkbox" class="column-toggle" data-column="19" checked> 修改时间</label>
+          {% for i, label in column_labels %}
+          <label><input type="checkbox" class="column-toggle" data-column="{{ i }}" checked> {{ label }}</label>
+          {% endfor %}
         </div>
 
         <div class="table-responsive">

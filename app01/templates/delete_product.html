@@ -1,0 +1,17 @@
+<!-- delete_product.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}删除产品{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>删除产品</h2>
+  <p>确定要删除 {{ product.chinese_name }} ({{ product.model }}) 吗？此操作无法撤销。</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">删除</button>
+    <a href="{% url 'product_details' product.model %}" class="btn btn-secondary">取消</a>
+  </form>
+</div>
+{% endblock %}

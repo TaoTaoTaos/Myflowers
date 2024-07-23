@@ -101,7 +101,6 @@ class ProductMaterialAdmin(admin.ModelAdmin):
         "flower_material",
         "quantity",
         "ratio",
-        "price_type",
     )
     search_fields = ("product__chinese_name", "flower_material__chinese_name")
-    list_filter = ("price_type",)
+    list_filter = []  # 你可以根据需要添加其他过滤条件

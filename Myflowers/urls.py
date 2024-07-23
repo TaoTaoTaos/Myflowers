@@ -37,17 +37,18 @@ urlpatterns = [
     path("register/", register_view, name="register"),
     path("add_product/", add_product, name="add_product"),
     path("success/", success_page, name="success_page"),
+    ###############产品############
     path("product_list/", product_list, name="product_list"),
     path("product_details/<str:model>/", views.product_details, name="product_details"),
+    path("products/edit/<str:model>/", views.edit_product, name="edit_product"),
+    path("products/delete/<str:model>/", views.delete_product, name="delete_product"),
+    ############产品END############
+    ####################花材######################
     path(
         "flower_material/<str:model>/",
         views.flower_material_detail,
         name="flower_material_detail",
-    ),
-    #########
-    path("add_quote_item", add_quote_item, name="add_quote_item"),
-    path("save_quote/", save_quote, name="save_quote"),
-    ####################花材######################
+    ),  # 花材详情
     path(
         "add-flower-material/", views.add_flower_material, name="add_flower_material"
     ),  # 花材增
@@ -63,6 +64,10 @@ urlpatterns = [
         "flower-materials/", flower_materials_list, name="flower_material_list"
     ),  # 花材查
     ####################花材END######################
+    ###################报价单#########################
+    path("add_quote_item", add_quote_item, name="add_quote_item"),
+    path("save_quote/", save_quote, name="save_quote"),
+    ###################报价单#########################
 ]
 
 if settings.DEBUG:

@@ -6,76 +6,145 @@
 {% endblock %}
 
 {% block content %}
-<section class="section">
-  <div class="container">
-    <h2 class="mb-4">产品详情</h2>
-    <div class="card">
-      <div class="card-body">
-        <h4>产品信息</h4>
-        <dl class="row">
-          <dt class="col-sm-3">型号</dt>
-          <dd class="col-sm-9">{{ product.model }}</dd>
-          <dt class="col-sm-3">中文名</dt>
-          <dd class="col-sm-9">{{ product.chinese_name }}</dd>
-          <dt class="col-sm-3">英文名</dt>
-          <dd class="col-sm-9">{{ product.english_name }}</dd>
-          <dt class="col-sm-3">尺寸</dt>
-          <dd class="col-sm-9">{{ product.size }}</dd>
-          <dt class="col-sm-3">重量</dt>
-          <dd class="col-sm-9">{{ product.weight }}</dd>
-          <dt class="col-sm-3">颜色</dt>
-          <dd class="col-sm-9">{{ product.color }}</dd>
-          <dt class="col-sm-3">包装</dt>
-          <dd class="col-sm-9">{{ product.Package }}</dd>
-          <dt class="col-sm-3">销售规格数量</dt>
-          <dd class="col-sm-9">{{ product.sale_spec_quantity }}</dd>
-          <dt class="col-sm-3">销售规格单位</dt>
-          <dd class="col-sm-9">{{ product.get_sale_spec_unit_display }}</dd>
-          <dt class="col-sm-3">内箱尺寸</dt>
-          <dd class="col-sm-9">{{ product.inner_box_size }}</dd>
-          <dt class="col-sm-3">外箱尺寸</dt>
-          <dd class="col-sm-9">{{ product.outer_box_size }}</dd>
-          <dt class="col-sm-3">人工成本</dt>
-          <dd class="col-sm-9">{{ product.labor_cost }}</dd>
-          <dt class="col-sm-3">损耗率</dt>
-          <dd class="col-sm-9">{{ product.loss_rate }}</dd>
-          <dt class="col-sm-3">总成本</dt>
-          <dd class="col-sm-9">{{ product.cost }}</dd>
-          <dt class="col-sm-3">备注信息</dt>
-          <dd class="col-sm-9">{{ product.description }}</dd>
-          <dt class="col-sm-3">创建者</dt>
-          <dd class="col-sm-9">{{ product.created_by }}</dd>
-          <dt class="col-sm-3">创建时间</dt>
-          <dd class="col-sm-9">{{ product.created_at }}</dd>
-          <dt class="col-sm-3">更新时间</dt>
-          <dd class="col-sm-9">{{ product.updated_at }}</dd>
-        </dl>
+  <a href="/product_list" class="btn btn-primary btn-lg" style="margin-left:auto">返回列表</a>
 
-        <h4 class="mt-4">产品组成</h4>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>花材型号</th>
-              <th>花材名称</th>
-              <th>数量</th>
-              <th>比例</th>
-              <th>价格类型</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for material in materials %}
-            <tr>
-              <td>{{ material.flower_material.model }}</td>
-              <td>{{ material.flower_material.chinese_name }}</td>
-              <td>{{ material.quantity }}</td>
-              <td>{{ material.ratio }}</td>
-              <td>{{ material.get_price_type_display }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="{{ product.chinese_name }}" />
+              {% else %}
+                <p>无图片</p>
+              {% endif %}
+              <div class="mt-3">
+                <a href="{% url 'edit_product' product.model %}" class="btn btn-sm btn-warning">编辑</a>
+                <a href="{% url 'delete_product' product.model %}" class="btn btn-sm btn-danger">删除</a>
+              </div>
+            </div>
+
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.chinese_name }} ({{ product.english_name }})</h5>
+                <div class="row">
+                  <div class="col-6">
+                    <p class="card-text">
+                      <strong>型号:</strong> {{ product.model }}
+                    </p>
+                    <p class="card-text">
+                      <strong>尺寸:</strong> {{ product.size }}
+                    </p>
+                    <p class="card-text">
+                      <strong>重量:</strong> {{ product.weight }}
+                    </p>
+                    <p class="card-text">
+                      <strong>颜色:</strong> {{ product.color }}
+                    </p>
+                    <p class="card-text">
+                      <strong>包装:</strong> {{ product.Package }}
+                    </p>
+                    <p class="card-text">
+                      <strong>销售规格数量:</strong> {{ product.sale_spec_quantity }}
+                    </p>
+                    <p class="card-text">
+                      <strong>销售规格单位:</strong> {{ product.get_sale_spec_unit_display }}
+                    </p>
+                    <p class="card-text">
+                      <strong>内箱尺寸:</strong> {{ product.inner_box_size }}
+                    </p>
+                    <p class="card-text">
+                      <strong>外箱尺寸:</strong> {{ product.outer_box_size }}
+                    </p>
+                  </div>
+                  <div class="col-6">
+                    <p class="card-text">
+                      <strong>人工成本:</strong> {{ product.labor_cost }}
+                    </p>
+                    <p class="card-text">
+                      <strong>损耗率:</strong> {{ product.loss_rate }}
+                    </p>
+                    <p class="card-text">
+                      <strong>总成本:</strong> {{ product.cost }}
+                    </p>
+                    <p class="card-text">
+                      <strong>备注信息:</strong> {{ product.description }}
+                    </p>
+                    <p class="card-text">
+                      <strong>创建者:</strong> {{ product.created_by }}
+                    </p>
+                    <p class="card-text">
+                      <strong>创建时间:</strong> {{ product.created_at }}
+                    </p>
+                    <p class="card-text">
+                      <strong>更新时间:</strong> {{ product.updated_at }}
+                    </p>
+                  </div>
+                </div>
+
+                <h4 class="mt-4">产品组成</h4>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>花材型号</th>
+                      <th>花材名称</th>
+                      <th>数量</th>
+                      <th>比例</th>
+                      <th>价格类型</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for material in materials %}
+                    <tr>
+                      <td>{{ material.flower_material.model }}</td>
+                      <td>{{ material.flower_material.chinese_name }}</td>
+                      <td>{{ material.quantity }}</td>
+                      <td>{{ material.ratio }}</td>
+                      <td>{{ material.get_price_type_display }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="position-sticky" style="top: 1rem;">
+          <div class="card">
+            <div class="card-header">产品列表</div>
+            <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+              <input type="text" class="form-control mb-2" id="searchProduct" placeholder="搜索产品" />
+              <ul class="list-group list-group-flush" id="productList">
+                {% for product in products %}
+                  <li class="list-group-item">
+                    <a href="{% url 'product_detail' product.model %}">{{ product.chinese_name }} ({{ product.model }})</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</section>
+
+  <script>
+    document.getElementById('searchProduct').addEventListener('keyup', function () {
+      var searchValue = this.value.toLowerCase();
+      var productItems = document.getElementById('productList').getElementsByTagName('li');
+    
+      for (var i = 0; i < productItems.length; i++) {
+        var productText = productItems[i].getElementsByTagName('a')[0].innerText.toLowerCase();
+        if (productText.indexOf(searchValue) > -1) {
+          productItems[i].style.display = '';
+        } else {
+          productItems[i].style.display = 'none';
+        }
+      }
+    });
+  </script>
 {% endblock %}

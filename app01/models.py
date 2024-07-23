@@ -199,6 +199,7 @@ class Product(models.Model):
     )
     labor_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     loss_rate = models.FloatField(default=0.0)
+    profit_margin = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     description = models.CharField(max_length=200, blank=True, default="无备注")
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -236,43 +237,32 @@ class Product(models.Model):
     def cost(self):
         total_cost = Decimal(0)
         for material in self.productmaterial_set.all():
-            if material.price_type == "price_one":
-                material_cost = (
-                    material.flower_material.price_one
-                    * Decimal(material.quantity)
-                    * Decimal(material.ratio)
-                )
-            else:
-                material_cost = (
-                    material.flower_material.price_two
-                    * Decimal(material.quantity)
-                    * Decimal(material.ratio)
-                )
+            material_cost = (
+                material.flower_material.cost_price
+                * Decimal(material.quantity)
+                * Decimal(material.ratio)
+            )
             total_cost += material_cost
         total_cost += self.labor_cost
         total_cost *= Decimal(1 + self.loss_rate)
         return total_cost
+
+    @property
+    def price(self):
+        return self.cost * Decimal(1 + self.profit_margin / 100)
 
     def __str__(self):
         return self.chinese_name
 
 
 class ProductMaterial(models.Model):
-    PRICE_TYPE_CHOICES = [
-        ("price_one", "Price One"),
-        ("price_two", "Price Two"),
-    ]
-
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     flower_material = models.ForeignKey(FlowerMaterial, on_delete=models.CASCADE)
     quantity = models.FloatField(default=1.0)
     ratio = models.FloatField(default=1.0)
-    price_type = models.CharField(
-        max_length=10, choices=PRICE_TYPE_CHOICES, default="price_one"
-    )
 
     def __str__(self):
-        return f"{self.product.chinese_name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio}, Price: {self.price_type})"
+        return f"{self.product.chinese_name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio})"
 
 
 #########################################报价单###############################################

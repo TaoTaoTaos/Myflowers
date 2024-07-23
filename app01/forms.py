@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser, Product, ProductMaterial, FlowerMaterial
+from .models import CustomUser, Product, ProductMaterial, FlowerMaterial, QuoteItem
 
 
 # 用户注册表单
@@ -73,9 +73,8 @@ class FlowerMaterialForm(forms.ModelForm):
         }
 
 
-##################################################
-from django.forms import inlineformset_factory
-from .models import Product, ProductMaterial, FlowerMaterial
+from django import forms
+from .models import Product, ProductMaterial
 
 
 class ProductForm(forms.ModelForm):
@@ -101,6 +100,7 @@ class ProductForm(forms.ModelForm):
             "outer_box_height": forms.NumberInput(attrs={"class": "form-control"}),
             "labor_cost": forms.NumberInput(attrs={"class": "form-control"}),
             "loss_rate": forms.NumberInput(attrs={"class": "form-control"}),
+            "profit_margin": forms.NumberInput(attrs={"class": "form-control"}),
             "image": forms.ClearableFileInput(attrs={"class": "form-control-file"}),
         }
 
@@ -108,7 +108,42 @@ class ProductForm(forms.ModelForm):
 class ProductMaterialForm(forms.ModelForm):
     class Meta:
         model = ProductMaterial
-        fields = ["flower_material", "quantity", "ratio", "price_type"]
+        fields = ["flower_material", "quantity", "ratio"]
+        widgets = {
+            "flower_material": forms.Select(attrs={"class": "form-control"}),
+            "quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "ratio": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+
+ProductMaterialFormSet = forms.inlineformset_factory(
+    Product, ProductMaterial, form=ProductMaterialForm, extra=1, can_delete=True
+)
+
+###############报价单################
+
+
+class QuoteItemForm(forms.ModelForm):
+    class Meta:
+        model = QuoteItem
+        fields = [
+            "model",
+            "picture",
+            "specification",
+            "color",
+            "qty",
+            "cost_price",
+            "profit_margin",
+        ]
+        widgets = {
+            "model": forms.TextInput(attrs={"class": "form-control"}),
+            "picture": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "specification": forms.TextInput(attrs={"class": "form-control"}),
+            "color": forms.TextInput(attrs={"class": "form-control"}),
+            "qty": forms.NumberInput(attrs={"class": "form-control"}),
+            "cost_price": forms.NumberInput(attrs={"class": "form-control"}),
+            "profit_margin": forms.NumberInput(attrs={"class": "form-control"}),
+        }
 
 
 ProductMaterialFormSet = forms.inlineformset_factory(
