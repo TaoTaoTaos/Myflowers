@@ -103,6 +103,9 @@ class FlowerMaterial(models.Model):
     supplier = models.ForeignKey(
         Supplier, on_delete=models.SET_NULL, null=True, blank=True, default=None
     )
+    cost_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
+    )  # 成本价
     price_one = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
     )
