@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  客户跟进情况 - {{ customer.name }}
+{% endblock %}
+
+{% block extra_css %}
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .timeline:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 4px;
+    background: #e9ecef;
+  }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding: 1rem 0;
+    width: 100%;
+  }
+  .timeline-item-left {
+    justify-content: flex-end;
+  }
+  .timeline-item-right {
+    justify-content: flex-start;
+  }
+  .timeline-content {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    width: 45%;
+    position: relative;
+  }
+  .timeline-item-left .timeline-content {
+    margin-right: 1rem;
+  }
+  .timeline-item-right .timeline-content {
+    margin-left: 1rem;
+  }
+  .timeline-content:before {
+    content: "";
+    position: absolute;
+    top: 1rem;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  .timeline-item-left .timeline-content:before {
+    right: -0.5rem;
+    border-width: 0.5rem 0 0.5rem 0.5rem;
+    border-color: transparent transparent transparent #fff;
+  }
+  .timeline-item-right .timeline-content:before {
+    left: -0.5rem;
+    border-width: 0.5rem 0.5rem 0.5rem 0;
+    border-color: transparent #fff transparent transparent;
+  }
+  .preview-image {
+    max-width: 100%;
+    height: auto;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title">添加跟进记录</h3>
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="id_details" class="form-label">跟进详情</label>
+                {{ form.details }}
+                {% if form.details.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.details.errors.0 }}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="mb-3">
+                <label for="id_file" class="form-label">附件</label>
+                {{ attachment_form.file }}
+                {% if attachment_form.file.errors %}
+                  <div class="invalid-feedback">
+                    {{ attachment_form.file.errors.0 }}
+                  </div>
+                {% endif %}
+              </div>
+              <button type="submit" class="btn btn-primary">提交</button>
+            </form>
+          </div>
+        </div>
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title">客户信息</h3>
+            <p><strong>编号：</strong>{{ customer.customer_id }}</p>
+            <p><strong>姓名：</strong>{{ customer.name }}</p>
+            <p><strong>国家：</strong>{{ customer.country }}</p>
+            <p><strong>公司名称：</strong>{{ customer.company_name }}</p>
+            <p><strong>联系地址：</strong>{{ customer.address }}</p>
+            <p><strong>联系电话：</strong>{{ customer.phone }}</p>
+            <p><strong>手机：</strong>{{ customer.mobile }}</p>
+            <p><strong>E-mail：</strong>{{ customer.email }}</p>
+            <p><strong>销售渠道：</strong>{{ customer.sales_channel }}</p>
+            <p><strong>需求产品：</strong>{{ customer.product_demand }}</p>
+            <p><strong>来源：</strong>{{ customer.source }}</p>
+            <p><strong>状态：</strong>{{ customer.get_status_display }}</p>
+            <p><strong>业务员：</strong>{{ customer.created_by.username }}</p>
+            <p><strong>修改时间：</strong>{{ customer.updated_at }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">客户跟进情况 - {{ customer.name }}</h2>
+            <ul class="timeline">
+              {% for follow_up in follow_ups %}
+                <li class="timeline-item {% cycle 'timeline-item-left' 'timeline-item-right' %}">
+                  <div class="timeline-content card">
+                    <div class="card-body">
+                      <h5 class="card-title">跟进次数：{{ follow_up.follow_up_count }}</h5>
+                      <p class="card-text">{{ follow_up.details }}</p>
+                      {% if follow_up.attachments.exists %}
+                        <div>
+                          <strong>附件:</strong>
+                          <ul>
+                            {% for attachment in follow_up.attachments.all %}
+                              <li>
+                                <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a>
+                                {% if attachment.is_image %}
+                                  <br>
+                                  <img src="{{ attachment.file.url }}" alt="{{ attachment.file.name }}" class="preview-image mt-2">
+                                {% endif %}
+                              </li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      {% endif %}
+                      <p class="card-text"><small class="text-muted">记录人：{{ follow_up.created_by.username }}</small></p>
+                      <p class="card-text"><small class="text-muted">跟进时间：{{ follow_up.follow_up_time|date:"Y-m-d H:i" }}</small></p>
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

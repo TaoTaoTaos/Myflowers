@@ -179,3 +179,56 @@ class QuoteItemForm(forms.ModelForm):
 
 
 ###############报价单end################
+######################客户###############################
+from django import forms
+from .models import Customer
+
+
+from django import forms
+from .models import Customer
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = [
+            "name",
+            "country",
+            "company_name",
+            "address",
+            "phone",
+            "mobile",
+            "email",
+            "sales_channel",
+            "product_demand",
+            "source",
+            "status",
+        ]
+
+
+from .models import FollowUpRecord
+
+
+# forms.py
+
+from django import forms
+from .models import FollowUpRecord, FollowUpAttachment
+from .widgets import MultiFileInput
+
+
+class FollowUpRecordForm(forms.ModelForm):
+    class Meta:
+        model = FollowUpRecord
+        fields = ["details"]
+        widgets = {
+            "details": forms.Textarea(attrs={"class": "form-control"}),
+        }
+
+
+class FollowUpAttachmentForm(forms.ModelForm):
+    class Meta:
+        model = FollowUpAttachment
+        fields = ["file"]
+        widgets = {
+            "file": MultiFileInput(attrs={"class": "form-control"}),
+        }

@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  客户管理页面
+{% endblock %}
+
+{% block extra_css %}
+  th {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fixed-image-cell img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px; /* 调整列宽度，比图片宽一点 */
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <a href="{% url 'add_customer' %}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">添加客户</a>
+        <button id="export-button" class="btn btn-secondary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">导出为Excel</button>
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+          <label>选择要显示的列：</label>
+          <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
+          <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
+          <label><input type="checkbox" class="column-toggle" data-column="2" checked> 国家</label>
+          <label><input type="checkbox" class="column-toggle" data-column="3" checked> 公司名称</label>
+          <label><input type="checkbox" class="column-toggle" data-column="4" checked> 联系地址</label>
+          <label><input type="checkbox" class="column-toggle" data-column="5" checked> 联系电话</label>
+          <label><input type="checkbox" class="column-toggle" data-column="6" checked> 手机</label>
+          <label><input type="checkbox" class="column-toggle" data-column="7" checked> E-mail</label>
+          <label><input type="checkbox" class="column-toggle" data-column="8" checked> 销售渠道</label>
+          <label><input type="checkbox" class="column-toggle" data-column="9" checked> 需求产品</label>
+          <label><input type="checkbox" class="column-toggle" data-column="10" checked> 来源</label>
+          <label><input type="checkbox" class="column-toggle" data-column="11" checked> 状态</label>
+          <label><input type="checkbox" class="column-toggle" data-column="12" checked> 业务员</label>
+          <label><input type="checkbox" class="column-toggle" data-column="13" checked> 修改时间</label>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-fixed" id="customer-table">
+            <thead>
+              <tr>
+                <th style="text-align: center; vertical-align: middle;">
+                  <input type="checkbox" id="select-all">
+                </th>
+                <th style="text-align: center; vertical-align: middle;">编号</th>
+                <th style="text-align: center; vertical-align: middle;">国家</th>
+                <th style="text-align: center; vertical-align: middle;">公司名称</th>
+                <th style="text-align: center; vertical-align: middle;">联系地址</th>
+                <th style="text-align: center; vertical-align: middle;">联系电话</th>
+                <th style="text-align: center; vertical-align: middle;">手机</th>
+                <th style="text-align: center; vertical-align: middle;">E-mail</th>
+                <th style="text-align: center; vertical-align: middle;">销售渠道</th>
+                <th style="text-align: center; vertical-align: middle;">需求产品</th>
+                <th style="text-align: center; vertical-align: middle;">来源</th>
+                <th style="text-align: center; vertical-align: middle;">状态</th>
+                <th style="text-align: center; vertical-align: middle;">业务员</th>
+                <th style="text-align: center; vertical-align: middle;">修改时间</th>
+                <th style="text-align: center; vertical-align: middle;">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for customer in customers %}
+                <tr>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <input type="checkbox" class="select-item">
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.customer_id }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.country }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.company_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.address }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.phone }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.mobile }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.email }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.sales_channel }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.product_demand }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.source }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.get_status_display }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.created_by.username }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.updated_at }}</td>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <a href="{% url 'follow_up_list' customer.customer_id %}" class="btn btn-secondary btn-sm">跟进</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const table = document.getElementById('customer-table');
+      const dataTable = new simpleDatatables.DataTable(table, {
+        searchable: true,
+        fixedHeight: true,
+        perPageSelect: [5, 10, 15, 20, 30, 500],
+        perPage: 20,
+        labels: {
+          placeholder: '搜索...',
+          perPage: '/条记录每页',
+          noRows: '没有找到符合条件的记录',
+          info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
+        },
+        columns: [
+          { select: [0], sortable: false } // Disable sorting on the first column (checkbox)
+        ]
+      });
+
+      const toggleColumnVisibility = () => {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          const column = parseInt(checkbox.dataset.column, 10) + 1;
+          const th = table.querySelector(`th:nth-child(${column})`);
+          const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
+
+          if (checkbox.checked) {
+            th.style.display = '';
+            tds.forEach(td => td.style.display = '');
+          } else {
+            th.style.display = 'none';
+            tds.forEach(td => td.style.display = 'none');
+          }
+        });
+      };
+
+      const saveColumnVisibility = () => {
+        const visibilityState = {};
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          visibilityState[checkbox.dataset.column] = checkbox.checked;
+        });
+        localStorage.setItem('columnVisibility', JSON.stringify(visibilityState));
+      };
+
+      const loadColumnVisibility = () => {
+        const visibilityState = JSON.parse(localStorage.getItem('columnVisibility'));
+        if (visibilityState) {
+          document.querySelectorAll('.column-toggle').forEach(checkbox => {
+            checkbox.checked = visibilityState[checkbox.dataset.column];
+          });
+          toggleColumnVisibility();
+        } else {
+          // 默认显示所有列
+          document.querySelectorAll('.column-toggle').forEach(checkbox => {
+            checkbox.checked = true;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          });
+        }
+      };
+
+      // Initial load of column visibility settings
+      loadColumnVisibility();
+
+      // Update column visibility on change
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          toggleColumnVisibility();
+          saveColumnVisibility();
+        });
+      });
+
+      // Select/Deselect all checkboxes
+      document.getElementById('select-all').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.select-item');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+      });
+
+      // Export selected rows to Excel
+      document.getElementById('export-button').addEventListener('click', function () {
+        const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
+          return row.querySelector('.select-item').checked;
+        });
+
+        if (selectedRows.length === 0) {
+          alert('请选择至少一条记录进行导出');
+          return;
+        }
+
+        const exportData = [];
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        exportData.push(headers.slice(1)); // Exclude the checkbox header
+
+        selectedRows.forEach(row => {
+          const rowData = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+          exportData.push(rowData.slice(1)); // Exclude the checkbox column
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '客户');
+
+        XLSX.writeFile(wb, '客户记录.xlsx');
+      });
+
+      // Column toggle functionality
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+          toggleColumnVisibility();
+          saveColumnVisibility();
+        });
+      });
+
+      // Show all/hide all functionality
+      document.getElementById('show-all').addEventListener('click', function () {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = true;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+        });
+      });
+
+      document.getElementById('hide-all').addEventListener('click', function () {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = false;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+        });
+      });
+
+      // Ensure certain columns are always visible
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        const column = parseInt(checkbox.dataset.column, 10);
+        if (column === 1) { // 你可以根据需要调整哪些列始终显示
+          checkbox.disabled = true;
+        }
+      });
+
+      // Ensure column visibility on table redraw
+      const applyVisibilityAfterRender = () => {
+        dataTable.on('datatable.page', toggleColumnVisibility);
+        dataTable.on('datatable.search', toggleColumnVisibility);
+        dataTable.on('datatable.sort', toggleColumnVisibility);
+      };
+
+      applyVisibilityAfterRender();
+
+      // Reapply column visibility settings on window resize
+      window.addEventListener('resize', toggleColumnVisibility);
+    });
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; cookies.length > i; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+{% endblock %}

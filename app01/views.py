@@ -503,3 +503,94 @@ def product_details(request, model):
 
 
 ##########################产品END#######################
+
+
+##############################客户###############################
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Customer
+from .forms import CustomerForm
+
+
+@login_required
+def customer_list(request):
+    if request.user.is_superuser:
+        customers = Customer.objects.all()
+    else:
+        customers = Customer.objects.filter(created_by=request.user)
+    return render(request, "customer_list.html", {"customers": customers})
+
+
+@login_required
+def add_customer(request):
+    if request.method == "POST":
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            customer = form.save(commit=False)
+            customer.created_by = request.user
+            customer.save()
+            return redirect("customer_list")
+    else:
+        form = CustomerForm()
+    return render(request, "add_customer.html", {"form": form})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Customer, FollowUpRecord
+from .forms import FollowUpRecordForm
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Customer, FollowUpRecord
+from .forms import FollowUpRecordForm
+from .models import Customer, FollowUpRecord, FollowUpAttachment
+from .forms import FollowUpRecordForm, FollowUpAttachmentForm
+
+
+# views.py
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Customer, FollowUpRecord, FollowUpAttachment
+from .forms import FollowUpRecordForm, FollowUpAttachmentForm
+
+
+@login_required
+def follow_up_list(request, customer_id):
+    customer = get_object_or_404(Customer, customer_id=customer_id)
+    follow_ups = customer.follow_ups.all().order_by("-follow_up_time")
+
+    # Add logic to determine if attachment is an image
+    for follow_up in follow_ups:
+        for attachment in follow_up.attachments.all():
+            attachment.is_image = attachment.file.url.lower().endswith(
+                (".png", ".jpg", ".jpeg")
+            )
+
+    if request.method == "POST":
+        form = FollowUpRecordForm(request.POST)
+        files = request.FILES.getlist("file")
+        if form.is_valid():
+            follow_up = form.save(commit=False)
+            follow_up.customer = customer
+            follow_up.created_by = request.user
+            follow_up.follow_up_count = follow_ups.count() + 1
+            follow_up.save()
+            for file in files:
+                FollowUpAttachment.objects.create(follow_up_record=follow_up, file=file)
+            return redirect("follow_up_list", customer_id=customer_id)
+    else:
+        form = FollowUpRecordForm()
+        attachment_form = FollowUpAttachmentForm()
+    return render(
+        request,
+        "follow_up_list.html",
+        {
+            "customer": customer,
+            "follow_ups": follow_ups,
+            "form": form,
+            "attachment_form": attachment_form,
+        },
+    )

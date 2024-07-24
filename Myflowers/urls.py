@@ -22,6 +22,9 @@ from app01.views import (
     product_details,
     add_quote_item,
     save_quote,
+    customer_list,
+    add_customer,
+    follow_up_list,
 )
 
 
@@ -69,6 +72,13 @@ urlpatterns = [
     path("add_quote_item", add_quote_item, name="add_quote_item"),
     path("save_quote/", save_quote, name="save_quote"),
     ###################报价单#########################
+    #############客户信息###########
+    path("customer_list/", customer_list, name="customer_list"),
+    path("add_customer/", add_customer, name="add_customer"),
+    path(
+        "customers/<str:customer_id>/follow-ups/", follow_up_list, name="follow_up_list"
+    ),
+    #############客户信息end###########
 ]
 
 if settings.DEBUG:

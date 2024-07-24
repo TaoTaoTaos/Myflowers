@@ -350,4 +350,81 @@ class QuoteItem(models.Model):
         return f"{self.model} - {self.qty} x {self.unit_price}"
 
 
-#########################################报价单end###############################################
+##################################报价单end#############################
+
+#################################客户############################
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class Customer(models.Model):
+    CUSTOMER_STATUS_CHOICES = [
+        ("已成交", "已成交"),
+        ("跟进中", "跟进中"),
+    ]
+
+    customer_id = models.CharField(max_length=100, unique=True, editable=False)
+    name = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    company_name = models.CharField(max_length=100)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(unique=True)
+    sales_channel = models.CharField(max_length=100, blank=True, null=True)
+    product_demand = models.CharField(max_length=255, blank=True, null=True)
+    source = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(
+        max_length=10, choices=CUSTOMER_STATUS_CHOICES, default="跟进中"
+    )
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="customers"
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.customer_id:
+            username = self.created_by.username
+            existing_customers = Customer.objects.filter(
+                created_by=self.created_by
+            ).count()
+            self.customer_id = f"{username}-{existing_customers + 1:04d}"
+        super().save(*args, **kwargs)
+
+
+class FollowUpRecord(models.Model):
+    customer = models.ForeignKey(
+        Customer, related_name="follow_ups", on_delete=models.CASCADE
+    )
+    follow_up_count = models.PositiveIntegerField()
+    follow_up_time = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    details = models.TextField()
+
+
+import re
+import os
+
+
+def user_directory_path(instance, filename):
+    # Replace any non-alphanumeric character with an underscore
+    safe_customer_name = re.sub(
+        r"[^\w\s-]", "", instance.follow_up_record.customer.name
+    )
+    safe_customer_name = re.sub(r"[-\s]+", "-", safe_customer_name).strip("-_")
+    # file will be uploaded to MEDIA_ROOT/<username>/<customer_name>/<filename>
+    return os.path.join(
+        instance.follow_up_record.created_by.username, safe_customer_name, filename
+    )
+
+
+class FollowUpAttachment(models.Model):
+    follow_up_record = models.ForeignKey(
+        FollowUpRecord, related_name="attachments", on_delete=models.CASCADE
+    )
+    file = models.FileField(upload_to=user_directory_path)

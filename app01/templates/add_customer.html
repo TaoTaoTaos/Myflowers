@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}添加客户 - CustomerManagement{% endblock %}
+
+{% block extra_styles %}
+<style>
+  .main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section {
+    flex: 1;
+  }
+
+  .form-group.col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<main id="main" class="main">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="card custom-width">
+          <div class="card-body">
+            <h5 class="card-title">添加客户</h5>
+            <p>（客户姓名、国家、公司名称为必填项）</p>
+
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label for="name" class="form-label">客户姓名</label>
+                  <input type="text" id="name" name="name" class="form-control {% if form.name.errors %}is-invalid{% endif %}" value="{{ form.name.value|default_if_none:'' }}" required>
+                  {% if form.name.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.name.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="country" class="form-label">国家</label>
+                  <input type="text" id="country" name="country" class="form-control {% if form.country.errors %}is-invalid{% endif %}" value="{{ form.country.value|default_if_none:'' }}" required>
+                  {% if form.country.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.country.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="company_name" class="form-label">公司名称</label>
+                  <input type="text" id="company_name" name="company_name" class="form-control {% if form.company_name.errors %}is-invalid{% endif %}" value="{{ form.company_name.value|default_if_none:'' }}" required>
+                  {% if form.company_name.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.company_name.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label for="address" class="form-label">联系地址</label>
+                  <input type="text" id="address" name="address" class="form-control {% if form.address.errors %}is-invalid{% endif %}" value="{{ form.address.value|default_if_none:'' }}">
+                  {% if form.address.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.address.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="phone" class="form-label">联系电话</label>
+                  <input type="text" id="phone" name="phone" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" value="{{ form.phone.value|default_if_none:'' }}">
+                  {% if form.phone.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.phone.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="mobile" class="form-label">手机</label>
+                  <input type="text" id="mobile" name="mobile" class="form-control {% if form.mobile.errors %}is-invalid{% endif %}" value="{{ form.mobile.value|default_if_none:'' }}">
+                  {% if form.mobile.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.mobile.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label for="email" class="form-label">E-mail</label>
+                  <input type="email" id="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" value="{{ form.email.value|default_if_none:'' }}">
+                  {% if form.email.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.email.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="sales_channel" class="form-label">客户的销售渠道</label>
+                  <input type="text" id="sales_channel" name="sales_channel" class="form-control {% if form.sales_channel.errors %}is-invalid{% endif %}" value="{{ form.sales_channel.value|default_if_none:'' }}">
+                  {% if form.sales_channel.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.sales_channel.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="product_demand" class="form-label">客户需求产品</label>
+                  <input type="text" id="product_demand" name="product_demand" class="form-control {% if form.product_demand.errors %}is-invalid{% endif %}" value="{{ form.product_demand.value|default_if_none:'' }}">
+                  {% if form.product_demand.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.product_demand.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label for="source" class="form-label">客户来源</label>
+                  <input type="text" id="source" name="source" class="form-control {% if form.source.errors %}is-invalid{% endif %}" value="{{ form.source.value|default_if_none:'' }}">
+                  {% if form.source.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.source.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <div class="form-group col-md-4">
+                  <label for="status" class="form-label">客户状态</label>
+                  <select id="status" name="status" class="form-select {% if form.status.errors %}is-invalid{% endif %}">
+                    <option value="">选择状态</option>
+                    <option value="已成交" {% if form.status.value == "已成交" %}selected{% endif %}>已成交</option>
+                    <option value="跟进中" {% if form.status.value == "跟进中" %}selected{% endif %}>跟进中</option>
+                  </select>
+                  {% if form.status.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.status.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">提交</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}
