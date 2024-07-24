@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  用户个人页面 - {{ user.username }}
+{% endblock %}
+
+{% block extra_css %}
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <div class="pagetitle">
+    <h1>个人资料</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+        <li class="breadcrumb-item">用户</li>
+        <li class="breadcrumb-item active">个人资料</li>
+      </ol>
+    </nav>
+  </div><!-- 结束页面标题 -->
+
+  <section class="section profile">
+    <div class="row">
+      <div class="col-xl-12">
+        <div class="card">
+          <div class="card-body pt-3">
+            <h5 class="card-title">用户信息</h5>
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ user_form.as_p }}
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary" name="update_profile">保存修改</button>
+              </div>
+            </form><!-- 结束用户信息表单 -->
+
+            <h5 class="card-title mt-5">修改密码</h5>
+            <form method="post">
+              {% csrf_token %}
+              {{ password_form.as_p }}
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary" name="change_password">修改密码</button>
+              </div>
+            </form><!-- 结束修改密码表单 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

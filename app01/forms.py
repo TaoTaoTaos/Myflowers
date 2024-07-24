@@ -17,6 +17,23 @@ class CustomAuthenticationForm(AuthenticationForm):
         fields = ("username", "password")
 
 
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email", "is_active", "is_staff"]
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = User
+        fields = ["old_password", "new_password1", "new_password2"]
+
+
 # 花材表单
 from django import forms
 from .models import FlowerMaterial

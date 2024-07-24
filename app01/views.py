@@ -16,12 +16,60 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.shortcuts import render
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
 
 
 ##########################普通视图#############################
+
+
+def superuser_required(view_func):
+    decorated_view_func = user_passes_test(lambda u: u.is_superuser)(view_func)
+    return decorated_view_func
+
+
+@superuser_required
+def superuser_page(request):
+    return render(request, "superuser.html", {"current_user": request.user})
+
+
 @login_required(login_url="/login/")
 def home_view(request):
     return render(request, "home.html", {"current_user": request.user})
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from .forms import UserUpdateForm, CustomPasswordChangeForm
+
+
+@login_required
+def profile_view(request):
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user, request.POST)
+
+        if "update_profile" in request.POST:
+            if user_form.is_valid():
+                user_form.save()
+                messages.success(request, "您的个人资料已成功更新！")
+                return redirect("profile")
+        elif "change_password" in request.POST:
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)  # 重要！
+                messages.success(request, "您的密码已成功更新！")
+                return redirect("profile")
+
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user)
+
+    context = {"user_form": user_form, "password_form": password_form}
+    return render(request, "profile.html", context)
 
 
 def base_view(request):

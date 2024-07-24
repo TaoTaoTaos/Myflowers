@@ -25,12 +25,16 @@ from app01.views import (
     customer_list,
     add_customer,
     follow_up_list,
+    superuser_page,
+    profile_view,
 )
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("base/", base_view, name="base"),
+    path("superuser_page/", superuser_page, name="superuser_page"),
+    path("profile/", profile_view, name="profile"),
     #############################################
     path("", login_view, name="login"),  # 打开网页指向home
     path("login/", login_view, name="login"),

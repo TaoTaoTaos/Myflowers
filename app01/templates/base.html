@@ -76,7 +76,7 @@
             <span class="username">{{ current_user.username }}</span>
         </button>
         <div class="dropdown-content">
-            <a href="/account">账户信息</a>
+            <a href="{% url 'profile' %}">账户信息</a>
             <a href="/login">退出登录</a>
         </div>
     </div>
@@ -178,10 +178,17 @@
 </header><!-- End Header -->
   <!-- ======= Sidebar ======= -->
 
-
+ 
   <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
+        <a class="nav-link collapsed" href="/superuser_page">
+          <i class="bi bi-grid"></i>
+          <span>管理员页面</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+       <li class="nav-item">
         <a class="nav-link collapsed" href="/control-panel">
           <i class="bi bi-grid"></i>
           <span>控制面板</span>
@@ -234,17 +241,7 @@
         </a>
       </li><!-- End 产品列表 Nav -->
 
-
-
-    
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="/admin">
-          <i class="bi bi-box-arrow-in-right"></i>
-          <span>后台管理</span>
-        </a>
-      </li><!-- End management Page Nav -->
-
-     
+ 
         <li class="nav-item">
         <a class="nav-link collapsed" href="/login">
           <i class="bi bi-box-arrow-in-right"></i>
@@ -279,6 +276,7 @@
           <span> 客户列表</span>
         </a>
       </li><!-- End 添加客户 Page Nav-->
+ 
 
 
     </ul>

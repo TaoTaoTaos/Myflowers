@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>欢迎，超级用户！</h1>
+    <button onclick="window.location.href='{% url 'admin:index' %}'">进入管理员页面</button>
+   
+</div>
+{% endblock %}
