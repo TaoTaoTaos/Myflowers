@@ -68,7 +68,11 @@ def profile_view(request):
         user_form = UserUpdateForm(instance=request.user)
         password_form = CustomPasswordChangeForm(request.user)
 
-    context = {"user_form": user_form, "password_form": password_form}
+    context = {
+        "user_form": user_form,
+        "password_form": password_form,
+        "current_user": request.user,
+    }
     return render(request, "profile.html", context)
 
 

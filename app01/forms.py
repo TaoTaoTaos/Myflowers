@@ -25,7 +25,25 @@ from django.contrib.auth.forms import PasswordChangeForm
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "is_active", "is_staff"]
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "last_login",
+            "date_joined",
+        ]
+        widgets = {
+            "username": forms.TextInput(attrs={"readonly": "readonly"}),
+            "is_active": forms.CheckboxInput(attrs={"disabled": "disabled"}),
+            "is_staff": forms.CheckboxInput(attrs={"disabled": "disabled"}),
+            "is_superuser": forms.CheckboxInput(attrs={"disabled": "disabled"}),
+            "last_login": forms.TextInput(attrs={"readonly": "readonly"}),
+            "date_joined": forms.TextInput(attrs={"readonly": "readonly"}),
+        }
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):
