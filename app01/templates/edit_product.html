@@ -46,33 +46,107 @@
             <form method="post" id="product-form" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="form-section">
-                {{ form.as_p }}
-              </div>
-              <div class="form-section">
-                <h5 class="mt-4">产品材料</h5>
-                {{ formset.management_form }}
-                <div id="formset-container">
-                  {% for form in formset %}
-                  <div class="formset-item">
-                    {{ form.id }}
-                    <div class="row">
-                      <div class="col-md-6">{{ form.flower_material }}</div>
-                      <div class="col-md-3">{{ form.quantity }}</div>
-                      <div class="col-md-3">{{ form.ratio }}</div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        {% if form.instance.pk %}
-                        <input type="checkbox" name="{{ form.prefix }}-DELETE"> 删除
-                        {% endif %}
-                      </div>
-                    </div>
+                <!-- 产品表单部分 -->
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="model">型号</label>
+                    {{ form.model|add_class:"form-control" }}
                   </div>
-                  {% endfor %}
+                  <div class="form-group col-md-6">
+                    <label for="chinese_name">中文名</label>
+                    {{ form.chinese_name|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="english_name">英文名</label>
+                    {{ form.english_name|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="size">尺寸</label>
+                    {{ form.size|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="weight">重量</label>
+                    {{ form.weight|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="color">颜色</label>
+                    {{ form.color|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="Package">包装</label>
+                    {{ form.Package|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="sale_spec_quantity">销售规格数量</label>
+                    {{ form.sale_spec_quantity|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="sale_spec_unit">销售规格单位</label>
+                    {{ form.sale_spec_unit|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="description">描述</label>
+                    {{ form.description|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label for="inner_box_long">内箱长度</label>
+                    {{ form.inner_box_long|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="inner_box_width">内箱宽度</label>
+                    {{ form.inner_box_width|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="inner_box_height">内箱高度</label>
+                    {{ form.inner_box_height|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label for="outer_box_length">外箱长度</label>
+                    {{ form.outer_box_length|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="outer_box_width">外箱宽度</label>
+                    {{ form.outer_box_width|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="outer_box_height">外箱高度</label>
+                    {{ form.outer_box_height|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="labor_cost">人工成本</label>
+                    {{ form.labor_cost|add_class:"form-control labor-cost-input" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="loss_rate">损耗率</label>
+                    {{ form.loss_rate|add_class:"form-control loss-rate-input" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="profit_margin">利润率</label>
+                    {{ form.profit_margin|add_class:"form-control profit-margin-input" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-12">
+                    <label for="image">产品图片</label>
+                    {{ form.image|add_class:"form-control-file" }}
+                  </div>
                 </div>
               </div>
-              <button type="submit" class="btn btn-success">保存更改</button>
-              <a href="{% url 'product_details' product.model %}" class="btn btn-secondary">取消</a>
+              <button type="submit" class="btn btn-success">提交</button>
             </form>
           </div>
         </div>
@@ -93,8 +167,8 @@
                 </tr>
               </thead>
               <tbody id="selected-materials-list">
-                {% for material in product.productmaterial_set.all %}
-                <tr data-id="{{ material.flower_material.id }}" data-cost-price="{{ material.flower_material.cost_price }}">
+                {% for material in existing_materials %}
+                <tr data-id="{{ material.flower_material.model }}" data-cost-price="{{ material.flower_material.cost_price }}">
                   <td>{{ material.flower_material.model }}</td>
                   <td>{{ material.flower_material.chinese_name }}</td>
                   <td><input type="number" name="quantity" class="form-control" value="{{ material.quantity }}"></td>
@@ -245,9 +319,12 @@
         var profitMargin = parseFloat($('.profit-margin-input').val()) || 0;
         totalCost += laborCost;
         totalCost *= (1 + lossRate);
-        totalCost *= (1 + profitMargin / 100);
+        totalCost *= (1 + profitMargin);
         $('#total-price').text(totalCost.toFixed(2));
       }
+
+      // Initial calculation
+      updateTotalPrice();
     });
   </script>
 {% endblock %}

@@ -395,56 +395,72 @@ def add_product(request):
     )
 
 
-from django.forms import modelform_factory, inlineformset_factory
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
+from django.shortcuts import render, get_object_or_404, redirect
+from django.forms import modelform_factory
 from django.db import transaction, IntegrityError
-from django.contrib.auth.decorators import login_required
-from .models import Product, ProductMaterial, FlowerMaterial
-from .forms import ProductMaterialForm
-
-from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.db import transaction, IntegrityError
 from django.contrib.auth.decorators import login_required
-from .models import Product, ProductMaterial, FlowerMaterial
-from .forms import ProductForm, ProductMaterialFormSet
+from .models import Product, FlowerMaterial, ProductMaterial
 
 
 @login_required
 def edit_product(request, model):
+    ProductForm = modelform_factory(
+        Product, exclude=["materials", "created_by", "created_at", "updated_at"]
+    )
+
     product = get_object_or_404(Product, model=model)
-    flower_materials = FlowerMaterial.objects.all()
 
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
-        formset = ProductMaterialFormSet(request.POST, instance=product)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             try:
                 with transaction.atomic():
                     product = form.save(commit=False)
+                    product.created_by = request.user
                     product.updated_at = timezone.now()
                     product.save()
-                    formset.save()
-                    return redirect("product_details", model=product.model)
+
+                    # 处理花材信息
+                    ProductMaterial.objects.filter(product=product).delete()
+                    flower_materials = request.POST.get("flower_materials", "").split(
+                        ";"
+                    )
+                    for fm in flower_materials:
+                        if fm:
+                            flower_material_model, quantity, ratio, cost_price = (
+                                fm.split(",")
+                            )
+                            flower_material = FlowerMaterial.objects.get(
+                                model=flower_material_model
+                            )
+                            ProductMaterial.objects.create(
+                                product=product,
+                                flower_material=flower_material,
+                                quantity=quantity,
+                                ratio=ratio,
+                            )
+
+                    return redirect("product_list")  # 重定向到产品列表页面
             except IntegrityError:
                 form.add_error(None, "保存产品时出现错误，请重试。")
-        else:
-            print(form.errors)  # 输出表单错误信息以进行调试
-            print(formset.errors)  # 输出表单集错误信息以进行调试
+            except FlowerMaterial.DoesNotExist:
+                form.add_error(None, "指定的花材不存在，请检查输入。")
     else:
         form = ProductForm(instance=product)
-        formset = ProductMaterialFormSet(instance=product)
+        flower_materials = FlowerMaterial.objects.all()
+
+        # 获取现有的花材信息，用于前端展示
+        existing_materials = ProductMaterial.objects.filter(product=product)
 
     return render(
         request,
         "edit_product.html",
         {
             "form": form,
-            "formset": formset,
-            "product": product,
-            "products": Product.objects.all(),
             "flower_materials": flower_materials,
+            "existing_materials": existing_materials,
+            "current_user": request.user,
         },
     )
 
@@ -457,9 +473,6 @@ def delete_product(request, model):
     return render(request, "delete_product.html", {"product": product})
 
 
-########################
-
-#################
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Product

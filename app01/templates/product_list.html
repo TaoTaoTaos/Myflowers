@@ -37,14 +37,7 @@
       <div class="col-lg-12">
         <a href="{% url 'add_product' %}" class="btn btn-primary btn-lg mb-2">添加产品</a>
         <button id="export-button" class="btn btn-secondary btn-lg mb-2">导出为Excel</button>
-        <div class="mb-2">
-          <label>选择要显示的列：</label>
-          <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
-          <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
-          {% for i, label in column_labels %}
-          <label><input type="checkbox" class="column-toggle" data-column="{{ i }}" checked> {{ label }}</label>
-          {% endfor %}
-        </div>
+       
 
         <div class="table-responsive">
           <table class="table table-hover table-fixed" id="products-table">
@@ -67,9 +60,9 @@
                 <th>劳动成本</th>
                 <th>损耗率</th>
                 <th>备注</th>
-                <th>创建人</th>
+                <th>最后修改人</th>
                 <th>创建时间</th>
-                <th>修改时间</th>
+                <th>最后修改时间</th>
               </tr>
             </thead>
             <tbody>

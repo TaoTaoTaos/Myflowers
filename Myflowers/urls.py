@@ -41,6 +41,7 @@ urlpatterns = [
     path("product_list/", product_list, name="product_list"),
     path("product_details/<str:model>/", views.product_details, name="product_details"),
     path("products/edit/<str:model>/", views.edit_product, name="edit_product"),
+    path("product_details/<str:model>/edit/", views.edit_product, name="edit_product"),
     path("products/delete/<str:model>/", views.delete_product, name="delete_product"),
     ############产品END############
     ####################花材######################
