@@ -518,7 +518,15 @@ def customer_list(request):
         customers = Customer.objects.all()
     else:
         customers = Customer.objects.filter(created_by=request.user)
-    return render(request, "customer_list.html", {"customers": customers})
+    return render(
+        request,
+        "customer_list.html",
+        {"customers": customers, "current_user": request.user},
+    )
+
+
+from .models import Customer
+from .forms import CustomerForm
 
 
 @login_required
@@ -532,7 +540,9 @@ def add_customer(request):
             return redirect("customer_list")
     else:
         form = CustomerForm()
-    return render(request, "add_customer.html", {"form": form})
+    return render(
+        request, "add_customer.html", {"form": form, "current_user": request.user}
+    )
 
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -592,5 +602,6 @@ def follow_up_list(request, customer_id):
             "follow_ups": follow_ups,
             "form": form,
             "attachment_form": attachment_form,
+            "current_user": request.user,
         },
     )
