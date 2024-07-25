@@ -1,15 +1,18 @@
 import pandas as pd
 from decimal import Decimal, InvalidOperation
 from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from app01.models import (
     Category,
     Color,
     Process,
     Supplier,
-    CreatedBy,
     FlowerMaterial,
     Grade,
 )
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -31,8 +34,13 @@ class Command(BaseCommand):
             color, _ = Color.objects.get_or_create(name=row["color"])
             process, _ = Process.objects.get_or_create(name=row["process"])
             supplier, _ = Supplier.objects.get_or_create(name=row["supplier"])
-            created_by, _ = CreatedBy.objects.get_or_create(name=row["created_by"])
             grade, _ = Grade.objects.get_or_create(name=row["grade"])
+
+            # 获取created_by字段的用户实例
+            try:
+                created_by = User.objects.get(username=row["created_by"])
+            except User.DoesNotExist:
+                created_by = None
 
             # 准备FlowerMaterial实例的字段
             flower_material_data = {

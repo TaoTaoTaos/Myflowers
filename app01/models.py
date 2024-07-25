@@ -351,10 +351,11 @@ class QuoteItem(models.Model):
 
 
 ##################################报价单end#############################
-
-#################################客户############################
+###################################客户#######################################
 from django.db import models
 from django.contrib.auth import get_user_model
+import re
+import os
 
 User = get_user_model()
 
@@ -363,6 +364,12 @@ class Customer(models.Model):
     CUSTOMER_STATUS_CHOICES = [
         ("已成交", "已成交"),
         ("跟进中", "跟进中"),
+    ]
+    CUSTOMER_LEVEL_CHOICES = [
+        ("A", "A"),
+        ("B", "B"),
+        ("C", "C"),
+        ("D", "D"),
     ]
 
     customer_id = models.CharField(max_length=100, unique=True, editable=False)
@@ -379,6 +386,10 @@ class Customer(models.Model):
     status = models.CharField(
         max_length=10, choices=CUSTOMER_STATUS_CHOICES, default="跟进中"
     )
+    level = models.CharField(max_length=1, choices=CUSTOMER_LEVEL_CHOICES, default="A")
+    social_account = models.CharField(max_length=255, blank=True, null=True)
+    website_link = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to="customer_images/", blank=True, null=True)
     created_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="customers"
     )
@@ -407,10 +418,6 @@ class FollowUpRecord(models.Model):
     details = models.TextField()
 
 
-import re
-import os
-
-
 def user_directory_path(instance, filename):
     # Replace any non-alphanumeric character with an underscore
     safe_customer_name = re.sub(
@@ -428,3 +435,6 @@ class FollowUpAttachment(models.Model):
         FollowUpRecord, related_name="attachments", on_delete=models.CASCADE
     )
     file = models.FileField(upload_to=user_directory_path)
+
+
+###################################客户#######################################

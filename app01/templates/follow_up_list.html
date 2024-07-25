@@ -5,50 +5,81 @@
 {% endblock %}
 
 {% block extra_css %}
-  <style>
-    .timeline {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      position: relative;
-    }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 20px;
-      width: 4px;
-      background: #e9ecef;
-    }
-    .timeline-item {
-      display: flex;
-      position: relative;
-      padding: 1rem 0;
-      width: 100%;
-    }
-    .timeline-content {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 0.25rem;
-      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
-      width: calc(100% - 30px);
-      margin-left: 30px;
-    }
-    .timeline-content::before {
-      content: "";
-      position: absolute;
-      top: 1rem;
-      left: -0.5rem;
-      border-width: 0.5rem 0.5rem 0.5rem 0;
-      border-color: transparent #fff transparent transparent;
-      border-style: solid;
-    }
-    .preview-image {
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+  .timeline:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 4px;
+    background: #e9ecef;
+  }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding: 1rem 0;
+    width: 100%;
+  }
+  .timeline-item-left {
+    justify-content: flex-end;
+  }
+  .timeline-item-right {
+    justify-content: flex-start;
+  }
+  .timeline-content {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    width: 45%;
+    position: relative;
+  }
+  .timeline-item-left .timeline-content {
+    margin-right: 1rem;
+  }
+  .timeline-item-right .timeline-content {
+    margin-left: 1rem;
+  }
+  .timeline-content:before {
+    content: "";
+    position: absolute;
+    top: 1rem;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  .timeline-item-left .timeline-content:before {
+    right: -0.5rem;
+    border-width: 0.5rem 0 0.5rem 0.5rem;
+    border-color: transparent transparent transparent #fff;
+  }
+  .timeline-item-right .timeline-content:before {
+    left: -0.5rem;
+    border-width: 0.5rem 0.5rem 0.5rem 0;
+    border-color: transparent #fff transparent transparent;
+  }
+  .preview-image {
+    max-width: 100%;
+    height: auto;
+  }
+  .card-body-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body-header h5 {
+    margin: 0;
+  }
+  .card-body-header small {
+    color: #6c757d;
+  }
 {% endblock %}
 
 {% block content %}
@@ -108,10 +139,14 @@
             <h2 class="card-title">客户跟进情况 - {{ customer.name }}</h2>
             <ul class="timeline">
               {% for follow_up in follow_ups %}
-                <li class="timeline-item">
+                <li class="timeline-item {% cycle 'timeline-item-left' 'timeline-item-right' %}">
                   <div class="timeline-content card">
                     <div class="card-body">
-                      <h5 class="card-title">跟进次数：{{ follow_up.follow_up_count }}</h5>
+                      <div class="card-body-header">
+                        <h5 class="card-title">跟进次数：{{ follow_up.follow_up_count }}</h5>
+                        <small>记录人：{{ follow_up.created_by.username }} | 跟进时间：{{ follow_up.follow_up_time|date:"Y-m-d H:i" }}</small>
+                      </div>
+                      <hr>
                       <p class="card-text">{{ follow_up.details }}</p>
                       {% if follow_up.attachments.exists %}
                         <div>
@@ -129,8 +164,6 @@
                           </ul>
                         </div>
                       {% endif %}
-                      <p class="card-text"><small class="text-muted">记录人：{{ follow_up.created_by.username }}</small></p>
-                      <p class="card-text"><small class="text-muted">跟进时间：{{ follow_up.follow_up_time|date:"Y-m-d H:i" }}</small></p>
                     </div>
                   </div>
                 </li>

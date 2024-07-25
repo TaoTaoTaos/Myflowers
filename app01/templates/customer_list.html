@@ -47,7 +47,6 @@
           <label><input type="checkbox" class="column-toggle" data-column="9" checked> 需求产品</label>
           <label><input type="checkbox" class="column-toggle" data-column="10" checked> 来源</label>
           <label><input type="checkbox" class="column-toggle" data-column="11" checked> 状态</label>
-          <label><input type="checkbox" class="column-toggle" data-column="12" checked> 业务员</label>
           <label><input type="checkbox" class="column-toggle" data-column="13" checked> 修改时间</label>
         </div>
         <div class="table-responsive">
@@ -68,8 +67,11 @@
                 <th style="text-align: center; vertical-align: middle;">需求产品</th>
                 <th style="text-align: center; vertical-align: middle;">来源</th>
                 <th style="text-align: center; vertical-align: middle;">状态</th>
-                <th style="text-align: center; vertical-align: middle;">业务员</th>
+                <th style="text-align: center; vertical-align: middle;">等级</th>
+                <th style="text-align: center; vertical-align: middle;">图片</th>
                 <th style="text-align: center; vertical-align: middle;">修改时间</th>
+                <th style="text-align: center; vertical-align: middle;">业务员</th>
+
                 <th style="text-align: center; vertical-align: middle;">操作</th>
               </tr>
             </thead>
@@ -90,8 +92,17 @@
                   <td style="text-align: center; vertical-align: middle;">{{ customer.product_demand }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ customer.source }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ customer.get_status_display }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ customer.created_by.username }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.level }}</td>
+                  <td class="fixed-image-cell">
+                    {% if customer.image %}
+                      <img src="{{ customer.image.url }}" alt="{{ customer.name }}">
+                    {% else %}
+                      无图片
+                    {% endif %}
+                  </td>
                   <td style="text-align: center; vertical-align: middle;">{{ customer.updated_at }}</td>
+                    <td style="text-align: center; vertical-align: middle;">{{ customer.created_by.username }}</td>
+
                   <td style="text-align: center; vertical-align: middle;">
                     <a href="{% url 'follow_up_list' customer.customer_id %}" class="btn btn-secondary btn-sm">跟进</a>
                   </td>
@@ -246,7 +257,7 @@
       // Ensure certain columns are always visible
       document.querySelectorAll('.column-toggle').forEach(checkbox => {
         const column = parseInt(checkbox.dataset.column, 10);
-        if (column === 1) { // 你可以根据需要调整哪些列始终显示
+        if ([12, 13].includes(column)) { // 12 is for level, 13 is for image
           checkbox.disabled = true;
         }
       });

@@ -34,9 +34,30 @@ def superuser_page(request):
     return render(request, "superuser.html", {"current_user": request.user})
 
 
+from django.shortcuts import render
+from .models import Product, FlowerMaterial
+
+
 @login_required(login_url="/login/")
 def home_view(request):
-    return render(request, "home.html", {"current_user": request.user})
+    latest_products = Product.objects.exclude(updated_at__isnull=True).order_by(
+        "-updated_at"
+    )[
+        :5
+    ]  # 获取最后编辑时间最近的5个产品
+    latest_flowers = FlowerMaterial.objects.exclude(updated_at__isnull=True).order_by(
+        "-updated_at"
+    )[
+        :5
+    ]  # 获取最后编辑时间最近的5个花材
+    return render(
+        request,
+        "home.html",
+        {
+            "latest_products": latest_products,
+            "latest_flowers": latest_flowers,
+        },
+    )
 
 
 from django.shortcuts import render, redirect
@@ -74,6 +95,9 @@ def profile_view(request):
         "current_user": request.user,
     }
     return render(request, "profile.html", context)
+
+
+#############################用户############################
 
 
 def base_view(request):
@@ -584,7 +608,7 @@ from .forms import CustomerForm
 @login_required
 def add_customer(request):
     if request.method == "POST":
-        form = CustomerForm(request.POST)
+        form = CustomerForm(request.POST, request.FILES)
         if form.is_valid():
             customer = form.save(commit=False)
             customer.created_by = request.user

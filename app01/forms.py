@@ -223,6 +223,10 @@ from django import forms
 from .models import Customer
 
 
+from django import forms
+from .models import Customer
+
+
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
@@ -238,6 +242,10 @@ class CustomerForm(forms.ModelForm):
             "product_demand",
             "source",
             "status",
+            "level",
+            "social_account",
+            "website_link",
+            "image",
         ]
 
 
