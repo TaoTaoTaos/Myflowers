@@ -4,7 +4,10 @@ from django.contrib.auth.models import AbstractUser
 from decimal import Decimal
 from django.conf import settings
 
+##############################花材相关模型#####################################
 
+
+# 等级模型
 class Grade(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -13,6 +16,7 @@ class Grade(models.Model):
         return self.name
 
 
+# 分类模型
 class Category(models.Model):
     name = models.CharField(max_length=100)
     id = models.AutoField(primary_key=True)
@@ -21,6 +25,7 @@ class Category(models.Model):
         return self.name
 
 
+# 颜色模型
 class Color(models.Model):
     name = models.CharField(max_length=100)
     id = models.AutoField(primary_key=True)
@@ -29,6 +34,7 @@ class Color(models.Model):
         return self.name
 
 
+# 处理方式模型
 class Process(models.Model):
     name = models.CharField(max_length=100)
     id = models.AutoField(primary_key=True)
@@ -37,6 +43,7 @@ class Process(models.Model):
         return self.name
 
 
+# 供应商模型
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
     id = models.AutoField(primary_key=True)
@@ -49,6 +56,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# 评论模型
 class Comment(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
@@ -61,6 +69,7 @@ class Comment(models.Model):
 from datetime import datetime
 
 
+# 花材模型
 class FlowerMaterial(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Material0000", primary_key=True
@@ -161,12 +170,16 @@ class FlowerMaterial(models.Model):
         )
 
 
+# 自定义用户模型
 class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
 
 ##############################产品#####################################
+
+
+# 产品模型
 class Product(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Product0000", primary_key=True
@@ -268,6 +281,7 @@ class Product(models.Model):
         return self.chinese_name
 
 
+# 产品-花材中间模型
 class ProductMaterial(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     flower_material = models.ForeignKey(FlowerMaterial, on_delete=models.CASCADE)
@@ -279,11 +293,13 @@ class ProductMaterial(models.Model):
 
 
 #########################################报价单###############################################
+
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
 
 
+# 报价单模型
 class Quote(models.Model):
     id = models.AutoField(primary_key=True)  # 自增的报价单单号
     shipper = models.CharField(max_length=255, default="Summer Flora.Co.,Ltd.")
@@ -337,6 +353,7 @@ from django.db import models
 from decimal import Decimal
 
 
+# 报价单项模型
 class QuoteItem(models.Model):
     quote = models.ForeignKey(Quote, related_name="items", on_delete=models.CASCADE)
     model = models.CharField(max_length=100)
@@ -364,7 +381,9 @@ class QuoteItem(models.Model):
 
 
 ##################################报价单end#############################
+
 ###################################客户#######################################
+
 from django.db import models
 from django.contrib.auth import get_user_model
 import re
@@ -373,6 +392,7 @@ import os
 User = get_user_model()
 
 
+# 客户模型
 class Customer(models.Model):
     CUSTOMER_STATUS_CHOICES = [
         ("已成交", "已成交"),
@@ -421,6 +441,7 @@ class Customer(models.Model):
         super().save(*args, **kwargs)
 
 
+# 客户跟进记录模型
 class FollowUpRecord(models.Model):
     customer = models.ForeignKey(
         Customer, related_name="follow_ups", on_delete=models.CASCADE
@@ -431,6 +452,7 @@ class FollowUpRecord(models.Model):
     details = models.TextField()
 
 
+# 文件上传路径函数
 def user_directory_path(instance, filename):
     # Replace any non-alphanumeric character with an underscore
     safe_customer_name = re.sub(
@@ -443,6 +465,7 @@ def user_directory_path(instance, filename):
     )
 
 
+# 跟进附件模型
 class FollowUpAttachment(models.Model):
     follow_up_record = models.ForeignKey(
         FollowUpRecord, related_name="attachments", on_delete=models.CASCADE
@@ -450,4 +473,4 @@ class FollowUpAttachment(models.Model):
     file = models.FileField(upload_to=user_directory_path)
 
 
-###################################客户#######################################
+###################################客户end#######################################

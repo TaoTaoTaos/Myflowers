@@ -64,43 +64,6 @@ def superuser_page(request):
 ################################### Home View ###################################
 
 
-@login_required(login_url="/login/")
-def home_view(request):
-    """
-    视图：显示主页
-    功能：展示最新的产品、花材和评论，并进行评论分页
-    """
-    latest_products = Product.objects.exclude(updated_at__isnull=True).order_by(
-        "-updated_at"
-    )[:5]
-    latest_flowers = FlowerMaterial.objects.exclude(updated_at__isnull=True).order_by(
-        "-updated_at"
-    )[:5]
-
-    # 分页评论
-    comments_list = Comment.objects.all().order_by("-created_at")
-    paginator = Paginator(comments_list, 5)  # 每页显示5条评论
-
-    page_number = request.GET.get("page")
-    try:
-        comments = paginator.page(page_number)
-    except PageNotAnInteger:
-        comments = paginator.page(1)
-    except EmptyPage:
-        comments = paginator.page(paginator.num_pages)
-
-    return render(
-        request,
-        "home.html",
-        {
-            "latest_products": latest_products,
-            "latest_flowers": latest_flowers,
-            "comments": comments,
-            "current_user": request.user,
-        },
-    )
-
-
 from django.shortcuts import render
 from django.http import JsonResponse
 
@@ -123,6 +86,8 @@ def home_view(request):
         "latest_products": latest_products,
         "latest_flowers": latest_flowers,
         "comments": comments,
+        "current_user": request.user,
+        "image_range": range(1, 11),  # 添加这一行
     }
     return render(request, "home.html", context)
 
@@ -132,10 +97,6 @@ def home_view(request):
 
 @login_required
 def add_comment_view(request):
-    """
-    视图：添加评论
-    功能：用户可以通过此视图添加评论
-    """
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -146,6 +107,24 @@ def add_comment_view(request):
     else:
         form = CommentForm()
     return render(request, "add_comment.html", {"form": form})
+
+
+@login_required
+def delete_comment_view(request, comment_id):
+    """
+    视图：删除评论
+    功能：用户可以通过此视图删除评论
+    """
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.method == "POST":
+        comment.delete()
+        messages.success(request, "评论已成功删除。")
+        return redirect("home")  # 替换为重定向URL，例如返回评论列表页面
+    return render(
+        request,
+        "delete_comment_confirm.html",
+        {"comment": comment, "current_user": request.user},
+    )
 
 
 ################################### Profile View ###################################
