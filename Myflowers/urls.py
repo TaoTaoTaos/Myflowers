@@ -1,4 +1,5 @@
 # Myflowers/urls.py
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -31,65 +32,65 @@ from app01.views import (
     delete_comment_view,
 )
 
-
 urlpatterns = [
+    # Admin URL
     path("admin/", admin.site.urls),
+    # Base and Home URLs
     path("base/", base_view, name="base"),
-    path("superuser_page/", superuser_page, name="superuser_page"),
+    path("home/", home_view, name="home"),
+    # Authentication URLs
+    path("", login_view, name="login"),  # 默认打开网页指向登录页面
+    path("login/", login_view, name="login"),
+    path("logout/", logout_view, name="logout"),
+    path("register/", register_view, name="register"),
+    # User Profile URLs
     path("profile/", profile_view, name="profile"),
+    path("set_background/", set_background, name="set_background"),
+    # Superuser Page URL
+    path("superuser_page/", superuser_page, name="superuser_page"),
+    # Comment URLs
     path("add_comment/", views.add_comment_view, name="add_comment"),
     path(
         "delete_comment/<int:comment_id>/", delete_comment_view, name="delete_comment"
     ),
-    #############################################
-    path("", login_view, name="login"),  # 打开网页指向home
-    path("set_background/", set_background, name="set_background"),
-    path("login/", login_view, name="login"),
-    path("logout/", logout_view, name="logout"),
-    path("home/", home_view, name="home"),
+    # Control Panel URL
     path("control-panel/", control_panel_view, name="control-panel"),
-    path("register/", register_view, name="register"),
+    # Product URLs
     path("add_product/", add_product, name="add_product"),
-    path("success/", success_page, name="success_page"),
-    ###############产品############
     path("product_list/", product_list, name="product_list"),
-    path("product_details/<str:model>/", views.product_details, name="product_details"),
+    path("product_details/<str:model>/", product_details, name="product_details"),
     path("products/edit/<str:model>/", views.edit_product, name="edit_product"),
     path("product_details/<str:model>/edit/", views.edit_product, name="edit_product"),
     path("products/delete/<str:model>/", views.delete_product, name="delete_product"),
-    ############产品END############
-    ####################花材######################
+    # Flower Material URLs
     path(
         "flower_material/<str:model>/",
-        views.flower_material_detail,
+        flower_material_detail,
         name="flower_material_detail",
     ),  # 花材详情
     path(
         "add-flower-material/", views.add_flower_material, name="add_flower_material"
     ),  # 花材增
     path(
-        "edit/<str:model>/", views.edit_flower_material, name="edit_flower_material"
+        "edit/<str:model>/", edit_flower_material, name="edit_flower_material"
     ),  # 花材改
     path(
-        "delete/<str:model>/",
-        views.delete_flower_material,
-        name="delete_flower_material",
+        "delete/<str:model>/", delete_flower_material, name="delete_flower_material"
     ),  # 花材删
     path(
         "flower-materials/", flower_materials_list, name="flower_material_list"
     ),  # 花材查
-    ####################花材END######################
-    ###################报价单#########################
-    path("add_quote_item", add_quote_item, name="add_quote_item"),
+    # Quote URLs
+    path("add_quote_item/", add_quote_item, name="add_quote_item"),
     path("save_quote/", save_quote, name="save_quote"),
-    ###################报价单#########################
-    #############客户信息###########
+    # Customer URLs
     path("customer_list/", customer_list, name="customer_list"),
     path("add_customer/", add_customer, name="add_customer"),
     path(
         "customers/<str:customer_id>/follow-ups/", follow_up_list, name="follow_up_list"
     ),
-    #############客户信息end###########
+    # Success Page URL
+    path("success/", success_page, name="success_page"),
 ]
 
 if settings.DEBUG:

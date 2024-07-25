@@ -79,8 +79,8 @@
                 </div>
                 <div class="row">
                   <div class="form-group col-md-6">
-                    <label for="Package">包装</label>
-                    {{ form.Package|add_class:"form-control" }}
+                    <label for="package">包装</label>
+                    {{ form.package|add_class:"form-control" }}
                   </div>
                   <div class="form-group col-md-6">
                     <label for="sale_spec_quantity">销售规格数量</label>
@@ -143,6 +143,16 @@
                   <div class="form-group col-md-12">
                     <label for="image">产品图片</label>
                     {{ form.image|add_class:"form-control-file" }}
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="attachment">附件</label>
+                    {{ form.attachment|add_class:"form-control-file" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-12">
+                    <label for="product_type">产品类型</label>
+                    {{ form.product_type|add_class:"form-control" }}
                   </div>
                 </div>
               </div>

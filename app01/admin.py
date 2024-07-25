@@ -5,102 +5,126 @@ from .models import (
     Color,
     Process,
     Supplier,
+    Comment,
     FlowerMaterial,
     CustomUser,
+    ProductType,
     Product,
     ProductMaterial,
+    Quote,
+    QuoteItem,
+    Customer,
+    FollowUpRecord,
+    FollowUpAttachment,
 )
 
-# Register your models here.
 
-
+# 注册花材相关模型
 @admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
+    list_display = ("id", "name")
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
+    list_display = ("id", "name")
 
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
+    list_display = ("id", "name")
 
 
 @admin.register(Process)
 class ProcessAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
+    list_display = ("id", "name")
 
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ("name",)
+    list_display = ("id", "name")
 
 
 @admin.register(FlowerMaterial)
 class FlowerMaterialAdmin(admin.ModelAdmin):
     list_display = (
         "model",
-        "category",
         "chinese_name",
         "english_name",
-        "scientific_name",
+        "category",
         "color",
-        "size",
-        "weight",
-        "sale_spec_quantity",
-        "sale_spec_unit",
-        "process",
-        "outer_box_length",
-        "outer_box_width",
-        "outer_box_height",
-        "packing_quantity",
-        "grade",
-        "supplier",
-        "price_one",
-        "price_two",
-        "created_by",
+        "cost_price",
     )
-    search_fields = ("model", "chinese_name", "english_name", "scientific_name")
-    list_filter = ("category", "color", "process", "grade", "supplier")
+    search_fields = ("model", "chinese_name", "english_name")
 
 
+# 注册用户模型
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ("username", "email", "first_name", "last_name", "is_staff")
-    search_fields = ("username", "email", "first_name", "last_name")
-    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+    list_display = ("username", "email", "is_staff", "is_active")
+    search_fields = ("username", "email")
+
+
+# 注册产品类型模型
+@admin.register(ProductType)
+class ProductTypeAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+
+
+# 注册产品模型
+class ProductMaterialInline(admin.TabularInline):
+    model = ProductMaterial
+    extra = 1
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = (
-        "model",
-        "chinese_name",
-        "english_name",
-        "labor_cost",
-        "loss_rate",
-        "created_by",
-        "cost",
-    )
+    list_display = ("model", "chinese_name", "english_name", "product_type", "price")
     search_fields = ("model", "chinese_name", "english_name")
-    list_filter = ("created_by",)
+    inlines = [ProductMaterialInline]
 
 
-@admin.register(ProductMaterial)
-class ProductMaterialAdmin(admin.ModelAdmin):
-    list_display = (
-        "product",
-        "flower_material",
-        "quantity",
-        "ratio",
-    )
-    search_fields = ("product__chinese_name", "flower_material__chinese_name")
-    list_filter = []  # 你可以根据需要添加其他过滤条件
+# 注册报价单模型
+class QuoteItemInline(admin.TabularInline):
+    model = QuoteItem
+    extra = 1
+
+
+@admin.register(Quote)
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ("id", "buyer", "date", "grand_total")
+    search_fields = ("buyer",)
+    inlines = [QuoteItemInline]
+
+
+@admin.register(QuoteItem)
+class QuoteItemAdmin(admin.ModelAdmin):
+    list_display = ("quote", "model", "qty", "unit_price", "amount")
+    search_fields = ("quote__buyer", "model")
+
+
+# 注册客户模型
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ("customer_id", "name", "company_name", "email", "status")
+    search_fields = ("name", "company_name", "email")
+
+
+# 注册客户跟进记录模型
+class FollowUpAttachmentInline(admin.TabularInline):
+    model = FollowUpAttachment
+    extra = 1
+
+
+@admin.register(FollowUpRecord)
+class FollowUpRecordAdmin(admin.ModelAdmin):
+    list_display = ("customer", "follow_up_count", "follow_up_time", "created_by")
+    search_fields = ("customer__name",)
+    inlines = [FollowUpAttachmentInline]
+
+
+# 注册评论模型
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("created_by", "text", "created_at")
+    search_fields = ("created_by__username", "text")

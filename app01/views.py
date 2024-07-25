@@ -45,6 +45,10 @@ from .forms import (
 ################################## Superuser Views ##################################
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_test
+
+
 def superuser_required(view_func):
     """
     装饰器：确保视图只能被超级用户访问
@@ -58,7 +62,7 @@ def superuser_page(request):
     """
     视图：显示超级用户页面
     """
-    return render(request, "superuser.html", {"current_user": request.user})
+    return render(request, "superuser_page.html", {"current_user": request.user})
 
 
 ################################### Home View ###################################
