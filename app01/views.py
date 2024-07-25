@@ -76,18 +76,27 @@ def set_background(request):
     return JsonResponse({"status": "error"})
 
 
+from django.core.paginator import Paginator
+
+
 def home_view(request):
-    background_index = request.session.get("background_index", 0)  # 默认显示第一个背景
+    background_index = request.session.get("background_index", 0)
     latest_products = Product.objects.all().order_by("-updated_at")[:5]
     latest_flowers = FlowerMaterial.objects.all().order_by("-updated_at")[:5]
-    comments = Comment.objects.all().order_by("-created_at")[:5]
+
+    # 获取评论分页
+    comments_list = Comment.objects.all().order_by("-created_at")
+    paginator = Paginator(comments_list, 5)  # 每页5条评论
+    page_number = request.GET.get("page")
+    comments = paginator.get_page(page_number)
+
     context = {
         "background_index": background_index,
         "latest_products": latest_products,
         "latest_flowers": latest_flowers,
         "comments": comments,
         "current_user": request.user,
-        "image_range": range(1, 11),  # 添加这一行
+        "image_range": range(1, 11),
     }
     return render(request, "home.html", context)
 
@@ -111,20 +120,11 @@ def add_comment_view(request):
 
 @login_required
 def delete_comment_view(request, comment_id):
-    """
-    视图：删除评论
-    功能：用户可以通过此视图删除评论
-    """
     comment = get_object_or_404(Comment, id=comment_id)
-    if request.method == "POST":
+    if request.method == "DELETE":
         comment.delete()
-        messages.success(request, "评论已成功删除。")
-        return redirect("home")  # 替换为重定向URL，例如返回评论列表页面
-    return render(
-        request,
-        "delete_comment_confirm.html",
-        {"comment": comment, "current_user": request.user},
-    )
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "failure"}, status=400)
 
 
 ################################### Profile View ###################################

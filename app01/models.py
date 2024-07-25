@@ -177,6 +177,29 @@ class CustomUser(AbstractUser):
 
 
 ##############################产品#####################################
+from django.db import models
+from django.utils import timezone
+from django.conf import settings
+from decimal import Decimal
+import os
+import re
+
+
+# 产品类型模型
+class ProductType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+# 自定义文件上传路径函数
+def product_directory_path(instance, filename):
+    # Replace any non-alphanumeric character with an underscore
+    safe_model_name = re.sub(r"[^\w\s-]", "", instance.model)
+    safe_model_name = re.sub(r"[-\s]+", "-", safe_model_name).strip("-_")
+    # file will be uploaded to MEDIA_ROOT/products/<model_name>/<filename>
+    return os.path.join("products", safe_model_name, filename)
 
 
 # 产品模型
@@ -184,16 +207,22 @@ class Product(models.Model):
     model = models.CharField(
         max_length=100, blank=False, default="Product0000", primary_key=True
     )
-    image = models.ImageField(
-        upload_to="products/", null=True, blank=True, default=None
+    product_type = models.ForeignKey(
+        ProductType, on_delete=models.SET_NULL, null=True, blank=True
     )
+    image = models.ImageField(
+        upload_to=product_directory_path, null=True, blank=True, default=None
+    )
+    attachment = models.FileField(
+        upload_to=product_directory_path, null=True, blank=True
+    )  # 支持上传视频
     materials = models.ManyToManyField("FlowerMaterial", through="ProductMaterial")
     chinese_name = models.CharField(max_length=200)
     english_name = models.CharField(max_length=200)
     size = models.CharField(max_length=200, blank=True, default="0")
     weight = models.CharField(max_length=200, blank=True, default="0")
     color = models.CharField(max_length=200, blank=True, default="默认颜色")
-    Package = models.CharField(max_length=200, blank=True, default="默认包装")
+    package = models.CharField(max_length=200, blank=True, default="默认包装")
     sale_spec_quantity = models.CharField(
         max_length=200, help_text="销售规格的数字", blank=True, default=""
     )
