@@ -35,6 +35,7 @@ urlpatterns = [
     path("base/", base_view, name="base"),
     path("superuser_page/", superuser_page, name="superuser_page"),
     path("profile/", profile_view, name="profile"),
+    path("add_comment/", views.add_comment_view, name="add_comment"),
     #############################################
     path("", login_view, name="login"),  # 打开网页指向home
     path("login/", login_view, name="login"),

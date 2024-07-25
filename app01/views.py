@@ -35,29 +35,62 @@ def superuser_page(request):
 
 
 from django.shortcuts import render
-from .models import Product, FlowerMaterial
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth.decorators import login_required
+from .models import Comment, Product, FlowerMaterial
 
 
 @login_required(login_url="/login/")
 def home_view(request):
     latest_products = Product.objects.exclude(updated_at__isnull=True).order_by(
         "-updated_at"
-    )[
-        :5
-    ]  # 获取最后编辑时间最近的5个产品
+    )[:5]
     latest_flowers = FlowerMaterial.objects.exclude(updated_at__isnull=True).order_by(
         "-updated_at"
-    )[
-        :5
-    ]  # 获取最后编辑时间最近的5个花材
+    )[:5]
+
+    # 分页评论
+    comments_list = Comment.objects.all().order_by("-created_at")
+    paginator = Paginator(comments_list, 5)  # 每页显示5条评论
+
+    page_number = request.GET.get("page")
+    try:
+        comments = paginator.page(page_number)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
     return render(
         request,
         "home.html",
         {
             "latest_products": latest_products,
             "latest_flowers": latest_flowers,
+            "comments": comments,
+            "current_user": request.user,
         },
     )
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Comment
+from .forms import CommentForm
+
+
+@login_required
+def add_comment_view(request):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.created_by = request.user
+            comment.save()
+            return redirect("home")
+    else:
+        form = CommentForm()
+    return render(request, "add_comment.html", {"form": form})
 
 
 from django.shortcuts import render, redirect

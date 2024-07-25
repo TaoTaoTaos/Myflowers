@@ -22,6 +22,16 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
 
+from django import forms
+from .models import Comment
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["text"]
+
+
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
