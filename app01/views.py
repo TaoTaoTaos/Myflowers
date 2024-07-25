@@ -90,7 +90,7 @@ def home_view(request):
 
     # 获取评论分页
     comments_list = Comment.objects.all().order_by("-created_at")
-    paginator = Paginator(comments_list, 5)  # 每页5条评论
+    paginator = Paginator(comments_list, 3)  # 每页5条评论
     page_number = request.GET.get("page")
     comments = paginator.get_page(page_number)
 
@@ -646,11 +646,13 @@ def product_details(request, model):
     """
     product = get_object_or_404(Product, model=model)
     materials = product.productmaterial_set.all()
+    products = Product.objects.all()  # 获取所有产品
 
     context = {
         "product": product,
         "materials": materials,
         "current_user": request.user,
+        "products": products,  # 将产品列表添加到上下文中
     }
     return render(request, "product_details.html", context)
 

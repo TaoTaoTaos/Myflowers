@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-  <a href="/product_list" class="btn btn-primary btn-lg" style="margin-left:auto">返回列表</a>
+  <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg" style="margin-left:auto">返回列表</a>
 
   <div class="container mt-5">
     <div class="row">
@@ -15,7 +15,7 @@
           <div class="row g-0">
             <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
               {% if product.image %}
-                <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="{{ product.chinese_name }}" />
+                <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="{{ product.chinese_name }}" style="max-width: 200px; max-height: 200px;" />
               {% else %}
                 <p>无图片</p>
               {% endif %}
@@ -29,85 +29,86 @@
               <div class="card-body">
                 <h5 class="card-title">{{ product.chinese_name }} ({{ product.english_name }})</h5>
                 <div class="row">
-                  <div class="col-6">
-                    <p class="card-text">
-                      <strong>型号:</strong> {{ product.model }}
-                    </p>
-                    <p class="card-text">
-                      <strong>尺寸:</strong> {{ product.size }}
-                    </p>
-                    <p class="card-text">
-                      <strong>重量:</strong> {{ product.weight }}
-                    </p>
-                    <p class="card-text">
-                      <strong>颜色:</strong> {{ product.color }}
-                    </p>
-                    <p class="card-text">
-                      <strong>包装:</strong> {{ product.Package }}
-                    </p>
-                    <p class="card-text">
-                      <strong>销售规格数量:</strong> {{ product.sale_spec_quantity }}
-                    </p>
-                    <p class="card-text">
-                      <strong>销售规格单位:</strong> {{ product.get_sale_spec_unit_display }}
-                    </p>
-                    <p class="card-text">
-                      <strong>内箱尺寸:</strong> {{ product.inner_box_size }}
-                    </p>
-                    <p class="card-text">
-                      <strong>外箱尺寸:</strong> {{ product.outer_box_size }}
-                    </p>
+                  <div class="col-4">
+                    <p class="card-text"><strong>型号:</strong> {{ product.model }}</p>
+                    <p class="card-text"><strong>产品类型:</strong> {{ product.product_type }}</p>
+                    <p class="card-text"><strong>尺寸:</strong> {{ product.size }}</p>
+                    <p class="card-text"><strong>重量:</strong> {{ product.weight }}</p>
+                    <p class="card-text"><strong>颜色:</strong> {{ product.color }}</p>
+                    <p class="card-text"><strong>包装:</strong> {{ product.package }}</p>
+                    <p class="card-text"><strong>销售规格数量:</strong> {{ product.sale_spec_quantity }}</p>
+                    <p class="card-text"><strong>销售规格单位:</strong> {{ product.get_sale_spec_unit_display }}</p>
+                    <p class="card-text"><strong>内箱尺寸:</strong> {{ product.inner_box_size }}</p>
+                    <p class="card-text"><strong>外箱尺寸:</strong> {{ product.outer_box_size }}</p>
                   </div>
-                  <div class="col-6">
+                  <div class="col-4">
+                    <p class="card-text"><strong>人工成本:</strong> {{ product.labor_cost }}</p>
+                    <p class="card-text"><strong>损耗率:</strong> {{ product.loss_rate }}</p>
+                    <p class="card-text"><strong>利润率:</strong> {{ product.profit_margin }}</p>
+                    <p class="card-text"><strong>总成本:</strong> {{ product.cost }}</p>
+                    <p class="card-text"><strong>价格:</strong> {{ product.price }}</p>
+                    <p class="card-text"><strong>备注信息:</strong> {{ product.description }}</p>
+                  </div>
+                  <div class="col-4">
+                    <p class="card-text"><strong>创建者:</strong> {{ product.created_by }}</p>
+                    <p class="card-text"><strong>创建时间:</strong> {{ product.created_at }}</p>
+                    <p class="card-text"><strong>更新时间:</strong> {{ product.updated_at }}</p>
                     <p class="card-text">
-                      <strong>人工成本:</strong> {{ product.labor_cost }}
-                    </p>
-                    <p class="card-text">
-                      <strong>损耗率:</strong> {{ product.loss_rate }}
-                    </p>
-                    <p class="card-text">
-                      <strong>总成本:</strong> {{ product.cost }}
-                    </p>
-                    <p class="card-text">
-                      <strong>备注信息:</strong> {{ product.description }}
-                    </p>
-                    <p class="card-text">
-                      <strong>创建者:</strong> {{ product.created_by }}
-                    </p>
-                    <p class="card-text">
-                      <strong>创建时间:</strong> {{ product.created_at }}
-                    </p>
-                    <p class="card-text">
-                      <strong>更新时间:</strong> {{ product.updated_at }}
+                      <strong>附件:</strong>
+                      {% if product.attachment %}
+                        <a href="{{ product.attachment.url }}">{{ product.attachment.name }}</a>
+                      {% else %}
+                        无附件
+                      {% endif %}
                     </p>
                   </div>
                 </div>
-
-                <h4 class="mt-4">产品组成</h4>
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>花材型号</th>
-                      <th>花材名称</th>
-                      <th>数量</th>
-                      <th>比例</th>
-                      <th>价格类型</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for material in materials %}
-                    <tr>
-                      <td>{{ material.flower_material.model }}</td>
-                      <td>{{ material.flower_material.chinese_name }}</td>
-                      <td>{{ material.quantity }}</td>
-                      <td>{{ material.ratio }}</td>
-                      <td>{{ material.get_price_type_display }}</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="card mt-3">
+          <div class="card-header">
+            <h4>产品组成</h4>
+          </div>
+          <div class="card-body">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th>花材型号</th>
+                  <th>花材名称</th>
+                  <th>英文名称</th>
+                  <th>数量</th>
+                  <th>比例</th>
+                  <th>图片</th>
+                  <th>成本</th>
+                  <th>修改人</th>
+                  <th>修改日期</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for material in materials %}
+                <tr>
+                  <td><a href="{% url 'flower_material_detail' material.flower_material.model %}">{{ material.flower_material.model }}</a></td>
+                  <td>{{ material.flower_material.chinese_name }}</td>
+                  <td>{{ material.flower_material.english_name }}</td>
+                  <td>{{ material.quantity }}</td>
+                  <td>{{ material.ratio }}</td>
+                  <td>
+                    {% if material.flower_material.image %}
+                      <img src="{{ material.flower_material.image.url }}" class="img-fluid" style="max-width: 50px; max-height: 50px;" alt="{{ material.flower_material.chinese_name }}" />
+                    {% else %}
+                      无图片
+                    {% endif %}
+                  </td>
+                  <td>{{ material.flower_material.cost_price }}</td>
+                  <td>{{ material.flower_material.created_by }}</td>
+                  <td>{{ material.flower_material.updated_at }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

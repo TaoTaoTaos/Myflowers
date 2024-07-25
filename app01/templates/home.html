@@ -14,10 +14,6 @@
     font-size: 0.8em;
     text-align: right;
   }
-  .time-display {
-    font-size: 1.2em;
-    margin-top: 10px;
-  }
   .btn-custom {
     padding: 20px;
     font-size: 1.2em;
@@ -87,7 +83,7 @@
 {% endblock %}
 
 {% block content %}
-<main id="main" class="main" style="position: relative; overflow: hidden; min-height: 100vh;margin-top:0px">
+<main id="main" class="main" style="position: relative; overflow: hidden; min-height: 100vh; margin-top: 0px;">
   <div class="corner-buttons">
   </div>
   <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="60000" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;">
@@ -99,7 +95,28 @@
         <img src="/static/assets/web_picture/2.jpg" class="d-block w-100 h-100" alt="幻灯片 2" style="object-fit: cover;">
       </div>
       <div class="carousel-item">
-        <img src="/static/assets/web_picture/3.jpg" class="d-block w-100 h-100" alt="幻灯片 2" style="object-fit: cover;">
+        <img src="/static/assets/web_picture/3.jpg" class="d-block w-100 h-100" alt="幻灯片 3" style="object-fit: cover;">
+      </div>
+       <div class="carousel-item">
+        <img src="/static/assets/web_picture/4.jpg" class="d-block w-100 h-100" alt="幻灯片 4" style="object-fit: cover;">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/assets/web_picture/5.jpg" class="d-block w-100 h-100" alt="幻灯片 5" style="object-fit: cover;">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/assets/web_picture/6.jpg" class="d-block w-100 h-100" alt="幻灯片 6" style="object-fit: cover;">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/assets/web_picture/7.jpg" class="d-block w-100 h-100" alt="幻灯片 7" style="object-fit: cover;">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/assets/web_picture/8.jpg" class="d-block w-100 h-100" alt="幻灯片 8" style="object-fit: cover;">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/assets/web_picture/9.jpg" class="d-block w-100 h-100" alt="幻灯片 9" style="object-fit: cover;">
+      </div>
+      <div class="carousel-item">
+        <img src="/static/assets/web_picture/10.jpg" class="d-block w-100 h-100" alt="幻灯片 10" style="object-fit: cover;">
       </div>
       
       <!-- Add more carousel items here -->
@@ -109,7 +126,7 @@
   <div class="container text-center mt-4" style="position: relative; z-index: 1; background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; width: 95%;">
     <div>
       <h1 class="jump-effect" onclick="nextSlide()">- SummerFlora -</h1>
-      <div id="current-time" class="time-display">2024年7月25日 星期四 13:27:34</div>
+      <div id="current-time" class="time-display" style="font-size: 1.5em; margin-top: 10px;margin-bottom: 10px;">2024年7月25日 星期四 13:27:34</div>
       <div class="btn-group">
         <button type="button" class="btn btn-light" onclick="window.location.href='/product_list/'">产品</button>
         <button type="button" class="btn btn-light" onclick="window.location.href='/flower-materials/'">花材</button>
@@ -195,7 +212,7 @@
             </li>
             <li class="page-item">
                 <a class="page-link" href="?page={{ comments.previous_page_number }}" aria-label="上一页">
-                    <span aria-hidden="true">上一页</span>
+                    <span aria-hidden="true"><</span>
                 </a>
             </li>
         {% endif %}
@@ -213,7 +230,7 @@
         {% if comments.has_next %}
             <li class="page-item">
                 <a class="page-link" href="?page={{ comments.next_page_number }}" aria-label="下一页">
-                    <span aria-hidden="true">下一页</span>
+                    <span aria-hidden="true">></span>
                 </a>
             </li>
             <li class="page-item">
@@ -238,8 +255,6 @@
 
   </div>
 
- 
-  
 </main>
 
 <script>

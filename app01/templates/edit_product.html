@@ -34,6 +34,24 @@
   .card.custom-width {
     width: 100%;
   }
+
+  .custom-file-input {
+    display: none;
+  }
+
+  .custom-file-label {
+    cursor: pointer;
+    display: inline-block;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    padding: 6px 12px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .custom-file-label:hover {
+    background-color: #e9ecef;
+  }
 {% endblock %}
 
 {% block content %}
@@ -63,36 +81,42 @@
                     {{ form.english_name|add_class:"form-control" }}
                   </div>
                   <div class="form-group col-md-6">
-                    <label for="size">尺寸</label>
-                    {{ form.size|add_class:"form-control" }}
+                    <label for="product_type">产品类型</label>
+                    {{ form.product_type|add_class:"form-control" }}
                   </div>
                 </div>
                 <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="size">尺寸</label>
+                    {{ form.size|add_class:"form-control" }}
+                  </div>
                   <div class="form-group col-md-6">
                     <label for="weight">重量</label>
                     {{ form.weight|add_class:"form-control" }}
                   </div>
+                </div>
+                <div class="row">
                   <div class="form-group col-md-6">
                     <label for="color">颜色</label>
                     {{ form.color|add_class:"form-control" }}
                   </div>
+                  <div class="form-group col-md-6">
+                    <label for="package">包装</label>
+                    {{ form.package|add_class:"form-control" }}
+                  </div>
                 </div>
                 <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="Package">包装</label>
-                    {{ form.Package|add_class:"form-control" }}
-                  </div>
                   <div class="form-group col-md-6">
                     <label for="sale_spec_quantity">销售规格数量</label>
                     {{ form.sale_spec_quantity|add_class:"form-control" }}
                   </div>
-                </div>
-                <div class="row">
                   <div class="form-group col-md-6">
                     <label for="sale_spec_unit">销售规格单位</label>
                     {{ form.sale_spec_unit|add_class:"form-control" }}
                   </div>
-                  <div class="form-group col-md-6">
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-12">
                     <label for="description">描述</label>
                     {{ form.description|add_class:"form-control" }}
                   </div>
@@ -134,15 +158,33 @@
                     <label for="loss_rate">损耗率</label>
                     {{ form.loss_rate|add_class:"form-control loss-rate-input" }}
                   </div>
+                </div>
+                <div class="row">
                   <div class="form-group col-md-6">
                     <label for="profit_margin">利润率</label>
                     {{ form.profit_margin|add_class:"form-control profit-margin-input" }}
                   </div>
+                  <div class="form-group col-md-6">
+                    <label for="cost">总成本</label>
+                    {{ form.cost|add_class:"form-control" }} 
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="price">价格</label>
+                    {{ form.price|add_class:"form-control" }} 
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="image">产品图片</label>
+                    <input type="file" name="image" class="custom-file-input" id="image">
+                    <label class="custom-file-label" for="image">选择图片</label>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="form-group col-md-12">
-                    <label for="image">产品图片</label>
-                    {{ form.image|add_class:"form-control-file" }}
+                    <label for="attachment">附件</label>
+                    <input type="file" name="attachment" class="custom-file-input" id="attachment">
+                    <label class="custom-file-label" for="attachment">选择附件</label>
                   </div>
                 </div>
               </div>
@@ -212,7 +254,7 @@
                     <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
                     <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
                       {% if material.image %}
-                      <img src="{{ material.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
+                      <img src="{{ material.image.url }}" alt="图片" style="width: 80px; height: 80px;" />
                       {% else %}
                       无图片
                       {% endif %}

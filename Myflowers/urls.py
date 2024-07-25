@@ -61,6 +61,9 @@ urlpatterns = [
     path("product_details/<str:model>/", product_details, name="product_details"),
     path("products/edit/<str:model>/", views.edit_product, name="edit_product"),
     path("product_details/<str:model>/edit/", views.edit_product, name="edit_product"),
+    path("product_details/<str:model>/", views.product_details, name="product_details"),
+    # 添加这一行以定义 product_detail 的 URL 模式
+    path("product_detail/<str:model>/", views.product_details, name="product_detail"),
     path("products/delete/<str:model>/", views.delete_product, name="delete_product"),
     # Flower Material URLs
     path(
