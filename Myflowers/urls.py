@@ -27,6 +27,7 @@ from app01.views import (
     follow_up_list,
     superuser_page,
     profile_view,
+    set_background,
 )
 
 
@@ -38,6 +39,7 @@ urlpatterns = [
     path("add_comment/", views.add_comment_view, name="add_comment"),
     #############################################
     path("", login_view, name="login"),  # 打开网页指向home
+    path("set_background/", set_background, name="set_background"),
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
     path("home/", home_view, name="home"),

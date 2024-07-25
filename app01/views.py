@@ -1,47 +1,75 @@
+################################### Imports ###################################
+
+from decimal import Decimal
+import json
+from django.forms import modelform_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from .models import FlowerMaterial, Product
-from .forms import FlowerMaterialForm
-from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import logout, authenticate, login, update_session_auth_hash
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from django.db import transaction, IntegrityError
+
 from .models import (
+    FlowerMaterial,
+    Product,
     Category,
     Color,
     Process,
     Supplier,
-    FlowerMaterial,
     Grade,
+    Comment,
+    Quote,
+    QuoteItem,
+    ProductMaterial,
+    Customer,
+    FollowUpRecord,
+    FollowUpAttachment,
 )
-from .forms import FlowerMaterialForm
-from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
-from django.shortcuts import render
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import user_passes_test
+from .forms import (
+    FlowerMaterialForm,
+    CommentForm,
+    UserUpdateForm,
+    CustomPasswordChangeForm,
+    RegisterForm,
+    CustomAuthenticationForm,
+    CustomerForm,
+    FollowUpRecordForm,
+    FollowUpAttachmentForm,
+)
 
-
-##########################普通视图#############################
+################################## Superuser Views ##################################
 
 
 def superuser_required(view_func):
+    """
+    装饰器：确保视图只能被超级用户访问
+    """
     decorated_view_func = user_passes_test(lambda u: u.is_superuser)(view_func)
     return decorated_view_func
 
 
 @superuser_required
 def superuser_page(request):
+    """
+    视图：显示超级用户页面
+    """
     return render(request, "superuser.html", {"current_user": request.user})
 
 
-from django.shortcuts import render
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.contrib.auth.decorators import login_required
-from .models import Comment, Product, FlowerMaterial
+################################### Home View ###################################
 
 
 @login_required(login_url="/login/")
 def home_view(request):
+    """
+    视图：显示主页
+    功能：展示最新的产品、花材和评论，并进行评论分页
+    """
     latest_products = Product.objects.exclude(updated_at__isnull=True).order_by(
         "-updated_at"
     )[:5]
@@ -73,14 +101,41 @@ def home_view(request):
     )
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Comment
-from .forms import CommentForm
+from django.shortcuts import render
+from django.http import JsonResponse
+
+
+def set_background(request):
+    if request.method == "POST":
+        background_index = request.POST.get("background_index")
+        request.session["background_index"] = background_index
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "error"})
+
+
+def home_view(request):
+    background_index = request.session.get("background_index", 0)  # 默认显示第一个背景
+    latest_products = Product.objects.all().order_by("-updated_at")[:5]
+    latest_flowers = FlowerMaterial.objects.all().order_by("-updated_at")[:5]
+    comments = Comment.objects.all().order_by("-created_at")[:5]
+    context = {
+        "background_index": background_index,
+        "latest_products": latest_products,
+        "latest_flowers": latest_flowers,
+        "comments": comments,
+    }
+    return render(request, "home.html", context)
+
+
+################################### Comment Views ###################################
 
 
 @login_required
 def add_comment_view(request):
+    """
+    视图：添加评论
+    功能：用户可以通过此视图添加评论
+    """
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -93,15 +148,15 @@ def add_comment_view(request):
     return render(request, "add_comment.html", {"form": form})
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import update_session_auth_hash
-from django.contrib import messages
-from .forms import UserUpdateForm, CustomPasswordChangeForm
+################################### Profile View ###################################
 
 
 @login_required
 def profile_view(request):
+    """
+    视图：用户个人资料页面
+    功能：用户可以更新个人资料和更改密码
+    """
     if request.method == "POST":
         user_form = UserUpdateForm(request.POST, instance=request.user)
         password_form = CustomPasswordChangeForm(request.user, request.POST)
@@ -130,58 +185,71 @@ def profile_view(request):
     return render(request, "profile.html", context)
 
 
-#############################用户############################
+################################## User Views ###################################
 
 
 def base_view(request):
+    """
+    视图：基础页面
+    """
     return render(request, "base.html", {"current_user": request.user})
 
 
 def login_view(request):
+    """
+    视图：登录页面
+    """
     return render(request, "login.html", {"current_user": request.user})
 
 
 def logout_view(request):
+    """
+    视图：登出功能
+    功能：用户登出并重定向到主页
+    """
     logout(request)
     return redirect("home", {"current_user": request.user})
 
 
 def success_page(request):
+    """
+    视图：成功页面
+    """
     return render(request, "success.html")
 
 
 def control_panel_view(request):
+    """
+    视图：控制面板页面
+    """
     return render(request, "control_panel.html", {"current_user": request.user})
 
 
 def QuoteMOD_view(request):
+    """
+    视图：报价管理页面
+    """
     return render(request, "QuoteMOD.html", {"current_user": request.user})
 
 
-def success_page(request):
-    return render(request, "success.html")
-
-
-##########################普通视图END##############################
-
-
-###############################报价单##############################
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
-from .models import Product, Quote, QuoteItem
-import json
-from decimal import Decimal
+################################### Quote Views ###################################
 
 
 def add_quote_item(request):
+    """
+    视图：添加报价项页面
+    功能：展示所有产品供用户选择添加到报价单中
+    """
     products = Product.objects.all()
     return render(request, "add_quote_item.html", {"products": products})
 
 
 @csrf_exempt
 def save_quote(request):
+    """
+    视图：保存报价单
+    功能：从请求中获取报价单数据并保存到数据库
+    """
     if request.method == "POST":
         data = json.loads(request.body)
         products = data["products"]
@@ -207,7 +275,7 @@ def save_quote(request):
         branch_code = data["branchCode"]
         remark = data["remark"]
 
-        # Create Quote instance
+        # 创建报价单实例
         quote = Quote(
             shipper=shipper,
             buyer=buyer,
@@ -235,7 +303,7 @@ def save_quote(request):
         )
         quote.save()
 
-        # Create QuoteItem instances
+        # 创建报价项实例
         for product in products:
             model = product["model"]
             picture = product["picture"]
@@ -267,16 +335,14 @@ def save_quote(request):
     )
 
 
-###############################报价单end############################
-
-#########################注册登录############################
-# 注册
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from .forms import RegisterForm
+################################### Registration and Login Views ###################################
 
 
 def register_view(request):
+    """
+    视图：用户注册页面
+    功能：用户可以通过此视图注册新账号
+    """
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -289,13 +355,11 @@ def register_view(request):
     return render(request, "register.html", {"form": form})
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from .forms import CustomAuthenticationForm
-
-
-# 登录
 def login_view(request):
+    """
+    视图：用户登录页面
+    功能：用户可以通过此视图登录
+    """
     if request.method == "POST":
         form = CustomAuthenticationForm(data=request.POST)
         if form.is_valid():
@@ -312,17 +376,15 @@ def login_view(request):
     return render(request, "login.html", {"form": form})
 
 
-#########################注册登录END############################
-##########################花材###############################
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .forms import FlowerMaterialForm
-from .models import Category, Supplier, Process, Grade
+################################### Flower Material Views ###################################
 
 
 @login_required
 def add_flower_material(request):
+    """
+    视图：添加花材页面
+    功能：用户可以通过此视图添加新花材
+    """
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES)
         if form.is_valid():
@@ -353,8 +415,11 @@ def add_flower_material(request):
     )
 
 
-# 花材表显示
 def flower_materials_list(request):
+    """
+    视图：花材列表页面
+    功能：展示所有花材
+    """
     flower_materials = FlowerMaterial.objects.all()
     return render(
         request,
@@ -363,8 +428,11 @@ def flower_materials_list(request):
     )
 
 
-# 花材详情页
 def flower_material_detail(request, model):
+    """
+    视图：花材详情页面
+    功能：展示特定花材的详细信息
+    """
     material = get_object_or_404(FlowerMaterial, model=model)
     flower_materials = FlowerMaterial.objects.all()
     return render(
@@ -378,8 +446,11 @@ def flower_material_detail(request, model):
     )
 
 
-# 花材编辑
 def edit_flower_material(request, model):
+    """
+    视图：编辑花材页面
+    功能：用户可以通过此视图编辑花材信息
+    """
     material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
         form = FlowerMaterialForm(request.POST, request.FILES, instance=material)
@@ -413,11 +484,11 @@ def edit_flower_material(request, model):
     return render(request, "flower_material_edit.html", context)
 
 
-# 花材删除
-from django.shortcuts import get_object_or_404, redirect, render
-
-
 def delete_flower_material(request, model):
+    """
+    视图：删除花材页面
+    功能：用户可以通过此视图删除花材
+    """
     material = get_object_or_404(FlowerMaterial, model=model)
     if request.method == "POST":
         material.delete()
@@ -427,28 +498,15 @@ def delete_flower_material(request, model):
     )
 
 
-##########################花材end###############################
-
-
-###############################产品####################################
-from django.db import transaction, IntegrityError
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.forms import modelform_factory
-from .models import Product, FlowerMaterial, ProductMaterial
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-
-
-from django.shortcuts import render, redirect
-from django.forms import modelform_factory
-from django.utils import timezone
-from django.db import transaction, IntegrityError
-from .models import Product, FlowerMaterial, ProductMaterial
+################################### Product Views ###################################
 
 
 @login_required
 def add_product(request):
+    """
+    视图：添加产品页面
+    功能：用户可以通过此视图添加新产品并关联花材
+    """
     # 使用 modelform_factory 创建 Product 表单，不包含 'materials', 'created_by', 'created_at', 'updated_at'
     ProductForm = modelform_factory(
         Product, exclude=["materials", "created_by", "created_at", "updated_at"]
@@ -504,16 +562,12 @@ def add_product(request):
     )
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.forms import modelform_factory
-from django.db import transaction, IntegrityError
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from .models import Product, FlowerMaterial, ProductMaterial
-
-
 @login_required
 def edit_product(request, model):
+    """
+    视图：编辑产品页面
+    功能：用户可以通过此视图编辑产品信息并更新关联花材
+    """
     ProductForm = modelform_factory(
         Product, exclude=["materials", "created_by", "created_at", "updated_at"]
     )
@@ -575,6 +629,10 @@ def edit_product(request, model):
 
 
 def delete_product(request, model):
+    """
+    视图：删除产品页面
+    功能：用户可以通过此视图删除产品
+    """
     product = get_object_or_404(Product, model=model)
     if request.method == "POST":
         product.delete()
@@ -582,12 +640,11 @@ def delete_product(request, model):
     return render(request, "delete_product.html", {"product": product})
 
 
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Product
-
-
 def product_list(request):
+    """
+    视图：产品列表页面
+    功能：展示所有产品
+    """
     products = Product.objects.all()
     return render(
         request,
@@ -600,6 +657,10 @@ def product_list(request):
 
 
 def product_details(request, model):
+    """
+    视图：产品详情页面
+    功能：展示特定产品的详细信息和关联的花材
+    """
     product = get_object_or_404(Product, model=model)
     materials = product.productmaterial_set.all()
 
@@ -611,18 +672,15 @@ def product_details(request, model):
     return render(request, "product_details.html", context)
 
 
-##########################产品END#######################
-
-
-##############################客户###############################
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Customer
-from .forms import CustomerForm
+################################### Customer Views ###################################
 
 
 @login_required
 def customer_list(request):
+    """
+    视图：客户列表页面
+    功能：超级用户可以查看所有客户，普通用户只能查看自己创建的客户
+    """
     if request.user.is_superuser:
         customers = Customer.objects.all()
     else:
@@ -634,12 +692,12 @@ def customer_list(request):
     )
 
 
-from .models import Customer
-from .forms import CustomerForm
-
-
 @login_required
 def add_customer(request):
+    """
+    视图：添加客户页面
+    功能：用户可以通过此视图添加新客户
+    """
     if request.method == "POST":
         form = CustomerForm(request.POST, request.FILES)
         if form.is_valid():
@@ -654,34 +712,16 @@ def add_customer(request):
     )
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Customer, FollowUpRecord
-from .forms import FollowUpRecordForm
-
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Customer, FollowUpRecord
-from .forms import FollowUpRecordForm
-from .models import Customer, FollowUpRecord, FollowUpAttachment
-from .forms import FollowUpRecordForm, FollowUpAttachmentForm
-
-
-# views.py
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Customer, FollowUpRecord, FollowUpAttachment
-from .forms import FollowUpRecordForm, FollowUpAttachmentForm
-
-
 @login_required
 def follow_up_list(request, customer_id):
+    """
+    视图：客户跟进记录页面
+    功能：展示客户的跟进记录，并允许用户添加新跟进记录和附件
+    """
     customer = get_object_or_404(Customer, customer_id=customer_id)
     follow_ups = customer.follow_ups.all().order_by("-follow_up_time")
 
-    # Add logic to determine if attachment is an image
+    # 添加逻辑以确定附件是否为图片
     for follow_up in follow_ups:
         for attachment in follow_up.attachments.all():
             attachment.is_image = attachment.file.url.lower().endswith(
