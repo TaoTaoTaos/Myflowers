@@ -559,17 +559,12 @@ from .forms import ProductForm, ProductMaterialFormSet
 
 @login_required
 def add_product(request):
-    """
-    视图：添加产品页面
-    功能：用户可以通过此视图添加新产品并关联花材
-    """
-    # 使用 modelform_factory 创建 Product 表单，不包含 'materials', 'created_by', 'created_at', 'updated_at'
     ProductForm = modelform_factory(
         Product, exclude=["materials", "created_by", "created_at", "updated_at"]
     )
 
     if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)  # 添加 request.FILES
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 with transaction.atomic():
@@ -584,7 +579,7 @@ def add_product(request):
                         ";"
                     )
                     for fm in flower_materials:
-                        if fm:  # 检查 fm 是否为空字符串
+                        if fm:
                             flower_material_model, quantity, ratio, cost_price = (
                                 fm.split(",")
                             )
@@ -598,14 +593,35 @@ def add_product(request):
                                 ratio=ratio,
                             )
 
-                    return redirect("product_list")  # 重定向到一个成功页面
+                    # 处理包装信息
+                    packagings = request.POST.get("packagings", "").split(";")
+                    for pk in packagings:
+                        if pk:
+                            (
+                                packaging_model,
+                                inner_box_quantity,
+                                outer_box_quantity,
+                                cost_price,
+                            ) = pk.split(",")
+                            packaging = Packaging.objects.get(model=packaging_model)
+                            ProductPackaging.objects.create(
+                                product=product,
+                                packaging=packaging,
+                                inner_box_quantity=inner_box_quantity,
+                                outer_box_quantity=outer_box_quantity,
+                            )
+
+                    return redirect("product_list")
             except IntegrityError:
                 form.add_error(None, "保存产品时出现错误，请重试。")
             except FlowerMaterial.DoesNotExist:
                 form.add_error(None, "指定的花材不存在，请检查输入。")
+            except Packaging.DoesNotExist:
+                form.add_error(None, "指定的包装不存在，请检查输入。")
     else:
         form = ProductForm()
         flower_materials = FlowerMaterial.objects.all()
+        packagings = Packaging.objects.all()
 
     return render(
         request,
@@ -613,6 +629,7 @@ def add_product(request):
         {
             "form": form,
             "flower_materials": flower_materials,
+            "packagings": packagings,
             "current_user": request.user,
         },
     )

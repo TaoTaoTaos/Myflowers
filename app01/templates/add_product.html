@@ -19,7 +19,7 @@
   }
 
   .fixed-image-cell {
-    width: 100px; /* 调整列宽度，比图片宽一点 */
+    width: 100px;
   }
 
   .scrollable-table {
@@ -37,291 +37,377 @@
 {% endblock %}
 
 {% block content %}
-  <section class="section">
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="card custom-width">
-          <div class="card-body">
-            <h2 class="card-title">创建产品</h2>
-            <form method="post" id="product-form" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="form-section">
-                <!-- 产品表单部分 -->
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="model">型号</label>
-                    {{ form.model|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="chinese_name">中文名</label>
-                    {{ form.chinese_name|add_class:"form-control" }}
-                  </div>
+<section class="section">
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h2 class="card-title">创建产品</h2>
+          <form method="post" id="product-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-section">
+              <!-- 产品表单部分 -->
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="model">型号</label>
+                  {{ form.model|add_class:"form-control" }}
                 </div>
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="english_name">英文名</label>
-                    {{ form.english_name|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="size">尺寸</label>
-                    {{ form.size|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="weight">重量</label>
-                    {{ form.weight|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="color">颜色</label>
-                    {{ form.color|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="package">包装</label>
-                    {{ form.package|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="sale_spec_quantity">销售规格数量</label>
-                    {{ form.sale_spec_quantity|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="sale_spec_unit">销售规格单位</label>
-                    {{ form.sale_spec_unit|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="description">描述</label>
-                    {{ form.description|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-4">
-                    <label for="inner_box_long">内箱长度</label>
-                    {{ form.inner_box_long|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="inner_box_width">内箱宽度</label>
-                    {{ form.inner_box_width|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="inner_box_height">内箱高度</label>
-                    {{ form.inner_box_height|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-4">
-                    <label for="outer_box_length">外箱长度</label>
-                    {{ form.outer_box_length|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="outer_box_width">外箱宽度</label>
-                    {{ form.outer_box_width|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="outer_box_height">外箱高度</label>
-                    {{ form.outer_box_height|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="labor_cost">人工成本</label>
-                    {{ form.labor_cost|add_class:"form-control labor-cost-input" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="loss_rate">损耗率</label>
-                    {{ form.loss_rate|add_class:"form-control loss-rate-input" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="profit_margin">利润率</label>
-                    {{ form.profit_margin|add_class:"form-control profit-margin-input" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-12">
-                    <label for="image">产品图片</label>
-                    {{ form.image|add_class:"form-control-file" }}
-                  </div>
-                  <div class="form-group col-md-12">
-                    <label for="attachment">附件</label>
-                    {{ form.attachment|add_class:"form-control-file" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-12">
-                    <label for="product_type">产品类型</label>
-                    {{ form.product_type|add_class:"form-control" }}
-                  </div>
+                <div class="form-group col-md-6">
+                  <label for="chinese_name">中文名</label>
+                  {{ form.chinese_name|add_class:"form-control" }}
                 </div>
               </div>
-              <button type="submit" class="btn btn-success">提交</button>
-            </form>
-          </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="english_name">英文名</label>
+                  {{ form.english_name|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="size">尺寸</label>
+                  {{ form.size|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="weight">重量</label>
+                  {{ form.weight|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="color">颜色</label>
+                  {{ form.color|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="package">包装</label>
+                  {{ form.package|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="sale_spec_quantity">销售规格数量</label>
+                  {{ form.sale_spec_quantity|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="sale_spec_unit">销售规格单位</label>
+                  {{ form.sale_spec_unit|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="description">描述</label>
+                  {{ form.description|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="labor_cost">人工成本</label>
+                  {{ form.labor_cost|add_class:"form-control labor-cost-input" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="loss_rate">损耗率</label>
+                  {{ form.loss_rate|add_class:"form-control loss-rate-input" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="profit_margin">利润率</label>
+                  {{ form.profit_margin|add_class:"form-control profit-margin-input" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-12">
+                  <label for="image">产品图片</label>
+                  {{ form.image|add_class:"form-control-file" }}
+                </div>
+                <div class="form-group col-md-12">
+                  <label for="attachment">附件</label>
+                  {{ form.attachment|add_class:"form-control-file" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-12">
+                  <label for="product_type">产品类型</label>
+                  {{ form.product_type|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success">提交</button>
+          </form>
         </div>
       </div>
-      <div class="col-lg-6">
-        <div class="card custom-width mb-4">
-          <div class="card-body">
-            <h3 class="card-title">已选择的花材</h3>
-            <table class="table table-bordered" id="selected-materials-table">
+    </div>
+    <div class="col-lg-6">
+      <div class="card custom-width mb-4">
+        <div class="card-body">
+          <h3 class="card-title">已选择的花材和包装</h3>
+          <h4>花材</h4>
+          <table class="table table-bordered" id="selected-materials-table">
+            <thead>
+              <tr>
+                <th>型号</th>
+                <th>名称</th>
+                <th>数量</th>
+                <th>比例</th>
+                <th>成本价</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-materials-list">
+            </tbody>
+          </table>
+          <h4>包装</h4>
+          <table class="table table-bordered" id="selected-packagings-table">
+            <thead>
+              <tr>
+                <th>型号</th>
+                <th>名称</th>
+                <th>内箱数量</th>
+                <th>外箱数量</th>
+                <th>成本价</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-packagings-list">
+            </tbody>
+          </table>
+          <p>总价: <span id="total-price">0</span> 元</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h3 class="card-title">花材列表</h3>
+          <input type="text" id="search-box" placeholder="搜索花材" class="form-control mb-3">
+          <div class="table-responsive scrollable-table">
+            <table class="table table-hover table-fixed" id="flower-materials-table">
               <thead>
                 <tr>
-                  <th>型号</th>
-                  <th>名称</th>
-                  <th>数量</th>
-                  <th>比例</th>
-                  <th>成本价</th>
-                  <th>操作</th>
+                  <th style="text-align: center; vertical-align: middle;">编号</th>
+                  <th style="text-align: center; vertical-align: middle;">分类</th>
+                  <th style="text-align: center; vertical-align: middle;">型号</th>
+                  <th style="text-align: center; vertical-align: middle;">图片</th>
+                  <th style="text-align: center; vertical-align: middle;">中文名</th>
+                  <th style="text-align: center; vertical-align: middle;">英文名</th>
+                  <th style="text-align: center; vertical-align: middle;">成本价</th>
+                  <th style="text-align: center; vertical-align: middle;">修改人</th>
+                  <th style="text-align: center; vertical-align: middle;">操作</th>
                 </tr>
               </thead>
-              <tbody id="selected-materials-list">
+              <tbody id="flower-materials-list">
+                {% for material in flower_materials %}
+                <tr>
+                  <td style="text-align: center; height: 90px; vertical-align: middle;">{{ forloop.counter }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.category.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
+                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
+                    {% if material.image %}
+                    <img src="{{ material.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
+                    {% else %}
+                    无图片
+                    {% endif %}
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.chinese_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.english_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.cost_price }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ material.created_by }}</td>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-model="{{ material.model }}" data-name="{{ material.chinese_name }}" data-cost-price="{{ material.cost_price }}">添加到产品</button>
+                  </td>
+                </tr>
+                {% endfor %}
               </tbody>
             </table>
-            <p>总价: <span id="total-price">0</span> 元</p>
           </div>
         </div>
       </div>
     </div>
-    <div class="row mt-4">
-      <div class="col-lg-12">
-        <div class="card custom-width">
-          <div class="card-body">
-            <h3 class="card-title">花材列表</h3>
-            <input type="text" id="search-box" placeholder="搜索花材" class="form-control mb-3">
-            <div class="table-responsive scrollable-table">
-              <table class="table table-hover table-fixed" id="flower-materials-table">
-                <thead>
-                  <tr>
-                    <th style="text-align: center; vertical-align: middle;">编号</th>
-                    <th style="text-align: center; vertical-align: middle;">分类</th>
-                    <th style="text-align: center; vertical-align: middle;">型号</th>
-                    <th style="text-align: center; vertical-align: middle;">图片</th>
-                    <th style="text-align: center; vertical-align: middle;">中文名</th>
-                    <th style="text-align: center; vertical-align: middle;">英文名</th>
-                    <th style="text-align: center; vertical-align: middle;">成本价</th>
-                    <th style="text-align: center; vertical-align: middle;">操作</th>
-                  </tr>
-                </thead>
-                <tbody id="flower-materials-list">
-                  {% for material in flower_materials %}
-                  <tr>
-                    <td style="text-align: center; height: 90px; vertical-align: middle;">{{ forloop.counter }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ material.category.name }}</td>
-                    <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
-                    <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
-                      {% if material.image %}
-                      <img src="{{ material.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
-                      {% else %}
-                      无图片
-                      {% endif %}
-                    </td>
-                    <td style="text-align: center; vertical-align: middle;">{{ material.chinese_name }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ material.english_name }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ material.cost_price }}</td>
-                    <td style="text-align: center; vertical-align: middle;">
-                      <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-model="{{ material.model }}" data-name="{{ material.chinese_name }}" data-cost-price="{{ material.cost_price }}">添加到产品</button>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h3 class="card-title">包装列表</h3>
+          <input type="text" id="search-packaging-box" placeholder="搜索包装" class="form-control mb-3">
+          <div class="table-responsive scrollable-table">
+            <table class="table table-hover table-fixed" id="packagings-table">
+              <thead>
+                <tr>
+                  <th style="text-align: center; vertical-align: middle;">编号</th>
+                  <th style="text-align: center; vertical-align: middle;">类型</th>
+                  <th style="text-align: center; vertical-align: middle;">型号</th>
+                  <th style="text-align: center; vertical-align: middle;">图片</th>
+                  <th style="text-align: center; vertical-align: middle;">名称</th>
+                  <th style="text-align: center; vertical-align: middle;">成本价</th>
+                  <th style="text-align: center; vertical-align: middle;">修改人</th>
+                  <th style="text-align: center; vertical-align: middle;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="packagings-list">
+                {% for packaging in packagings %}
+                <tr>
+                  <td style="text-align: center; height: 90px; vertical-align: middle;">{{ forloop.counter }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.packaging_type.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" >{{ packaging.model }}</td>
+                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
+                    {% if packaging.image %}
+                    <img src="{{ packaging.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
+                    {% else %}
+                    无图片
+                    {% endif %}
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.cost_price }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.created_by }}</td>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <button type="button" class="btn btn-primary add-packaging-btn" data-id="{{ packaging.model }}" data-model="{{ packaging.model }}" data-name="{{ packaging.name }}" data-cost-price="{{ packaging.cost_price }}">添加到产品</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script>
-    $(document).ready(function(){
-      console.log("Document is ready");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    console.log("Document is ready");
 
-      $('.add-material-btn').click(function(){
-        console.log("Add button clicked");
+    $('.add-material-btn').click(function(){
+      console.log("Add material button clicked");
 
-        var id = $(this).data('id');
-        var model = $(this).data('model');
-        var name = $(this).data('name');
-        var costPrice = $(this).data('cost-price');
+      var id = $(this).data('id');
+      var model = $(this).data('model');
+      var name = $(this).data('name');
+      var costPrice = $(this).data('cost-price');
 
-        var newRow = `
-          <tr data-id="${id}" data-cost-price="${costPrice}">
-            <td>${model}</td>
-            <td>${name}</td>
-            <td><input type="number" name="quantity" class="form-control" value="1"></td>
-            <td><input type="number" name="ratio" class="form-control" value="1"></td>
-            <td>${costPrice}</td>
-            <td><button type="button" class="btn btn-danger remove-material-btn">删除</button></td>
-          </tr>
-        `;
-        $('#selected-materials-list').append(newRow);
-        updateTotalPrice();
-      });
-
-      $('#selected-materials-list').on('click', '.remove-material-btn', function(){
-        console.log("Remove button clicked");
-        $(this).closest('tr').remove();
-        updateTotalPrice();
-      });
-
-      $('#product-form').submit(function(){
-        console.log("Form submitted");
-        var flowerMaterials = [];
-        $('#selected-materials-list tr').each(function(){
-          var id = $(this).data('id');
-          var quantity = $(this).find('input[name="quantity"]').val();
-          var ratio = $(this).find('input[name="ratio"]').val();
-          var costPrice = $(this).data('cost-price');
-          flowerMaterials.push(`${id},${quantity},${ratio},${costPrice}`);
-        });
-        $('<input>').attr({
-          type: 'hidden',
-          name: 'flower_materials',
-          value: flowerMaterials.join(';')
-        }).appendTo('#product-form');
-      });
-
-      $('#search-box').on('input', function(){
-        var searchTerm = $(this).val().toLowerCase();
-        $('#flower-materials-list tr').each(function(){
-          var model = $(this).find('td:eq(2)').text().toLowerCase();
-          var name = $(this).find('td:eq(4)').text().toLowerCase();
-          if (model.includes(searchTerm) || name.includes(searchTerm)) {
-            $(this).show();
-          } else {
-            $(this).hide();
-          }
-        });
-      });
-
-      $('#selected-materials-list').on('change', 'input[name="quantity"], input[name="ratio"]', function(){
-        updateTotalPrice();
-      });
-
-      // Ensure these event listeners are also set up for labor cost, loss rate, and profit margin inputs
-      $(document).on('input', '.labor-cost-input, .loss-rate-input, .profit-margin-input', function(){
-        updateTotalPrice();
-      });
-
-      function updateTotalPrice() {
-        var totalCost = 0;
-        $('#selected-materials-list tr').each(function(){
-          var quantity = parseFloat($(this).find('input[name="quantity"]').val());
-          var ratio = parseFloat($(this).find('input[name="ratio"]').val());
-          var costPrice = parseFloat($(this).data('cost-price'));
-          totalCost += quantity * ratio * costPrice;
-        });
-        var laborCost = parseFloat($('.labor-cost-input').val()) || 0;
-        var lossRate = parseFloat($('.loss-rate-input').val()) || 0;
-        var profitMargin = parseFloat($('.profit-margin-input').val()) || 0;
-        totalCost += laborCost;
-        totalCost *= (1 + lossRate);
-        totalCost *= (1 + profitMargin);
-        $('#total-price').text(totalCost.toFixed(2));
-      }
+      var newRow = `
+        <tr data-id="${id}" data-cost-price="${costPrice}">
+          <td>${model}</td>
+          <td>${name}</td>
+          <td><input type="number" name="quantity" class="form-control" value="1"></td>
+          <td><input type="number" name="ratio" class="form-control" value="1"></td>
+          <td>${costPrice}</td>
+          <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+        </tr>
+      `;
+      $('#selected-materials-list').append(newRow);
+      updateTotalPrice();
     });
-  </script>
+
+    $('.add-packaging-btn').click(function(){
+      console.log("Add packaging button clicked");
+
+      var id = $(this).data('id');
+      var model = $(this).data('model');
+      var name = $(this).data('name');
+      var costPrice = $(this).data('cost-price');
+
+      var newRow = `
+        <tr data-id="${id}" data-cost-price="${costPrice}">
+          <td>${model}</td>
+          <td>${name}</td>
+          <td><input type="number" name="inner_box_quantity" class="form-control" value="1"></td>
+          <td><input type="number" name="outer_box_quantity" class="form-control" value="1"></td>
+          <td>${costPrice}</td>
+          <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+        </tr>
+      `;
+      $('#selected-packagings-list').append(newRow);
+    });
+
+    $('#selected-items-list').on('click', '.remove-item-btn', function(){
+      console.log("Remove item button clicked");
+      $(this).closest('tr').remove();
+      updateTotalPrice();
+    });
+
+    $('#product-form').submit(function(){
+      console.log("Form submitted");
+      var flowerMaterials = [];
+      var packagings = [];
+      $('#selected-materials-list tr').each(function(){
+        var id = $(this).data('id');
+        var quantity = $(this).find('input[name="quantity"]').val();
+        var ratio = $(this).find('input[name="ratio"]').val();
+        var costPrice = $(this).data('cost-price');
+        flowerMaterials.push(`${id},${quantity},${ratio},${costPrice}`);
+      });
+      $('#selected-packagings-list tr').each(function(){
+        var id = $(this).data('id');
+        var innerBoxQuantity = $(this).find('input[name="inner_box_quantity"]').val();
+        var outerBoxQuantity = $(this).find('input[name="outer_box_quantity"]').val();
+        var costPrice = $(this).data('cost-price');
+        packagings.push(`${id},${innerBoxQuantity},${outerBoxQuantity},${costPrice}`);
+      });
+      $('<input>').attr({
+        type: 'hidden',
+        name: 'flower_materials',
+        value: flowerMaterials.join(';')
+      }).appendTo('#product-form');
+      $('<input>').attr({
+        type: 'hidden',
+        name: 'packagings',
+        value: packagings.join(';')
+      }).appendTo('#product-form');
+    });
+
+    $('#search-box').on('input', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('#flower-materials-list tr').each(function(){
+        var model = $(this).find('td:eq(2)').text().toLowerCase();
+        var name = $(this).find('td:eq(4)').text().toLowerCase();
+        if (model.includes(searchTerm) || name.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $('#search-packaging-box').on('input', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('#packagings-list tr').each(function(){
+        var model = $(this).find('td:eq(2)').text().toLowerCase();
+        var name = $(this).find('td:eq(4)').text().toLowerCase();
+        if (model.includes(searchTerm) || name.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $('#selected-materials-list, #selected-packagings-list').on('change', 'input[name="quantity"], input[name="ratio"], input[name="inner_box_quantity"], input[name="outer_box_quantity"]', function(){
+      updateTotalPrice();
+    });
+
+    $(document).on('input', '.labor-cost-input, .loss-rate-input, .profit-margin-input', function(){
+      updateTotalPrice();
+    });
+
+    function updateTotalPrice() {
+      var totalCost = 0;
+      $('#selected-materials-list tr').each(function(){
+        var quantity = parseFloat($(this).find('input[name="quantity"]').val());
+        var ratio = parseFloat($(this).find('input[name="ratio"]').val());
+        var costPrice = parseFloat($(this).data('cost-price'));
+        totalCost += quantity * ratio * costPrice;
+      });
+      $('#selected-packagings-list tr').each(function(){
+        var costPrice = parseFloat($(this).data('cost-price'));
+        totalCost += costPrice;
+      });
+      var laborCost = parseFloat($('.labor-cost-input').val()) || 0;
+      var lossRate = parseFloat($('.loss-rate-input').val()) || 0;
+      var profitMargin = parseFloat($('.profit-margin-input').val()) || 0;
+      totalCost += laborCost;
+      totalCost *= (1 + lossRate);
+      totalCost *= (1 + profitMargin);
+      $('#total-price').text(totalCost.toFixed(2));
+    }
+  });
+</script>
 {% endblock %}
