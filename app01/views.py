@@ -33,6 +33,7 @@ from .models import (
 from .forms import (
     FlowerMaterialForm,
     CommentForm,
+    ProductPackagingFormSet,
     UserUpdateForm,
     CustomPasswordChangeForm,
     RegisterForm,
@@ -412,6 +413,7 @@ def packaging_list(request):
     packagings = Packaging.objects.all()
     return render(request, "packaging_list.html", {"packagings": packagings})
 
+
 ######## Flower Material Views ##########################
 
 
@@ -535,6 +537,24 @@ def delete_flower_material(request, model):
 
 
 ################################### Product Views ###################################
+
+from django import forms
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import transaction, IntegrityError
+from django.utils import timezone
+
+
+from .models import (
+    FlowerMaterial,
+    Product,
+    ProductMaterial,
+    Packaging,
+    ProductPackaging,
+)
+from .forms import ProductForm, ProductMaterialFormSet
 
 
 @login_required

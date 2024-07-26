@@ -1,7 +1,14 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser, Product, ProductMaterial, FlowerMaterial, QuoteItem
+from .models import (
+    CustomUser,
+    Product,
+    ProductMaterial,
+    FlowerMaterial,
+    ProductPackaging,
+    QuoteItem,
+)
 
 # 包装表单
 
@@ -141,10 +148,6 @@ class FlowerMaterialForm(forms.ModelForm):
         }
 
 
-from django import forms
-from .models import Product, ProductMaterial
-
-
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -194,34 +197,20 @@ ProductMaterialFormSet = forms.inlineformset_factory(
     Product, ProductMaterial, form=ProductMaterialForm, extra=1, can_delete=True
 )
 
-###############报价单################
 
-
-class QuoteItemForm(forms.ModelForm):
+class ProductPackagingForm(forms.ModelForm):
     class Meta:
-        model = QuoteItem
-        fields = [
-            "model",
-            "picture",
-            "specification",
-            "color",
-            "qty",
-            "cost_price",
-            "profit_margin",
-        ]
+        model = ProductPackaging
+        fields = ["packaging", "inner_box_quantity", "outer_box_quantity"]
         widgets = {
-            "model": forms.TextInput(attrs={"class": "form-control"}),
-            "picture": forms.ClearableFileInput(attrs={"class": "form-control"}),
-            "specification": forms.TextInput(attrs={"class": "form-control"}),
-            "color": forms.TextInput(attrs={"class": "form-control"}),
-            "qty": forms.NumberInput(attrs={"class": "form-control"}),
-            "cost_price": forms.NumberInput(attrs={"class": "form-control"}),
-            "profit_margin": forms.NumberInput(attrs={"class": "form-control"}),
+            "packaging": forms.Select(attrs={"class": "form-control"}),
+            "inner_box_quantity": forms.NumberInput(attrs={"class": "form-control"}),
+            "outer_box_quantity": forms.NumberInput(attrs={"class": "form-control"}),
         }
 
 
-ProductMaterialFormSet = forms.inlineformset_factory(
-    Product, ProductMaterial, form=ProductMaterialForm, extra=1, can_delete=True
+ProductPackagingFormSet = forms.inlineformset_factory(
+    Product, ProductPackaging, form=ProductPackagingForm, extra=1, can_delete=True
 )
 
 ###############报价单################
