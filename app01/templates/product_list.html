@@ -1,12 +1,10 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}
-  产品列表
+  产品管理页面
 {% endblock %}
 
 {% block extra_css %}
-<style>
   th {
     text-align: center;
     vertical-align: middle;
@@ -27,234 +25,274 @@
   .fixed-image-cell {
     width: 100px; /* 调整列宽度，比图片宽一点 */
   }
-</style>
 {% endblock %}
 
 {% block content %}
-<section class="section">
-  <div class="container">
-    <div class="row mb-4">
+  <section class="section">
+    <div class="row">
       <div class="col-lg-12">
-        <a href="{% url 'add_product' %}" class="btn btn-primary btn-lg mb-2">添加产品</a>
-        <button id="export-button" class="btn btn-secondary btn-lg mb-2">导出为Excel</button>
-       
-
+        <a href="{% url 'add_product' %}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">添加产品</a>
+        <button id="export-button" class="btn btn-secondary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">导出为Excel</button>
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+          <label>选择要显示的列：</label>
+          <button id="show-all" class="btn btn-outline-primary btn-sm">显示全部</button>
+          <button id="hide-all" class="btn btn-outline-primary btn-sm">隐藏全部</button>
+          <label><input type="checkbox" class="column-toggle" data-column="7" checked> 学名</label>
+          <label><input type="checkbox" class="column-toggle" data-column="11" checked> 规格</label>
+          <label><input type="checkbox" class="column-toggle" data-column="12" checked> 装箱数量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="13" checked> 销售商</label>
+          <label><input type="checkbox" class="column-toggle" data-column="14" checked> 颜色</label>
+          <label><input type="checkbox" class="column-toggle" data-column="15" checked> 尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="16" checked> 重量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="17" checked> 装箱数量</label>
+          <label><input type="checkbox" class="column-toggle" data-column="18" checked> 装箱单位</label>
+          <label><input type="checkbox" class="column-toggle" data-column="19" checked> 工艺</label>
+          <label><input type="checkbox" class="column-toggle" data-column="20" checked> 外箱尺寸</label>
+          <label><input type="checkbox" class="column-toggle" data-column="21" checked> 等级</label>
+        </div>
         <div class="table-responsive">
-          <table class="table table-hover table-fixed" id="products-table">
+          <table class="table table-hover table-fixed" id="product-table">
             <thead>
               <tr>
-                <th><input type="checkbox" id="select-all"></th>
-                <th>编号</th>
-                <th>型号</th>
-                <th>图片</th>
-                <th>中文名</th>
-                <th>英文名</th>
-                <th>尺寸</th>
-                <th>重量</th>
-                <th>颜色</th>
-                <th>包装</th>
-                <th>销售规格数量</th>
-                <th>销售规格单位</th>
-                <th>内箱尺寸</th>
-                <th>外箱尺寸</th>
-                <th>劳动成本</th>
-                <th>损耗率</th>
-                <th>备注</th>
-                <th>最后修改人</th>
-                <th>创建时间</th>
-                <th>最后修改时间</th>
+                <th style="text-align: center; vertical-align: middle;">
+                  <input type="checkbox" id="select-all">
+                </th>
+                <th style="text-align: center; vertical-align: middle;">编号</th>
+                <th style="text-align: center; vertical-align: middle;">类型</th>
+                <th style="text-align: center; vertical-align: middle;">型号</th>
+                <th style="text-align: center; vertical-align: middle;">图片</th>
+                <th style="text-align: center; vertical-align: middle;">中文名</th>
+                <th style="text-align: center; vertical-align: middle;">英文名</th>
+                <th style="text-align: center; vertical-align: middle;">规格</th>
+                <th style="text-align: center; vertical-align: middle;">内箱数量</th>
+                <th style="text-align: center; vertical-align: middle;">外箱数量</th>
+                <th style="text-align: center; vertical-align: middle;">颜色</th>
+                <th style="text-align: center; vertical-align: middle;">尺寸</th>
+                <th style="text-align: center; vertical-align: middle;">重量</th>
+                <th style="text-align: center; vertical-align: middle;">工艺</th>
+                <th style="text-align: center; vertical-align: middle;">内箱尺寸</th>
+                <th style="text-align: center; vertical-align: middle;">外箱尺寸</th>
+                <th style="text-align: center; vertical-align: middle;">成本</th>
+                <th style="text-align: center; vertical-align: middle;">价格</th>
+                <th style="text-align: center; vertical-align: middle;">备注</th>
+                <th style="text-align: center; vertical-align: middle;">最后修改人</th>
+                <th style="text-align: center; vertical-align: middle;">修改时间</th>
               </tr>
             </thead>
             <tbody>
               {% for product in products %}
-              <tr>
-                <td><input type="checkbox" class="select-item"></td>
-                <td>{{ forloop.counter }}</td>
-                <td onclick="window.location.href='{% url 'product_details' product.model %}'">{{ product.model }}</td>
-                <td class="fixed-image-cell">
-                  {% if product.image %}
-                  <img src="{{ product.image.url }}" alt="图片">
-                  {% else %}
-                  无图片
-                  {% endif %}
-                </td>
-                <td>{{ product.chinese_name }}</td>
-                <td>{{ product.english_name }}</td>
-                <td>{{ product.size }}</td>
-                <td>{{ product.weight }}</td>
-                <td>{{ product.color }}</td>
-                <td>{{ product.Package }}</td>
-                <td>{{ product.sale_spec_quantity }}</td>
-                <td>{{ product.sale_spec_unit }}</td>
-                <td>{{ product.inner_box_size }}</td>
-                <td>{{ product.outer_box_size }}</td>
-                <td>{{ product.labor_cost }}</td>
-                <td>{{ product.loss_rate }}</td>
-                <td>{{ product.description }}</td>
-                <td>{{ product.created_by.username }}</td>
-                <td>{{ product.created_at }}</td>
-                <td>{{ product.updated_at }}</td>
-              </tr>
+                <tr>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <input type="checkbox" class="select-item">
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ forloop.counter }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.product_type.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'product_details' product.model %}'">{{ product.model }}</td>
+                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
+                    {% if product.image %}
+                      <img src="{{ product.image.url }}" alt="图片" style="width: 100px; height: 100px;"/>
+                    {% else %}
+                      无图片
+                    {% endif %}
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.chinese_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.english_name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.size }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.inner_box_quantity }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.outer_box_quantity }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.color }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.size }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.weight }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.process.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.inner_box_size }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.outer_box_size }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.cost }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.price }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.description }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.created_by.username }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ product.updated_at }}</td>
+                </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div>
-</section>
-{% endblock %}
+  </section>
 
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const table = document.getElementById('products-table');
-    const dataTable = new simpleDatatables.DataTable(table, {
-      searchable: true,
-      fixedHeight: true,
-      perPageSelect: [5, 10, 15, 20, 30, 500],
-      perPage: 20,
-      labels: {
-        placeholder: '搜索...',
-        perPage: '/条记录每页     （点击型号、中文名、英文名查看详情）',
-        noRows: '没有找到符合条件的记录',
-        info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
-      },
-      columns: [
-        { select: [0], sortable: false } // Disable sorting on the first column (checkbox)
-      ]
-    });
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
 
-    const toggleColumnVisibility = () => {
-      document.querySelectorAll('.column-toggle').forEach(checkbox => {
-        const column = parseInt(checkbox.dataset.column, 10) + 1;
-        const th = table.querySelector(`th:nth-child(${column})`);
-        const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const table = document.getElementById('product-table');
+      const dataTable = new simpleDatatables.DataTable(table, {
+        searchable: true,
+        fixedHeight: true,
+        perPageSelect: [5, 10, 15, 20, 30, 500],
+        perPage: 20,
+        labels: {
+          placeholder: '搜索...',
+          perPage: '/条记录每页     （点击型号、中文名、英文名查看详情）',
+          noRows: '没有找到符合条件的记录',
+          info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
+        },
+        columns: [
+          { select: [0], sortable: false } // Disable sorting on the first column (checkbox)
+        ]
+      });
 
-        if (checkbox.checked) {
-          th.style.display = '';
-          tds.forEach(td => td.style.display = '');
+      const toggleColumnVisibility = () => {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          const column = parseInt(checkbox.dataset.column, 10) + 1;
+          const th = table.querySelector(`th:nth-child(${column})`);
+          const tds = table.querySelectorAll(`tbody td:nth-child(${column})`);
+
+          if (checkbox.checked) {
+            th.style.display = '';
+            tds.forEach(td => td.style.display = '');
+          } else {
+            th.style.display = 'none';
+            tds.forEach(td => td.style.display = 'none');
+          }
+        });
+      };
+
+      const saveColumnVisibility = () => {
+        const visibilityState = {};
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          visibilityState[checkbox.dataset.column] = checkbox.checked;
+        });
+        localStorage.setItem('columnVisibility', JSON.stringify(visibilityState));
+      };
+
+      const loadColumnVisibility = () => {
+        const visibilityState = JSON.parse(localStorage.getItem('columnVisibility'));
+        if (visibilityState) {
+          document.querySelectorAll('.column-toggle').forEach(checkbox => {
+            checkbox.checked = visibilityState[checkbox.dataset.column];
+          });
+          toggleColumnVisibility();
         } else {
-          th.style.display = 'none';
-          tds.forEach(td => td.style.display = 'none');
+          // 默认显示所有列
+          document.querySelectorAll('.column-toggle').forEach(checkbox => {
+            checkbox.checked = true;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          });
         }
-      });
-    };
+      };
 
-    const saveColumnVisibility = () => {
-      const visibilityState = {};
+      // Initial load of column visibility settings
+      loadColumnVisibility();
+
+      // Update column visibility on change
       document.querySelectorAll('.column-toggle').forEach(checkbox => {
-        visibilityState[checkbox.dataset.column] = checkbox.checked;
-      });
-      localStorage.setItem('columnVisibility', JSON.stringify(visibilityState));
-    };
-
-    const loadColumnVisibility = () => {
-      const visibilityState = JSON.parse(localStorage.getItem('columnVisibility'));
-      if (visibilityState) {
-        document.querySelectorAll('.column-toggle').forEach(checkbox => {
-          checkbox.checked = visibilityState[checkbox.dataset.column];
+        checkbox.addEventListener('change', () => {
+          toggleColumnVisibility();
+          saveColumnVisibility();
         });
-        toggleColumnVisibility();
-      } else {
-        // 默认显示所有列
-        document.querySelectorAll('.column-toggle').forEach(checkbox => {
-          checkbox.checked = true;
-          const event = new Event('change');
-          checkbox.dispatchEvent(event);
+      });
+
+      // Select/Deselect all checkboxes
+      document.getElementById('select-all').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.select-item');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
         });
-      }
-    };
-
-    // Initial load of column visibility settings
-    loadColumnVisibility();
-
-    // Update column visibility on change
-    document.querySelectorAll('.column-toggle').forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        toggleColumnVisibility();
-        saveColumnVisibility();
-      });
-    });
-
-    // Select/Deselect all checkboxes
-    document.getElementById('select-all').addEventListener('change', function () {
-      const checkboxes = document.querySelectorAll('.select-item');
-      checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-      });
-    });
-
-    // Export selected rows to Excel
-    document.getElementById('export-button').addEventListener('click', function () {
-      const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
-        return row.querySelector('.select-item').checked;
       });
 
-      if (selectedRows.length === 0) {
-        alert('请选择至少一条记录进行导出');
-        return;
-      }
+      // Export selected rows to Excel
+      document.getElementById('export-button').addEventListener('click', function () {
+        const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
+          return row.querySelector('.select-item').checked;
+        });
 
-      const exportData = [];
-      const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
-      exportData.push(headers.slice(1)); // Exclude the checkbox header
+        if (selectedRows.length === 0) {
+          alert('请选择至少一条记录进行导出');
+          return;
+        }
 
-      selectedRows.forEach(row => {
-        const rowData = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
-        exportData.push(rowData.slice(1)); // Exclude the checkbox column
+        const exportData = [];
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        exportData.push(headers.slice(1)); // Exclude the checkbox header
+
+        selectedRows.forEach(row => {
+          const rowData = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+          exportData.push(rowData.slice(1)); // Exclude the checkbox column
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '产品');
+
+        XLSX.writeFile(wb, '产品记录.xlsx');
       });
 
-      const ws = XLSX.utils.aoa_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, '产品记录');
-
-      XLSX.writeFile(wb, '产品记录.xlsx');
-    });
-
-    // Show all/hide all functionality
-    document.getElementById('show-all').addEventListener('click', function () {
+      // Column toggle functionality
       document.querySelectorAll('.column-toggle').forEach(checkbox => {
-        if (!checkbox.disabled) {
-          checkbox.checked = true;
-          const event = new Event('change');
-          checkbox.dispatchEvent(event);
+        checkbox.addEventListener('change', function () {
+          toggleColumnVisibility();
+          saveColumnVisibility();
+        });
+      });
+
+      // Show all/hide all functionality
+      document.getElementById('show-all').addEventListener('click', function () {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = true;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+        });
+      });
+
+      document.getElementById('hide-all').addEventListener('click', function () {
+        document.querySelectorAll('.column-toggle').forEach(checkbox => {
+          if (!checkbox.disabled) {
+            checkbox.checked = false;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+        });
+      });
+
+      // Ensure the Chinese and English names are always visible
+      document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        const column = parseInt(checkbox.dataset.column, 10);
+        if (column === 4 || column === 5 || column === 6 || column === 8 || column === 9 || column === 10||column === 21|| column === 22) {
+          checkbox.disabled = true;
         }
       });
+
+      // Ensure column visibility on table redraw
+      const applyVisibilityAfterRender = () => {
+        dataTable.on('datatable.page', toggleColumnVisibility);
+        dataTable.on('datatable.search', toggleColumnVisibility);
+        dataTable.on('datatable.sort', toggleColumnVisibility);
+      };
+
+      applyVisibilityAfterRender();
+
+      // Reapply column visibility settings on window resize
+      window.addEventListener('resize', toggleColumnVisibility);
     });
 
-    document.getElementById('hide-all').addEventListener('click', function () {
-      document.querySelectorAll('.column-toggle').forEach(checkbox => {
-        if (!checkbox.disabled) {
-          checkbox.checked = false;
-          const event = new Event('change');
-          checkbox.dispatchEvent(event);
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; cookies.length > i; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
         }
-      });
-    });
-
-    // Ensure certain columns are always visible
-    document.querySelectorAll('.column-toggle').forEach(checkbox => {
-      const column = parseInt(checkbox.dataset.column, 10);
-      if ([2, 4, 5].includes(column)) { // Ensure columns for model, chinese_name, english_name are always visible
-        checkbox.disabled = true;
       }
-    });
-
-    // Ensure column visibility on table redraw
-    const applyVisibilityAfterRender = () => {
-      dataTable.on('datatable.page', toggleColumnVisibility);
-      dataTable.on('datatable.search', toggleColumnVisibility);
-      dataTable.on('datatable.sort', toggleColumnVisibility);
-    };
-
-    applyVisibilityAfterRender();
-
-    // Reapply column visibility settings on window resize
-    window.addEventListener('resize', toggleColumnVisibility);
-  });
-</script>
+      return cookieValue;
+    }
+  </script>
 {% endblock %}

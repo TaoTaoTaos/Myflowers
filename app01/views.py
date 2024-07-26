@@ -412,8 +412,7 @@ def packaging_list(request):
     packagings = Packaging.objects.all()
     return render(request, "packaging_list.html", {"packagings": packagings})
 
-
-############################### Flower Material Views ###################################
+######## Flower Material Views ##########################
 
 
 @login_required
