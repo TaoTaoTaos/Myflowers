@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}删除包装{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">删除包装</h5>
+                    <p>您确定要删除这个包装吗？</p>
+                    <ul>
+                        <li><strong>型号:</strong> {{ packaging.model }}</li>
+                        <li><strong>名称:</strong> {{ packaging.name }}</li>
+                        <li><strong>类型:</strong> {{ packaging.packaging_type.name }}</li>
+                    </ul>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">删除</button>
+                        <a href="{% url 'packaging_list' %}" class="btn btn-secondary">取消</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

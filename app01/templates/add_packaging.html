@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+  创建包装页面
+{% endblock %}
+
+{% block extra_css %}
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fixed-image-cell img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px; /* 调整列宽度，比图片宽一点 */
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+  }
+
+  .card.custom-width {
+    width: 100%;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card custom-width">
+          <div class="card-body">
+            <h2 class="card-title">创建包装</h2>
+            <form method="post" id="packaging-form" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-section">
+                <!-- 包装表单部分 -->
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="packaging_type">包装类型</label>
+                    {{ form.packaging_type|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="name">包装名称</label>
+                    {{ form.name|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label for="length">长度</label>
+                    {{ form.length|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="width">宽度</label>
+                    {{ form.width|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="height">高度</label>
+                    {{ form.height|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="cost_price">成本价</label>
+                    {{ form.cost_price|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="selling_price">售价</label>
+                    {{ form.selling_price|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="remark">备注</label>
+                  {{ form.remark|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                  <label for="image">包装图片</label>
+                  {{ form.image|add_class:"form-control-file" }}
+                </div>
+              </div>
+              <button type="submit" class="btn btn-success">提交</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

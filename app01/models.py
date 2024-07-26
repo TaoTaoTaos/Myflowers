@@ -4,6 +4,78 @@ from django.contrib.auth.models import AbstractUser
 from decimal import Decimal
 from django.conf import settings
 
+###############################包装相关模型###################################
+from django.db import models
+from django.utils import timezone
+from django.conf import settings
+import os
+import re
+
+
+# 包装类型模型
+class PackagingType(models.Model):
+    TYPE_CHOICES = [
+        ("内盒", "Inner Box"),
+        ("外箱", "Outer Box"),
+        ("花器", "Flower Vessel"),
+    ]
+
+    name = models.CharField(max_length=100, choices=TYPE_CHOICES, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+# 自定义文件上传路径函数
+def packaging_directory_path(instance, filename):
+    # Replace any non-alphanumeric character with an underscore
+    safe_model_name = re.sub(r"[^\w\s-]", "", instance.model)
+    safe_model_name = re.sub(r"[-\s]+", "-", safe_model_name).strip("-_")
+    # file will be uploaded to MEDIA_ROOT/packaging_images/Packaging/<model_name>/<filename>
+    return os.path.join("packaging_images", "Packaging", safe_model_name, filename)
+
+
+# 包装模型
+class Packaging(models.Model):
+    model = models.CharField(max_length=100, primary_key=True, editable=False)
+    packaging_type = models.ForeignKey(
+        PackagingType, on_delete=models.SET_NULL, null=True
+    )
+    image = models.ImageField(upload_to=packaging_directory_path, null=True, blank=True)
+    name = models.CharField(max_length=200)
+    length = models.FloatField(help_text="长度，单位：cm", null=True, blank=True)
+    width = models.FloatField(help_text="宽度，单位：cm", null=True, blank=True)
+    height = models.FloatField(help_text="高度，单位：cm", null=True, blank=True)
+    cost_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
+    )
+    selling_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
+    )
+    remark = models.TextField(blank=True, default="无备注")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+        if not self.model:
+            existing_packagings = Packaging.objects.filter(
+                packaging_type=self.packaging_type
+            ).count()
+            self.model = f"{self.packaging_type.name}-{existing_packagings + 1:04d}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+###############################包装相关模型end###################################
+#
 ##############################花材相关模型#####################################
 
 
@@ -321,7 +393,7 @@ class ProductMaterial(models.Model):
         return f"{self.product.chinese_name} - {self.flower_material.chinese_name} x {self.quantity} (Ratio: {self.ratio})"
 
 
-#########################################报价单###############################################
+#########################################报价单##########################################
 
 from django.db import models
 from django.utils import timezone

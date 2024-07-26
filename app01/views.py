@@ -85,12 +85,12 @@ from django.core.paginator import Paginator
 
 def home_view(request):
     background_index = request.session.get("background_index", 0)
-    latest_products = Product.objects.all().order_by("-updated_at")[:5]
-    latest_flowers = FlowerMaterial.objects.all().order_by("-updated_at")[:5]
+    latest_products = Product.objects.all().order_by("-updated_at")[:8]
+    latest_flowers = FlowerMaterial.objects.all().order_by("-updated_at")[:8]
 
     # 获取评论分页
     comments_list = Comment.objects.all().order_by("-created_at")
-    paginator = Paginator(comments_list, 3)  # 每页5条评论
+    paginator = Paginator(comments_list, 4)  # 每页4条评论
     page_number = request.GET.get("page")
     comments = paginator.get_page(page_number)
 
@@ -318,7 +318,7 @@ def save_quote(request):
     )
 
 
-################################### Registration and Login Views ###################################
+######## ############Registration and Login Views ##########################
 
 
 def register_view(request):
@@ -359,7 +359,61 @@ def login_view(request):
     return render(request, "login.html", {"form": form})
 
 
-################################### Flower Material Views ###################################
+#######################包装视图################################
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.contrib import messages
+from .forms import PackagingForm
+from .models import Packaging, PackagingType
+
+
+def add_packaging(request):
+    if request.method == "POST":
+        form = PackagingForm(request.POST, request.FILES)
+        if form.is_valid():
+            packaging = form.save(commit=False)
+            packaging.created_by = request.user
+            packaging.save()
+            return redirect("packaging_list")
+    else:
+        form = PackagingForm()
+    return render(request, "add_packaging.html", {"form": form})
+
+
+def edit_packaging(request, pk):
+    packaging = get_object_or_404(Packaging, pk=pk)
+    packaging_types = PackagingType.objects.all()  # 获取所有包装类型
+
+    if request.method == "POST":
+        form = PackagingForm(request.POST, request.FILES, instance=packaging)
+        if form.is_valid():
+            form.save()
+            return redirect("packaging_list")
+    else:
+        form = PackagingForm(instance=packaging)
+
+    return render(
+        request,
+        "edit_packaging.html",
+        {"form": form, "packaging": packaging, "packaging_types": packaging_types},
+    )
+
+
+def delete_packaging(request, pk):
+    packaging = get_object_or_404(Packaging, pk=pk)
+    if request.method == "POST":
+        packaging.delete()
+        messages.success(request, "包装已成功删除。")
+        return redirect("packaging_list")
+    return render(request, "delete_packaging.html", {"packaging": packaging})
+
+
+def packaging_list(request):
+    packagings = Packaging.objects.all()
+    return render(request, "packaging_list.html", {"packagings": packagings})
+
+
+############################### Flower Material Views ###################################
 
 
 @login_required

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  包装管理页面
+{% endblock %}
+
+{% block extra_css %}
+  th {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fixed-image-cell img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px; /* 调整列宽度，比图片宽一点 */
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <a href="{% url 'add_packaging' %}" class="btn btn-primary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">添加包装</a>
+        <button id="export-button" class="btn btn-secondary btn-lg" style="margin-top: 10px; margin-bottom: 10px;">导出为Excel</button>
+        <div class="table-responsive">
+          <table class="table table-hover table-fixed" id="packaging-table">
+            <thead>
+              <tr>
+                <th style="text-align: center; vertical-align: middle;">
+                  <input type="checkbox" id="select-all">
+                </th>
+                <th style="text-align: center; vertical-align: middle;">编号</th>
+                <th style="text-align: center; vertical-align: middle;">类型</th>
+                <th style="text-align: center; vertical-align: middle;">型号</th>
+                <th style="text-align: center; vertical-align: middle;">图片</th>
+                <th style="text-align: center; vertical-align: middle;">名称</th>
+                <th style="text-align: center; vertical-align: middle;">长度</th>
+                <th style="text-align: center; vertical-align: middle;">宽度</th>
+                <th style="text-align: center; vertical-align: middle;">高度</th>
+                <th style="text-align: center; vertical-align: middle;">成本价</th>
+                <th style="text-align: center; vertical-align: middle;">售价</th>
+                <th style="text-align: center; vertical-align: middle;">备注</th>
+                <th style="text-align: center; vertical-align: middle;">创建人</th>
+                <th style="text-align: center; vertical-align: middle;">创建时间</th>
+                <th style="text-align: center; vertical-align: middle;">修改时间</th>
+                <th style="text-align: center; vertical-align: middle;">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for packaging in packagings %}
+                <tr>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <input type="checkbox" class="select-item">
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ forloop.counter }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.packaging_type.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.model }}</td>
+                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
+                    {% if packaging.image %}
+                      <img src="{{ packaging.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
+                    {% else %}
+                      无图片
+                    {% endif %}
+                  </td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.length }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.width }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.height }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.cost_price }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.selling_price }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.remark }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.created_by.username }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.created_at }}</td>
+                  <td style="text-align: center; vertical-align: middle;">{{ packaging.updated_at }}</td>
+                  <td style="text-align: center; vertical-align: middle;">
+                    <a href="{% url 'edit_packaging' packaging.pk %}" class="btn btn-warning btn-sm">编辑</a>
+                    <a href="{% url 'delete_packaging' packaging.pk %}" class="btn btn-danger btn-sm">删除</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const table = document.getElementById('packaging-table');
+      const dataTable = new simpleDatatables.DataTable(table, {
+        searchable: true,
+        fixedHeight: true,
+        perPageSelect: [5, 10, 15, 20, 30, 500],
+        perPage: 20,
+        labels: {
+          placeholder: '搜索...',
+          perPage: '/条记录每页',
+          noRows: '没有找到符合条件的记录',
+          info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
+        },
+        columns: [
+          { select: [0], sortable: false } // Disable sorting on the first column (checkbox)
+        ]
+      });
+
+      // Select/Deselect all checkboxes
+      document.getElementById('select-all').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.select-item');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+      });
+
+      // Export selected rows to Excel
+      document.getElementById('export-button').addEventListener('click', function () {
+        const selectedRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => {
+          return row.querySelector('.select-item').checked;
+        });
+
+        if (selectedRows.length === 0) {
+          alert('请选择至少一条记录进行导出');
+          return;
+        }
+
+        const exportData = [];
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        exportData.push(headers.slice(1)); // Exclude the checkbox header
+
+        selectedRows.forEach(row => {
+          const rowData = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+          exportData.push(rowData.slice(1)); // Exclude the checkbox column
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '包装');
+
+        XLSX.writeFile(wb, '包装记录.xlsx');
+      });
+    });
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; cookies.length > i; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+{% endblock %}

@@ -30,9 +30,17 @@ from app01.views import (
     profile_view,
     set_background,
     delete_comment_view,
+    add_packaging,
+    packaging_list,
+    edit_packaging,
+    delete_packaging,
 )
 
 urlpatterns = [
+    path("add_packaging/", add_packaging, name="add_packaging"),
+    path("packaging_list/", packaging_list, name="packaging_list"),
+    path("edit_packaging/<str:pk>/", edit_packaging, name="edit_packaging"),
+    path("delete_packaging/<str:pk>/", delete_packaging, name="delete_packaging"),
     # Admin URL
     path("admin/", admin.site.urls),
     # Base and Home URLs

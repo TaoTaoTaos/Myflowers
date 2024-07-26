@@ -3,7 +3,30 @@ from django.db import models
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, Product, ProductMaterial, FlowerMaterial, QuoteItem
 
+# 包装表单
 
+from django import forms
+from .models import Packaging
+
+
+class PackagingForm(forms.ModelForm):
+    class Meta:
+        model = Packaging
+
+        fields = [
+            "packaging_type",
+            "name",
+            "length",
+            "width",
+            "height",
+            "cost_price",
+            "selling_price",
+            "image",
+            "remark",
+        ]
+
+
+###################################包装表单###################################
 # 用户注册表单
 class RegisterForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
