@@ -257,20 +257,6 @@ import os
 import re
 
 
-# 包装类型模型
-class PackagingType(models.Model):
-    TYPE_CHOICES = [
-        ("内盒", "Inner Box"),
-        ("外箱", "Outer Box"),
-        ("花器", "Flower Vessel"),
-    ]
-
-    name = models.CharField(max_length=100, choices=TYPE_CHOICES, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 # 自定义文件上传路径函数
 def packaging_directory_path(instance, filename):
     # Replace any non-alphanumeric character with an underscore
@@ -336,6 +322,17 @@ def product_directory_path(instance, filename):
     return os.path.join("products", safe_model_name, filename)
 
 
+class package_name(models.Model):
+    TYPE_CHOICES = [
+        ("OOP Bag", "OOP Bag"),
+    ]
+
+    name = models.CharField(max_length=100, choices=TYPE_CHOICES, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 # 产品模型
 class Product(models.Model):
     model = models.CharField(
@@ -343,6 +340,9 @@ class Product(models.Model):
     )
     product_type = models.ForeignKey(
         ProductType, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    package_name = models.ForeignKey(
+        package_name, on_delete=models.SET_NULL, null=True, blank=True
     )
     image = models.ImageField(
         upload_to=product_directory_path, null=True, blank=True, default=None

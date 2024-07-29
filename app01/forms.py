@@ -162,7 +162,7 @@ class ProductForm(forms.ModelForm):
             "size": forms.TextInput(attrs={"class": "form-control"}),
             "weight": forms.TextInput(attrs={"class": "form-control"}),
             "color": forms.TextInput(attrs={"class": "form-control"}),
-            "package": forms.TextInput(attrs={"class": "form-control"}),
+            "package_name": forms.Select(attrs={"class": "form-control"}),
             "sale_spec_quantity": forms.TextInput(attrs={"class": "form-control"}),
             "sale_spec_unit": forms.Select(attrs={"class": "form-control"}),
             "description": forms.Textarea(attrs={"class": "form-control"}),

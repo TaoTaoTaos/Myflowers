@@ -79,19 +79,15 @@
               </div>
               <div class="row">
                 <div class="form-group col-md-6">
-                  <label for="package">包装</label>
-                  {{ form.package|add_class:"form-control" }}
+                  <label for="package_name">包装</label>
+                  {{ form.package_name|add_class:"form-control" }}
                 </div>
-                <div class="form-group col-md-6">
-                  <label for="sale_spec_quantity">销售规格数量</label>
-                  {{ form.sale_spec_quantity|add_class:"form-control" }}
+                 <div class="form-group col-md-6">
+                  <label for="product_type">产品类型</label>
+                  {{ form.product_type|add_class:"form-control" }}
                 </div>
               </div>
               <div class="row">
-                <div class="form-group col-md-6">
-                  <label for="sale_spec_unit">销售规格单位</label>
-                  {{ form.sale_spec_unit|add_class:"form-control" }}
-                </div>
                 <div class="form-group col-md-6">
                   <label for="description">描述</label>
                   {{ form.description|add_class:"form-control" }}
@@ -112,21 +108,16 @@
                 </div>
               </div>
               <div class="row">
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-6">
                   <label for="image">产品图片</label>
                   {{ form.image|add_class:"form-control-file" }}
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-6">
                   <label for="attachment">附件</label>
                   {{ form.attachment|add_class:"form-control-file" }}
                 </div>
               </div>
-              <div class="row">
-                <div class="form-group col-md-12">
-                  <label for="product_type">产品类型</label>
-                  {{ form.product_type|add_class:"form-control" }}
-                </div>
-              </div>
+          
             </div>
             <button type="submit" class="btn btn-success">提交</button>
           </form>
@@ -316,9 +307,10 @@
         </tr>
       `;
       $('#selected-packagings-list').append(newRow);
+      updateTotalPrice();
     });
 
-    $('#selected-items-list').on('click', '.remove-item-btn', function(){
+    $('#selected-materials-list, #selected-packagings-list').on('click', '.remove-item-btn', function(){
       console.log("Remove item button clicked");
       $(this).closest('tr').remove();
       updateTotalPrice();
