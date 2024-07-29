@@ -559,26 +559,34 @@ from .forms import ProductForm, ProductMaterialFormSet
 
 @login_required
 def add_product(request):
-    ProductForm = modelform_factory(
-        Product, exclude=["materials", "created_by", "created_at", "updated_at"]
-    )
+    flower_materials = FlowerMaterial.objects.all()
+    packagings = Packaging.objects.all()
 
     if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
+        product_form = ProductForm(request.POST, request.FILES)
+        packaging_form = PackagingForm(request.POST, request.FILES)
+
+        if packaging_form.is_valid():
+            new_packaging = packaging_form.save(commit=False)
+            new_packaging.created_by = request.user
+            new_packaging.save()
+            messages.success(request, "新包装已成功创建")
+
+        if product_form.is_valid():
             try:
                 with transaction.atomic():
-                    product = form.save(commit=False)
+                    product = product_form.save(commit=False)
                     product.created_by = request.user
-                    product.created_at = timezone.now()
-                    product.updated_at = timezone.now()
+                    product.updated_at = timezone.now()  # 确保 updated_at 字段有值
                     product.save()
+                    messages.success(request, "产品已成功保存")
+                    print("Product saved: ", product)
 
                     # 处理花材信息
-                    flower_materials = request.POST.get("flower_materials", "").split(
-                        ";"
-                    )
-                    for fm in flower_materials:
+                    flower_materials_data = request.POST.get(
+                        "flower_materials", ""
+                    ).split(";")
+                    for fm in flower_materials_data:
                         if fm:
                             flower_material_model, quantity, ratio, cost_price = (
                                 fm.split(",")
@@ -594,8 +602,8 @@ def add_product(request):
                             )
 
                     # 处理包装信息
-                    packagings = request.POST.get("packagings", "").split(";")
-                    for pk in packagings:
+                    packagings_data = request.POST.get("packagings", "").split(";")
+                    for pk in packagings_data:
                         if pk:
                             (
                                 packaging_model,
@@ -604,6 +612,16 @@ def add_product(request):
                                 cost_price,
                             ) = pk.split(",")
                             packaging = Packaging.objects.get(model=packaging_model)
+                            inner_box_quantity = (
+                                int(inner_box_quantity)
+                                if packaging.packaging_type.name == "内盒"
+                                else 0
+                            )
+                            outer_box_quantity = (
+                                int(outer_box_quantity)
+                                if packaging.packaging_type.name in ["内盒", "外箱"]
+                                else 0
+                            )
                             ProductPackaging.objects.create(
                                 product=product,
                                 packaging=packaging,
@@ -612,22 +630,30 @@ def add_product(request):
                             )
 
                     return redirect("product_list")
-            except IntegrityError:
-                form.add_error(None, "保存产品时出现错误，请重试。")
-            except FlowerMaterial.DoesNotExist:
-                form.add_error(None, "指定的花材不存在，请检查输入。")
-            except Packaging.DoesNotExist:
-                form.add_error(None, "指定的包装不存在，请检查输入。")
+            except IntegrityError as e:
+                print("IntegrityError: ", e)
+                product_form.add_error(None, "保存产品时出现错误，请重试。")
+            except FlowerMaterial.DoesNotExist as e:
+                print("FlowerMaterial.DoesNotExist: ", e)
+                product_form.add_error(None, "指定的花材不存在，请检查输入。")
+            except Packaging.DoesNotExist as e:
+                print("Packaging.DoesNotExist: ", e)
+                product_form.add_error(None, "指定的包装不存在，请检查输入。")
+            except Exception as e:
+                print("Exception: ", e)
+                product_form.add_error(None, "发生未知错误，请重试。")
+        else:
+            print("Product form is not valid: ", product_form.errors)
     else:
-        form = ProductForm()
-        flower_materials = FlowerMaterial.objects.all()
-        packagings = Packaging.objects.all()
+        product_form = ProductForm()
+        packaging_form = PackagingForm()
 
     return render(
         request,
         "add_product.html",
         {
-            "form": form,
+            "form": product_form,
+            "packaging_form": packaging_form,
             "flower_materials": flower_materials,
             "packagings": packagings,
             "current_user": request.user,

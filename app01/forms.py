@@ -151,12 +151,10 @@ class FlowerMaterialForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = "__all__"
+        exclude = ["materials", "updated_at"]
         widgets = {
             "model": forms.TextInput(attrs={"class": "form-control"}),
-            "product_type": forms.Select(
-                attrs={"class": "form-control"}
-            ),  # 新增 product_type 字段
+            "product_type": forms.Select(attrs={"class": "form-control"}),
             "chinese_name": forms.TextInput(attrs={"class": "form-control"}),
             "english_name": forms.TextInput(attrs={"class": "form-control"}),
             "size": forms.TextInput(attrs={"class": "form-control"}),
@@ -178,7 +176,7 @@ class ProductForm(forms.ModelForm):
             "image": forms.ClearableFileInput(attrs={"class": "form-control-file"}),
             "attachment": forms.ClearableFileInput(
                 attrs={"class": "form-control-file"}
-            ),  # 新增附件字段
+            ),
         }
 
 

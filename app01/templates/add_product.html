@@ -34,6 +34,20 @@
   .card.custom-width {
     width: 100%;
   }
+
+  .small-width {
+    width: 80px;
+  }
+
+  .img-thumbnail {
+    height: 30px;
+    width: 30px;
+    object-fit: cover;
+  }
+
+  .img-thumbnail-cell {
+    width: 100px;
+  }
 {% endblock %}
 
 {% block content %}
@@ -82,7 +96,7 @@
                   <label for="package_name">包装</label>
                   {{ form.package_name|add_class:"form-control" }}
                 </div>
-                 <div class="form-group col-md-6">
+                <div class="form-group col-md-6">
                   <label for="product_type">产品类型</label>
                   {{ form.product_type|add_class:"form-control" }}
                 </div>
@@ -134,8 +148,9 @@
               <tr>
                 <th>型号</th>
                 <th>名称</th>
-                <th>数量</th>
-                <th>比例</th>
+                <th>图片</th>
+                <th style="width: 100px; ">数量</th>
+                <th style="width: 100px; ">比例</th>
                 <th>成本价</th>
                 <th>操作</th>
               </tr>
@@ -149,8 +164,10 @@
               <tr>
                 <th>型号</th>
                 <th>名称</th>
-                <th>内箱数量</th>
-                <th>外箱数量</th>
+                <th>图片</th>
+                <th style="width: 100px; ">内箱数量</th>
+                <th style="width: 100px; ">外箱数量</th>
+                <th>尺寸</th>
                 <th>成本价</th>
                 <th>操作</th>
               </tr>
@@ -159,6 +176,72 @@
             </tbody>
           </table>
           <p>总价: <span id="total-price">0</span> 元</p>
+          <!-- 新包装表单 -->
+          <div class="card-body">
+            <h3 class="card-title">创建包装</h3>
+            <form method="post" id="packaging-form" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-section">
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="packaging_type">包装类型</label>
+                    {{ packaging_form.packaging_type|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="name">包装名称</label>
+                    {{ packaging_form.name|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label for="length">长度</label>
+                    {{ packaging_form.length|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="width">宽度</label>
+                    {{ packaging_form.width|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="height">高度</label>
+                    {{ packaging_form.height|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="cost_price">成本价</label>
+                    {{ packaging_form.cost_price|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="selling_price">售价</label>
+                    {{ packaging_form.selling_price|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="remark">备注</label>
+                  {{ packaging_form.remark|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                  <label for="image">包装图片</label>
+                  {{ packaging_form.image|add_class:"form-control-file" }}
+                </div>
+              </div>
+              <button type="submit" class="btn btn-success">提交</button>
+            </form>
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                <ul>
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
@@ -202,7 +285,7 @@
                   <td style="text-align: center; vertical-align: middle;">{{ material.cost_price }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.created_by }}</td>
                   <td style="text-align: center; vertical-align: middle;">
-                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-model="{{ material.model }}" data-name="{{ material.chinese_name }}" data-cost-price="{{ material.cost_price }}">添加到产品</button>
+                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-model="{{ material.model }}" data-name="{{ material.chinese_name }}" data-image="{% if material.image %}{{ material.image.url }}{% endif %}" data-cost-price="{{ material.cost_price }}">添加到产品</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -235,7 +318,7 @@
                 {% for packaging in packagings %}
                 <tr>
                   <td style="text-align: center; height: 90px; vertical-align: middle;">{{ forloop.counter }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ packaging.packaging_type.name }}</td>
+                  <td style="text-align: center; vertical-align: middle;" class="packaging-type">{{ packaging.packaging_type.name }}</td>
                   <td style="text-align: center; vertical-align: middle;" >{{ packaging.model }}</td>
                   <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
                     {% if packaging.image %}
@@ -248,7 +331,7 @@
                   <td style="text-align: center; vertical-align: middle;">{{ packaging.cost_price }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ packaging.created_by }}</td>
                   <td style="text-align: center; vertical-align: middle;">
-                    <button type="button" class="btn btn-primary add-packaging-btn" data-id="{{ packaging.model }}" data-model="{{ packaging.model }}" data-name="{{ packaging.name }}" data-cost-price="{{ packaging.cost_price }}">添加到产品</button>
+                    <button type="button" class="btn btn-primary add-packaging-btn" data-id="{{ packaging.model }}" data-model="{{ packaging.model }}" data-name="{{ packaging.name }}" data-image="{% if packaging.image %}{{ packaging.image.url }}{% endif %}" data-cost-price="{{ packaging.cost_price }}" data-type="{{ packaging.packaging_type.name }}" data-size="{{ packaging.length }} x {{ packaging.width }} x {{ packaging.height }} cm">添加到产品</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -272,14 +355,16 @@
       var id = $(this).data('id');
       var model = $(this).data('model');
       var name = $(this).data('name');
+      var imageUrl = $(this).data('image');
       var costPrice = $(this).data('cost-price');
 
       var newRow = `
         <tr data-id="${id}" data-cost-price="${costPrice}">
           <td>${model}</td>
           <td>${name}</td>
-          <td><input type="number" name="quantity" class="form-control" value="1"></td>
-          <td><input type="number" name="ratio" class="form-control" value="1"></td>
+          <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" style="width: 50px; height: 50px;" >` : '无图片'}</td>
+          <td class="small-width"><input type="number" name="quantity" class="form-control" value="1"></td>
+          <td class="small-width"><input type="number" name="ratio" class="form-control" value="1"></td>
           <td>${costPrice}</td>
           <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
         </tr>
@@ -294,18 +379,39 @@
       var id = $(this).data('id');
       var model = $(this).data('model');
       var name = $(this).data('name');
+      var imageUrl = $(this).data('image');
       var costPrice = $(this).data('cost-price');
+      var packagingType = $(this).data('type');
+      var size = $(this).data('size');
 
-      var newRow = `
-        <tr data-id="${id}" data-cost-price="${costPrice}">
-          <td>${model}</td>
-          <td>${name}</td>
-          <td><input type="number" name="inner_box_quantity" class="form-control" value="1"></td>
-          <td><input type="number" name="outer_box_quantity" class="form-control" value="1"></td>
-          <td>${costPrice}</td>
-          <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
-        </tr>
-      `;
+      var newRow = '';
+      if (packagingType === '内盒') {
+        newRow = `
+          <tr data-id="${id}" data-cost-price="${costPrice}">
+            <td>${model}</td>
+            <td>${name}</td>
+            <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片"style="width: 50px; height: 50px;">` : '无图片'}</td>
+            <td class="small-width"><input type="number" name="inner_box_quantity" class="form-control" value="1"></td>
+            <td class="small-width"><input type="number" name="outer_box_quantity" class="form-control" value="1"></td>
+            <td class="size-field">${size}</td>
+            <td>${costPrice}</td>
+            <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+          </tr>
+        `;
+      } else {
+        newRow = `
+          <tr data-id="${id}" data-cost-price="${costPrice}">
+            <td>${model}</td>
+            <td>${name}</td>
+            <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" class="img-thumbnail">` : '无图片'}</td>
+            <td class="small-width inner-box-field"></td>
+            <td class="small-width outer-box-field"></td>
+            <td class="size-field">${size}</td>
+            <td>${costPrice}</td>
+            <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+          </tr>
+        `;
+      }
       $('#selected-packagings-list').append(newRow);
       updateTotalPrice();
     });
@@ -329,8 +435,8 @@
       });
       $('#selected-packagings-list tr').each(function(){
         var id = $(this).data('id');
-        var innerBoxQuantity = $(this).find('input[name="inner_box_quantity"]').val();
-        var outerBoxQuantity = $(this).find('input[name="outer_box_quantity"]').val();
+        var innerBoxQuantity = $(this).find('input[name="inner_box_quantity"]').val() || 0;
+        var outerBoxQuantity = $(this).find('input[name="outer_box_quantity"]').val() || 0;
         var costPrice = $(this).data('cost-price');
         packagings.push(`${id},${innerBoxQuantity},${outerBoxQuantity},${costPrice}`);
       });

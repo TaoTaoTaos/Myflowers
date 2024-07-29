@@ -52,7 +52,7 @@ class Packaging(models.Model):
     selling_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, default=0.0
     )
-    remark = models.TextField(blank=True, default="无备注")
+    remark = models.CharField(max_length=200,blank=True, default="无备注")
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
