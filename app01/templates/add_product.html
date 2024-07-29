@@ -52,7 +52,125 @@
 
 {% block content %}
 <section class="section">
+  
   <div class="row">
+    <div class="col-lg-6">
+      <div class="card custom-width mb-4">
+        <div class="card-body">
+          <h3 class="card-title">已选择的材料和包装</h3>
+          <h4>材料</h4>
+          <table class="table table-bordered" id="selected-materials-table">
+            <thead>
+              <tr>
+                <th>型号</th>
+                <th>名称</th>
+                <th>图片</th>
+                <th style="width: 100px; ">数量</th>
+                <th style="width: 100px; ">比例</th>
+                <th>成本价</th>
+                <th style="width: 70px; ">操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-materials-list">
+            </tbody>
+          </table>
+          <h4>包装</h4>
+          <table class="table table-bordered" id="selected-packagings-table">
+            <thead>
+              <tr>
+                <th>型号</th>
+                <th>名称</th>
+                <th>图片</th>
+                <th style="width: 100px; ">内盒装盒数</th>
+                <th style="width: 100px; ">外箱装箱数</th>
+                <th>尺寸</th>
+                <th>成本价</th>
+                <th style="width: 70px; ">操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-packagings-list">
+            </tbody>
+          </table>
+          
+          <!-- 新包装表单 -->
+          <div class="card-body" style="border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
+            <h3 class="card-title">创建包装</h3>
+            <form method="post" id="packaging-form" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-section">
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="packaging_type">包装类型</label>
+                    {{ packaging_form.packaging_type|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="name">包装名称</label>
+                    {{ packaging_form.name|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label for="length">长度</label>
+                    {{ packaging_form.length|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="width">宽度</label>
+                    {{ packaging_form.width|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="height">高度</label>
+                    {{ packaging_form.height|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="cost_price">成本价</label>
+                    {{ packaging_form.cost_price|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="selling_price">售价</label>
+                    {{ packaging_form.selling_price|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="remark">包装备注</label>
+                  {{ packaging_form.remark|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-4">
+                  <label for="image" class="form-label">包装图片</label>
+                  <input type="file" id="image" name="image" class="form-control {% if packaging_form.image.errors %}is-invalid{% endif %}">
+                  {% if packaging_form.image.errors %}
+                  <div class="invalid-feedback">
+                    {{ packaging_form.image.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+           
+               <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-outline-success" type="submit" >创建此包装并添加到当前产品</button>
+              </div>
+
+
+            </form>
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                <ul>
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="col-lg-6">
       <div class="card custom-width">
         <div class="card-body">
@@ -96,7 +214,7 @@
                   <label for="package_name">包装</label>
                   {{ form.package_name|add_class:"form-control" }}
                 </div>
-                <div class="form-group col-md-6">
+                 <div class="form-group col-md-6">
                   <label for="product_type">产品类型</label>
                   {{ form.product_type|add_class:"form-control" }}
                 </div>
@@ -122,147 +240,54 @@
                 </div>
               </div>
               <div class="row">
-                <div class="form-group col-md-6">
-                  <label for="image">产品图片</label>
-                  {{ form.image|add_class:"form-control-file" }}
+                <div class="form-group col-md-4">
+                  <label for="image" class="form-label">产品图片</label>
+                  <input type="file" id="image" name="image" class="form-control {% if form.image.errors %}is-invalid{% endif %}">
+                  {% if form.image.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.image.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
-                <div class="form-group col-md-6">
-                  <label for="attachment">附件</label>
-                  {{ form.attachment|add_class:"form-control-file" }}
+                <div class="form-group col-md-4">
+                  <label for="attachment" class="form-label">附件</label>
+                  <input type="file" id="attachment" name="attachment" class="form-control {% if form.attachment.errors %}is-invalid{% endif %}">
+                  {% if form.attachment.errors %}
+                  <div class="invalid-feedback">
+                    {{ form.attachment.errors.0 }}
+                  </div>
+                  {% endif %}
                 </div>
               </div>
           
             </div>
-            <button type="submit" class="btn btn-success">提交</button>
+          <p style="font-size: 24px;">预估产品价格: <span id="total-price">0</span> 元</p>
+            <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-primary" type="submit" >保存并创建该产品</button>
+              </div>
           </form>
         </div>
       </div>
     </div>
-    <div class="col-lg-6">
-      <div class="card custom-width mb-4">
-        <div class="card-body">
-          <h3 class="card-title">已选择的花材和包装</h3>
-          <h4>花材</h4>
-          <table class="table table-bordered" id="selected-materials-table">
-            <thead>
-              <tr>
-                <th>型号</th>
-                <th>名称</th>
-                <th>图片</th>
-                <th style="width: 100px; ">数量</th>
-                <th style="width: 100px; ">比例</th>
-                <th>成本价</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="selected-materials-list">
-            </tbody>
-          </table>
-          <h4>包装</h4>
-          <table class="table table-bordered" id="selected-packagings-table">
-            <thead>
-              <tr>
-                <th>型号</th>
-                <th>名称</th>
-                <th>图片</th>
-                <th style="width: 100px; ">内箱数量</th>
-                <th style="width: 100px; ">外箱数量</th>
-                <th>尺寸</th>
-                <th>成本价</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="selected-packagings-list">
-            </tbody>
-          </table>
-          <p>总价: <span id="total-price">0</span> 元</p>
-          <!-- 新包装表单 -->
-          <div class="card-body">
-            <h3 class="card-title">创建包装</h3>
-            <form method="post" id="packaging-form" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="form-section">
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="packaging_type">包装类型</label>
-                    {{ packaging_form.packaging_type|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="name">包装名称</label>
-                    {{ packaging_form.name|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-4">
-                    <label for="length">长度</label>
-                    {{ packaging_form.length|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="width">宽度</label>
-                    {{ packaging_form.width|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="height">高度</label>
-                    {{ packaging_form.height|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="cost_price">成本价</label>
-                    {{ packaging_form.cost_price|add_class:"form-control" }}
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="selling_price">售价</label>
-                    {{ packaging_form.selling_price|add_class:"form-control" }}
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="remark">备注</label>
-                  {{ packaging_form.remark|add_class:"form-control" }}
-                </div>
-                <div class="form-group">
-                  <label for="image">包装图片</label>
-                  {{ packaging_form.image|add_class:"form-control-file" }}
-                </div>
-              </div>
-              <button type="submit" class="btn btn-success">提交</button>
-            </form>
-            {% if form.errors %}
-              <div class="alert alert-danger">
-                <ul>
-                  {% for field in form %}
-                    {% for error in field.errors %}
-                      <li>{{ field.label }}: {{ error }}</li>
-                    {% endfor %}
-                  {% endfor %}
-                  {% for error in form.non_field_errors %}
-                    <li>{{ error }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
+    
   </div>
   <div class="row mt-4">
     <div class="col-lg-6">
       <div class="card custom-width">
         <div class="card-body">
-          <h3 class="card-title">花材列表</h3>
+          <h3 class="card-title">原材料列表</h3>
           <input type="text" id="search-box" placeholder="搜索花材" class="form-control mb-3">
           <div class="table-responsive scrollable-table">
             <table class="table table-hover table-fixed" id="flower-materials-table">
               <thead>
                 <tr>
-                  <th style="text-align: center; vertical-align: middle;">编号</th>
+                  <th style="width: 50px; ">编号</th>
                   <th style="text-align: center; vertical-align: middle;">分类</th>
                   <th style="text-align: center; vertical-align: middle;">型号</th>
                   <th style="text-align: center; vertical-align: middle;">图片</th>
                   <th style="text-align: center; vertical-align: middle;">中文名</th>
                   <th style="text-align: center; vertical-align: middle;">英文名</th>
-                  <th style="text-align: center; vertical-align: middle;">成本价</th>
+                  <th style="width: 50px; ">成本价</th>
                   <th style="text-align: center; vertical-align: middle;">修改人</th>
                   <th style="text-align: center; vertical-align: middle;">操作</th>
                 </tr>
@@ -275,7 +300,7 @@
                   <td style="text-align: center; vertical-align: middle;" onclick="window.location.href='{% url 'flower_material_detail' material.model %}'">{{ material.model }}</td>
                   <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
                     {% if material.image %}
-                    <img src="{{ material.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
+                    <img src="{{ material.image.url }}" alt="图片" style="width: 50px; height: 50px;" />
                     {% else %}
                     无图片
                     {% endif %}
@@ -285,7 +310,7 @@
                   <td style="text-align: center; vertical-align: middle;">{{ material.cost_price }}</td>
                   <td style="text-align: center; vertical-align: middle;">{{ material.created_by }}</td>
                   <td style="text-align: center; vertical-align: middle;">
-                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-model="{{ material.model }}" data-name="{{ material.chinese_name }}" data-image="{% if material.image %}{{ material.image.url }}{% endif %}" data-cost-price="{{ material.cost_price }}">添加到产品</button>
+                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-model="{{ material.model }}" data-name="{{ material.chinese_name }}" data-image="{% if material.image %}{{ material.image.url }}{% endif %}" data-cost-price="{{ material.cost_price }}">添加</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -309,6 +334,7 @@
                   <th style="text-align: center; vertical-align: middle;">型号</th>
                   <th style="text-align: center; vertical-align: middle;">图片</th>
                   <th style="text-align: center; vertical-align: middle;">名称</th>
+                  <th style="text-align: center; vertical-align: middle;">尺寸</th>
                   <th style="text-align: center; vertical-align: middle;">成本价</th>
                   <th style="text-align: center; vertical-align: middle;">修改人</th>
                   <th style="text-align: center; vertical-align: middle;">操作</th>
@@ -317,31 +343,32 @@
               <tbody id="packagings-list">
                 {% for packaging in packagings %}
                 <tr>
-                  <td style="text-align: center; height: 90px; vertical-align: middle;">{{ forloop.counter }}</td>
-                  <td style="text-align: center; vertical-align: middle;" class="packaging-type">{{ packaging.packaging_type.name }}</td>
-                  <td style="text-align: center; vertical-align: middle;" >{{ packaging.model }}</td>
-                  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
-                    {% if packaging.image %}
-                    <img src="{{ packaging.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
-                    {% else %}
-                    无图片
-                    {% endif %}
-                  </td>
-                  <td style="text-align: center; vertical-align: middle;">{{ packaging.name }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ packaging.cost_price }}</td>
-                  <td style="text-align: center; vertical-align: middle;">{{ packaging.created_by }}</td>
-                  <td style="text-align: center; vertical-align: middle;">
-                    <button type="button" class="btn btn-primary add-packaging-btn" data-id="{{ packaging.model }}" data-model="{{ packaging.model }}" data-name="{{ packaging.name }}" data-image="{% if packaging.image %}{{ packaging.image.url }}{% endif %}" data-cost-price="{{ packaging.cost_price }}" data-type="{{ packaging.packaging_type.name }}" data-size="{{ packaging.length }} x {{ packaging.width }} x {{ packaging.height }} cm">添加到产品</button>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <td style="text-align: center; height: 90px; vertical-align: middle;">{{ forloop.counter }}</td>
+  <td style="text-align: center; vertical-align: middle;" class="packaging-type">{{ packaging.packaging_type.name }}</td>
+  <td style="text-align: center; vertical-align: middle;" >{{ packaging.model }}</td>
+  <td style="text-align: center; vertical-align: middle;" class="fixed-image-cell">
+    {% if packaging.image %}
+    <img src="{{ packaging.image.url }}" alt="图片" style="width: 100px; height: 100px;" />
+    {% else %}
+    无图片
+    {% endif %}
+  </td>
+  <td style="text-align: center; vertical-align: middle;">{{ packaging.name }}</td>
+  <td style="text-align: center; vertical-align: middle;">{{ packaging.length }} x {{ packaging.width }} x {{ packaging.height }} cm</td>
+  <td style="text-align: center; vertical-align: middle;">{{ packaging.cost_price }}</td>
+  <td style="text-align: center; vertical-align: middle;">{{ packaging.created_by }}</td>
+  <td style="text-align: center; vertical-align: middle;">
+    <button type="button" class="btn btn-primary add-packaging-btn" data-id="{{ packaging.model }}" data-model="{{ packaging.model }}" data-name="{{ packaging.name }}" data-image="{% if packaging.image %}{{ packaging.image.url }}{% endif %}" data-cost-price="{{ packaging.cost_price }}" data-type="{{ packaging.packaging_type.name }}" data-size="{{ packaging.length }} x {{ packaging.width }} x {{ packaging.height }} cm">添加</button>
+  </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -422,7 +449,7 @@
       updateTotalPrice();
     });
 
-    $('#product-form').submit(function(){
+    $('#product-form').submit(function(event){
       console.log("Form submitted");
       var flowerMaterials = [];
       var packagings = [];
@@ -506,6 +533,65 @@
       totalCost *= (1 + profitMargin);
       $('#total-price').text(totalCost.toFixed(2));
     }
+
+    $('#packaging-form').submit(function(event) {
+      event.preventDefault();
+      var formData = new FormData(this);
+      $.ajax({
+        url: '{% url "add_packaging" %}',  // 确保此URL指向正确的视图
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          console.log("Packaging added successfully");
+
+          var id = response.model;
+          var model = response.model;
+          var name = response.name;
+          var imageUrl = response.image;
+          var costPrice = response.cost_price;
+          var packagingType = response.packaging_type;
+          var size = response.size;
+
+          var newRow = '';
+          if (packagingType === '内盒') {
+            newRow = `
+              <tr data-id="${id}" data-cost-price="${costPrice}">
+                <td>${model}</td>
+                <td>${name}</td>
+                <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片"style="width: 50px; height: 50px;">` : '无图片'}</td>
+                <td class="small-width"><input type="number" name="inner_box_quantity" class="form-control" value="1"></td>
+                <td class="small-width"><input type="number" name="outer_box_quantity" class="form-control" value="1"></td>
+                <td class="size-field">${size}</td>
+                <td>${costPrice}</td>
+                <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+              </tr>
+            `;
+          } else {
+            newRow = `
+              <tr data-id="${id}" data-cost-price="${costPrice}">
+                <td>${model}</td>
+                <td>${name}</td>
+                <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" class="img-thumbnail">` : '无图片'}</td>
+                <td class="small-width inner-box-field"></td>
+                <td class="small-width outer-box-field"></td>
+                <td class="size-field">${size}</td>
+                <td>${costPrice}</td>
+                <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+              </tr>
+            `;
+          }
+          $('#selected-packagings-list').append(newRow);
+          updateTotalPrice();
+          $('#packaging-form')[0].reset();
+        },
+        error: function(xhr, status, error) {
+          console.log("Error adding packaging: " + error);
+        }
+      });
+    });
   });
 </script>
+
 {% endblock %}

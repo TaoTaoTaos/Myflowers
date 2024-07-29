@@ -163,7 +163,7 @@ class ProductForm(forms.ModelForm):
             "package_name": forms.Select(attrs={"class": "form-control"}),
             "sale_spec_quantity": forms.TextInput(attrs={"class": "form-control"}),
             "sale_spec_unit": forms.Select(attrs={"class": "form-control"}),
-            "description": forms.Textarea(attrs={"class": "form-control"}),
+            "description": forms.TextInput(attrs={"class": "form-control"}),
             "inner_box_long": forms.NumberInput(attrs={"class": "form-control"}),
             "inner_box_width": forms.NumberInput(attrs={"class": "form-control"}),
             "inner_box_height": forms.NumberInput(attrs={"class": "form-control"}),

@@ -368,6 +368,7 @@ from .forms import PackagingForm
 from .models import Packaging, PackagingType
 
 
+@csrf_exempt
 def add_packaging(request):
     if request.method == "POST":
         form = PackagingForm(request.POST, request.FILES)
@@ -375,7 +376,19 @@ def add_packaging(request):
             packaging = form.save(commit=False)
             packaging.created_by = request.user
             packaging.save()
-            return redirect("packaging_list")
+
+            # JSON response with packaging details
+            data = {
+                "model": packaging.model,
+                "name": packaging.name,
+                "image": packaging.image.url if packaging.image else None,
+                "cost_price": packaging.cost_price,
+                "packaging_type": packaging.packaging_type.name,
+                "size": f"{packaging.length} x {packaging.width} x {packaging.height} cm",
+            }
+            return JsonResponse(data)
+        else:
+            return JsonResponse({"errors": form.errors}, status=400)
     else:
         form = PackagingForm()
     return render(request, "add_packaging.html", {"form": form})
