@@ -301,3 +301,44 @@ class FollowUpAttachmentForm(forms.ModelForm):
         widgets = {
             "file": MultiFileInput(attrs={"class": "form-control"}),
         }
+
+
+#############################
+from django import forms
+from .models import Order, OrderItem
+from django.forms import inlineformset_factory
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = [
+            "order_number",
+            "customer",
+            "order_date",
+            "shipment_date",
+            "remarks",
+            "actual_payment_received",
+            "status",
+            "preparation_status",
+            "freight_cost_received",
+            "actual_freight_cost",
+            "tracking_number",
+            "shipping_method",
+        ]
+        widgets = {
+            "order_date": forms.DateInput(attrs={"type": "date"}),
+            "shipment_date": forms.DateInput(attrs={"type": "date"}),
+            "actual_shipment_date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+
+class OrderItemForm(forms.ModelForm):
+    class Meta:
+        model = OrderItem
+        fields = ["product", "flower_material", "quantity", "price_type"]
+
+
+OrderItemFormSet = inlineformset_factory(
+    Order, OrderItem, form=OrderItemForm, extra=1, can_delete=True
+)

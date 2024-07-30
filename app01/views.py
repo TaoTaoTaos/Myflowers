@@ -868,3 +868,67 @@ def follow_up_list(request, customer_id):
             "current_user": request.user,
         },
     )
+
+
+#########################################
+from django.shortcuts import render, redirect
+from django.views import View
+from .models import Order, OrderItem, Product, FlowerMaterial, ShippingMethod
+from .forms import OrderForm, OrderItemFormSet
+from django.contrib import messages
+from django.db import transaction
+from django.utils import timezone
+
+
+class OrderCreateView(View):
+    def get(self, request, *args, **kwargs):
+        form = OrderForm()
+        products = Product.objects.all()
+        flower_materials = FlowerMaterial.objects.all()
+        return render(
+            request,
+            "order_create.html",
+            {"form": form, "products": products, "flower_materials": flower_materials},
+        )
+
+    def post(self, request, *args, **kwargs):
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    order = form.save(commit=False)
+                    order.created_by = request.user
+                    order.save()
+                    products_data = request.POST.get("products", "").split(";")
+                    for p in products_data:
+                        if p:
+                            product_id, quantity, price = p.split(",")
+                            product = Product.objects.get(model=product_id)
+                            OrderItem.objects.create(
+                                order=order,
+                                content_object=product,
+                                quantity=quantity,
+                                price=price,
+                            )
+                    materials_data = request.POST.get("materials", "").split(";")
+                    for m in materials_data:
+                        if m:
+                            material_id, quantity, price = m.split(",")
+                            material = FlowerMaterial.objects.get(model=material_id)
+                            OrderItem.objects.create(
+                                order=order,
+                                content_object=material,
+                                quantity=quantity,
+                                price=price,
+                            )
+                    messages.success(request, "订单已成功创建")
+                    return redirect("order_list")
+            except Exception as e:
+                form.add_error(None, f"创建订单时出现错误: {str(e)}")
+        products = Product.objects.all()
+        flower_materials = FlowerMaterial.objects.all()
+        return render(
+            request,
+            "order_create.html",
+            {"form": form, "products": products, "flower_materials": flower_materials},
+        )

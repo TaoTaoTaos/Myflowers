@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+  创建订单页面
+{% endblock %}
+
+{% block extra_css %}
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fixed-image-cell img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px;
+  }
+
+  .scrollable-table {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+  }
+
+  .card.custom-width {
+    width: 100%;
+  }
+
+  .small-width {
+    width: 80px;
+  }
+
+  .img-thumbnail {
+    height: 30px;
+    width: 30px;
+    object-fit: cover;
+  }
+
+  .img-thumbnail-cell {
+    width: 100px;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card custom-width mb-4">
+        <div class="card-body">
+          <h3 class="card-title">已选择的产品和花材</h3>
+          <h4>产品</h4>
+          <table class="table table-bordered" id="selected-products-table">
+            <thead>
+              <tr>
+                <th>型号</th>
+                <th>名称</th>
+                <th>图片</th>
+                <th style="width: 100px;">数量</th>
+                <th>价格</th>
+                <th style="width: 70px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-products-list">
+            </tbody>
+          </table>
+          <h4>花材</h4>
+          <table class="table table-bordered" id="selected-materials-table">
+            <thead>
+              <tr>
+                <th>型号</th>
+                <th>名称</th>
+                <th>图片</th>
+                <th style="width: 100px;">数量</th>
+                <th>价格</th>
+                <th style="width: 70px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-materials-list">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h2 class="card-title">创建订单</h2>
+          <form method="post" id="order-form">
+            {% csrf_token %}
+            <div class="form-section">
+              <!-- 订单表单部分 -->
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="customer">客户</label>
+                  {{ form.customer|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="order_date">订单日期</label>
+                  {{ form.order_date|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="status">订单状态</label>
+                  {{ form.status|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="shipping_method">发货方式</label>
+                  {{ form.shipping_method|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="freight_cost">运费</label>
+                  {{ form.freight_cost|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="tracking_number">运单号</label>
+                  {{ form.tracking_number|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6">
+                  <label for="expected_ship_date">应发货日期</label>
+                  {{ form.expected_ship_date|add_class:"form-control" }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="actual_ship_date">实发货日期</label>
+                  {{ form.actual_ship_date|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-12">
+                  <label for="remarks">备注</label>
+                  {{ form.remarks|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+            <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-primary" type="submit">保存并创建订单</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h3 class="card-title">产品列表</h3>
+          <input type="text" id="search-products-box" placeholder="搜索产品" class="form-control mb-3">
+          <div class="table-responsive scrollable-table">
+            <table class="table table-hover table-fixed" id="products-table">
+              <thead>
+                <tr>
+                  <th>编号</th>
+                  <th>型号</th>
+                  <th>图片</th>
+                  <th>名称</th>
+                  <th>价格</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="products-list">
+                {% for product in products %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ product.model }}</td>
+                  <td class="fixed-image-cell">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="图片">
+                    {% else %}
+                    无图片
+                    {% endif %}
+                  </td>
+                  <td>{{ product.chinese_name }}</td>
+                  <td>{{ product.price }}</td>
+                  <td>
+                    <button type="button" class="btn btn-primary add-product-btn" data-id="{{ product.model }}" data-name="{{ product.chinese_name }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}" data-price="{{ product.price }}">添加</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h3 class="card-title">花材列表</h3>
+          <input type="text" id="search-materials-box" placeholder="搜索花材" class="form-control mb-3">
+          <div class="table-responsive scrollable-table">
+            <table class="table table-hover table-fixed" id="flower-materials-table">
+              <thead>
+                <tr>
+                  <th>编号</th>
+                  <th>型号</th>
+                  <th>图片</th>
+                  <th>名称</th>
+                  <th>价格</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="flower-materials-list">
+                {% for material in flower_materials %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ material.model }}</td>
+                  <td class="fixed-image-cell">
+                    {% if material.image %}
+                    <img src="{{ material.image.url }}" alt="图片">
+                    {% else %}
+                    无图片
+                    {% endif %}
+                  </td>
+                  <td>{{ material.chinese_name }}</td>
+                  <td>{{ material.price_one }}</td>
+                  <td>
+                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-name="{{ material.chinese_name }}" data-image="{% if material.image %}{{ material.image.url }}{% endif %}" data-price="{{ material.price_one }}">添加</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    console.log("Document is ready");
+
+    $('.add-product-btn').click(function(){
+      console.log("Add product button clicked");
+
+      var id = $(this).data('id');
+      var name = $(this).data('name');
+      var imageUrl = $(this).data('image');
+      var price = $(this).data('price');
+
+      var newRow = `
+        <tr data-id="${id}" data-price="${price}">
+          <td>${id}</td>
+          <td>${name}</td>
+          <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" style="width: 50px; height: 50px;">` : '无图片'}</td>
+          <td class="small-width"><input type="number" name="quantity" class="form-control" value="1"></td>
+          <td>${price}</td>
+          <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+        </tr>
+      `;
+      $('#selected-products-list').append(newRow);
+      updateTotalPrice();
+    });
+
+    $('.add-material-btn').click(function(){
+      console.log("Add material button clicked");
+
+      var id = $(this).data('id');
+      var name = $(this).data('name');
+      var imageUrl = $(this).data('image');
+      var price = $(this).data('price');
+
+      var newRow = `
+        <tr data-id="${id}" data-price="${price}">
+          <td>${id}</td>
+          <td>${name}</td>
+          <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" style="width: 50px; height: 50px;">` : '无图片'}</td>
+          <td class="small-width"><input type="number" name="quantity" class="form-control" value="1"></td>
+          <td>${price}</td>
+          <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+        </tr>
+      `;
+      $('#selected-materials-list').append(newRow);
+      updateTotalPrice();
+    });
+
+    $('#selected-products-list, #selected-materials-list').on('click', '.remove-item-btn', function(){
+      console.log("Remove item button clicked");
+      $(this).closest('tr').remove();
+      updateTotalPrice();
+    });
+
+    $('#order-form').submit(function(event){
+      console.log("Form submitted");
+      var products = [];
+      var materials = [];
+      $('#selected-products-list tr').each(function(){
+        var id = $(this).data('id');
+        var quantity = $(this).find('input[name="quantity"]').val();
+        var price = $(this).data('price');
+        products.push(`${id},${quantity},${price}`);
+      });
+      $('#selected-materials-list tr').each(function(){
+        var id = $(this).data('id');
+        var quantity = $(this).find('input[name="quantity"]').val();
+        var price = $(this).data('price');
+        materials.push(`${id},${quantity},${price}`);
+      });
+      $('<input>').attr({
+        type: 'hidden',
+        name: 'products',
+        value: products.join(';')
+      }).appendTo('#order-form');
+      $('<input>').attr({
+        type: 'hidden',
+        name: 'materials',
+        value: materials.join(';')
+      }).appendTo('#order-form');
+    });
+
+    $('#search-products-box').on('input', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('#products-list tr').each(function(){
+        var model = $(this).find('td:eq(1)').text().toLowerCase();
+        var name = $(this).find('td:eq(3)').text().toLowerCase();
+        if (model.includes(searchTerm) || name.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $('#search-materials-box').on('input', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('#flower-materials-list tr').each(function(){
+        var model = $(this).find('td:eq(1)').text().toLowerCase();
+        var name = $(this).find('td:eq(3)').text().toLowerCase();
+        if (model.includes(searchTerm) || name.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $('#selected-products-list, #selected-materials-list').on('change', 'input[name="quantity"]', function(){
+      updateTotalPrice();
+    });
+
+    function updateTotalPrice() {
+      var totalCost = 0;
+      $('#selected-products-list tr').each(function(){
+        var quantity = parseFloat($(this).find('input[name="quantity"]').val());
+        var price = parseFloat($(this).data('price'));
+        totalCost += quantity * price;
+      });
+      $('#selected-materials-list tr').each(function(){
+        var quantity = parseFloat($(this).find('input[name="quantity"]').val());
+        var price = parseFloat($(this).data('price'));
+        totalCost += quantity * price;
+      });
+      var freightCost = parseFloat($('input[name="freight_cost"]').val()) || 0;
+      totalCost += freightCost;
+      $('#total-price').text(totalCost.toFixed(2));
+    }
+  });
+</script>
+
+{% endblock %}
+

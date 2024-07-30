@@ -93,3 +93,5 @@ class Command(BaseCommand):
             )
 
         self.stdout.write(self.style.SUCCESS("Data imported successfully."))
+
+        # manage.py import_flower_data

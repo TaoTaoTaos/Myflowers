@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
+
 from app01 import views
 from app01.views import (
     base_view,
@@ -34,6 +35,7 @@ from app01.views import (
     packaging_list,
     edit_packaging,
     delete_packaging,
+    OrderCreateView,
 )
 
 urlpatterns = [
@@ -102,6 +104,10 @@ urlpatterns = [
     ),
     # Success Page URL
     path("success/", success_page, name="success_page"),
+    ###############################
+    path(
+        "order_create/", OrderCreateView.as_view(), name="order_create"
+    ),  # 确保使用 .as_view()
 ]
 
 if settings.DEBUG:
