@@ -5,26 +5,28 @@
 {% endblock %}
 
 {% block extra_css %}
-  th {
-    text-align: center;
-    vertical-align: middle;
-  }
+  <style>
+    th {
+      text-align: center;
+      vertical-align: middle;
+    }
 
-  .align-middle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .align-middle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  .fixed-image-cell img {
-    height: 80px;
-    width: 80px;
-    object-fit: cover;
-  }
+    .fixed-image-cell img {
+      height: 80px;
+      width: 80px;
+      object-fit: cover;
+    }
 
-  .fixed-image-cell {
-    width: 100px; /* 调整列宽度，比图片宽一点 */
-  }
+    .fixed-image-cell {
+      width: 100px; /* 调整列宽度，比图片宽一点 */
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -71,7 +73,6 @@
                 <th style="text-align: center; vertical-align: middle;">图片</th>
                 <th style="text-align: center; vertical-align: middle;">修改时间</th>
                 <th style="text-align: center; vertical-align: middle;">业务员</th>
-
                 <th style="text-align: center; vertical-align: middle;">操作</th>
               </tr>
             </thead>
@@ -101,8 +102,7 @@
                     {% endif %}
                   </td>
                   <td style="text-align: center; vertical-align: middle;">{{ customer.updated_at }}</td>
-                    <td style="text-align: center; vertical-align: middle;">{{ customer.created_by.username }}</td>
-
+                  <td style="text-align: center; vertical-align: middle;">{{ customer.created_by.username }}</td>
                   <td style="text-align: center; vertical-align: middle;">
                     <a href="{% url 'follow_up_list' customer.customer_id %}" class="btn btn-secondary btn-sm">跟进</a>
                   </td>

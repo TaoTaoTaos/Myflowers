@@ -278,8 +278,6 @@ class CustomerForm(forms.ModelForm):
 from .models import FollowUpRecord
 
 
-# forms.py
-
 from django import forms
 from .models import FollowUpRecord, FollowUpAttachment
 from .widgets import MultiFileInput
@@ -299,7 +297,44 @@ class FollowUpAttachmentForm(forms.ModelForm):
         model = FollowUpAttachment
         fields = ["file"]
         widgets = {
-            "file": MultiFileInput(attrs={"class": "form-control"}),
+            "file": MultiFileInput(attrs={"class": "form-control", "multiple": True}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(FollowUpAttachmentForm, self).__init__(*args, **kwargs)
+        self.fields["file"].required = False
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = [
+            "name",
+            "country",
+            "company_name",
+            "address",
+            "phone",
+            "mobile",
+            "email",
+            "sales_channel",
+            "product_demand",
+            "source",
+            "status",
+            "image",
+        ]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "country": forms.TextInput(attrs={"class": "form-control"}),
+            "company_name": forms.TextInput(attrs={"class": "form-control"}),
+            "address": forms.TextInput(attrs={"class": "form-control"}),
+            "phone": forms.TextInput(attrs={"class": "form-control"}),
+            "mobile": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "sales_channel": forms.TextInput(attrs={"class": "form-control"}),
+            "product_demand": forms.TextInput(attrs={"class": "form-control"}),
+            "source": forms.TextInput(attrs={"class": "form-control"}),
+            "status": forms.Select(attrs={"class": "form-control"}),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
         }
 
 

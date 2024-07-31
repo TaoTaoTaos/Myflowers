@@ -828,23 +828,19 @@ def add_customer(request):
 
 @login_required
 def follow_up_list(request, customer_id):
-    """
-    视图：客户跟进记录页面
-    功能：展示客户的跟进记录，并允许用户添加新跟进记录和附件
-    """
     customer = get_object_or_404(Customer, customer_id=customer_id)
     follow_ups = customer.follow_ups.all().order_by("-follow_up_time")
 
-    # 添加逻辑以确定附件是否为图片
     for follow_up in follow_ups:
         for attachment in follow_up.attachments.all():
             attachment.is_image = attachment.file.url.lower().endswith(
-                (".png", ".jpg", ".jpeg")
+                (".png", ".jpg", ".jpeg", ".gif")
             )
 
     if request.method == "POST":
         form = FollowUpRecordForm(request.POST)
         files = request.FILES.getlist("file")
+        customer_form = CustomerForm(request.POST, request.FILES, instance=customer)
         if form.is_valid():
             follow_up = form.save(commit=False)
             follow_up.customer = customer
@@ -854,9 +850,14 @@ def follow_up_list(request, customer_id):
             for file in files:
                 FollowUpAttachment.objects.create(follow_up_record=follow_up, file=file)
             return redirect("follow_up_list", customer_id=customer_id)
+        elif customer_form.is_valid():
+            customer_form.save()
+            return redirect("follow_up_list", customer_id=customer_id)
     else:
         form = FollowUpRecordForm()
         attachment_form = FollowUpAttachmentForm()
+        customer_form = CustomerForm(instance=customer)
+
     return render(
         request,
         "follow_up_list.html",
@@ -865,7 +866,29 @@ def follow_up_list(request, customer_id):
             "follow_ups": follow_ups,
             "form": form,
             "attachment_form": attachment_form,
+            "customer_form": customer_form,
             "current_user": request.user,
+        },
+    )
+
+
+@login_required
+def customer_update(request, customer_id):
+    customer = get_object_or_404(Customer, customer_id=customer_id)
+    if request.method == "POST":
+        customer_form = CustomerForm(request.POST, request.FILES, instance=customer)
+        if customer_form.is_valid():
+            customer_form.save()
+            return redirect("follow_up_list", customer_id=customer_id)
+    else:
+        customer_form = CustomerForm(instance=customer)
+
+    return render(
+        request,
+        "customer_update.html",
+        {
+            "customer_form": customer_form,
+            "customer": customer,
         },
     )
 
@@ -932,3 +955,88 @@ class OrderCreateView(View):
             "order_create.html",
             {"form": form, "products": products, "flower_materials": flower_materials},
         )
+
+
+@login_required
+def delete_order(request, order_id):
+    """
+    视图：删除订单
+    功能：用户可以通过此视图删除订单
+    """
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == "POST":
+        order.delete()
+        return redirect("order_list")
+    return render(request, "delete_order.html", {"order": order})
+
+
+@login_required
+def order_list(request):
+    """
+    视图：订单列表页面
+    功能：展示所有订单
+    """
+    if request.user.is_superuser:
+        orders = Order.objects.all()
+    else:
+        orders = Order.objects.filter(created_by=request.user)
+
+    return render(
+        request,
+        "order_list.html",
+        {"orders": orders, "current_user": request.user},
+    )
+
+
+@login_required
+def order_details(request, order_id):
+    """
+    视图：订单详情页面
+    功能：展示特定订单的详细信息
+    """
+    order = get_object_or_404(Order, id=order_id)
+    order_items = order.items.all()
+
+    return render(
+        request,
+        "order_details.html",
+        {"order": order, "order_items": order_items, "current_user": request.user},
+    )
+
+
+@login_required
+def order_edit(request, order_id):
+    """
+    视图：编辑订单页面
+    功能：用户可以通过此视图编辑订单信息并更新订单项
+    """
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == "POST":
+        form = OrderForm(request.POST, instance=order)
+        formset = OrderItemFormSet(request.POST, instance=order)
+        if form.is_valid() and formset.is_valid():
+            order = form.save(commit=False)
+            order.updated_at = timezone.now()
+            order.save()
+            formset.save()
+            return redirect("order_details", order_id=order.id)
+    else:
+        form = OrderForm(instance=order)
+        formset = OrderItemFormSet(instance=order)
+
+    customers = Customer.objects.all()
+    shipping_methods = ShippingMethod.objects.all()
+
+    context = {
+        "form": form,
+        "formset": formset,
+        "order": order,
+        "customers": customers,
+        "shipping_methods": shipping_methods,
+        "products": Product.objects.all(),
+        "flower_materials": FlowerMaterial.objects.all(),
+        "current_user": request.user,
+    }
+
+    return render(request, "order_edit.html", context)

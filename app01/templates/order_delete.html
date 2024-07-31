@@ -1,0 +1,24 @@
+<!-- templates/delete_order.html -->
+{% extends 'base.html' %}
+
+{% block title %}删除订单{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">删除订单</h5>
+                    <p>确定要删除订单 <strong>{{ order.order_number }}</strong> 吗？此操作无法撤销。</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">删除</button>
+                        <a href="{% url 'order_details' order.id %}" class="btn btn-secondary">取消</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

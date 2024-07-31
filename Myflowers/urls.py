@@ -1,5 +1,3 @@
-# Myflowers/urls.py
-
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -39,43 +37,52 @@ from app01.views import (
 )
 
 urlpatterns = [
+    ############################### 包装 ###############################
     path("add_packaging/", add_packaging, name="add_packaging"),
     path("packaging_list/", packaging_list, name="packaging_list"),
     path("edit_packaging/<str:pk>/", edit_packaging, name="edit_packaging"),
     path("delete_packaging/<str:pk>/", delete_packaging, name="delete_packaging"),
-    # Admin URL
+    ############################### 包装 END ###############################
+    ############################### 管理员 ###############################
     path("admin/", admin.site.urls),
-    # Base and Home URLs
+    ############################### 管理员 END ###############################
+    ############################### 基础和主页 ###############################
     path("base/", base_view, name="base"),
     path("home/", home_view, name="home"),
-    # Authentication URLs
+    ############################### 基础和主页 END ###############################
+    ############################### 认证 ###############################
     path("", login_view, name="login"),  # 默认打开网页指向登录页面
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
     path("register/", register_view, name="register"),
-    # User Profile URLs
+    ############################### 认证 END ###############################
+    ############################### 用户个人资料 ###############################
     path("profile/", profile_view, name="profile"),
     path("set_background/", set_background, name="set_background"),
-    # Superuser Page URL
+    ############################### 用户个人资料 END ###############################
+    ############################### 超级用户 ###############################
     path("superuser_page/", superuser_page, name="superuser_page"),
-    # Comment URLs
+    ############################### 超级用户 END ###############################
+    ############################### 评论 ###############################
     path("add_comment/", views.add_comment_view, name="add_comment"),
     path(
         "delete_comment/<int:comment_id>/", delete_comment_view, name="delete_comment"
     ),
-    # Control Panel URL
+    ############################### 评论 END ###############################
+    ############################### 控制面板 ###############################
     path("control-panel/", control_panel_view, name="control-panel"),
-    # Product URLs
+    ############################### 控制面板 END ###############################
+    ############################### 产品 ###############################
     path("add_product/", add_product, name="add_product"),
     path("product_list/", product_list, name="product_list"),
     path("product_details/<str:model>/", product_details, name="product_details"),
     path("products/edit/<str:model>/", views.edit_product, name="edit_product"),
     path("product_details/<str:model>/edit/", views.edit_product, name="edit_product"),
     path("product_details/<str:model>/", views.product_details, name="product_details"),
-    # 添加这一行以定义 product_detail 的 URL 模式
     path("product_detail/<str:model>/", views.product_details, name="product_detail"),
     path("products/delete/<str:model>/", views.delete_product, name="delete_product"),
-    # Flower Material URLs
+    ############################### 产品 END ###############################
+    ############################### 花材 ###############################
     path(
         "flower_material/<str:model>/",
         flower_material_detail,
@@ -93,21 +100,35 @@ urlpatterns = [
     path(
         "flower-materials/", flower_materials_list, name="flower_material_list"
     ),  # 花材查
-    # Quote URLs
+    ############################### 花材 END ###############################
+    ############################### 报价 ###############################
     path("add_quote_item/", add_quote_item, name="add_quote_item"),
     path("save_quote/", save_quote, name="save_quote"),
-    # Customer URLs
+    ############################### 报价 END ###############################
+    ############################### 客户 ###############################
     path("customer_list/", customer_list, name="customer_list"),
     path("add_customer/", add_customer, name="add_customer"),
     path(
         "customers/<str:customer_id>/follow-ups/", follow_up_list, name="follow_up_list"
     ),
-    # Success Page URL
+    path(
+        "customers/<str:customer_id>/update/",
+        views.customer_update,
+        name="customer_update",
+    ),
+    ############################### 客户 END ###############################
+    ############################### 成功页面 ###############################
     path("success/", success_page, name="success_page"),
-    ###############################
+    ############################### 成功页面 END ###############################
+    ############################### 订单 ###############################
     path(
         "order_create/", OrderCreateView.as_view(), name="order_create"
     ),  # 确保使用 .as_view()
+    path("order_list/", views.order_list, name="order_list"),
+    path("order_list/<int:order_id>/", views.order_details, name="order_details"),
+    path("order_list/<int:order_id>/edit/", views.order_edit, name="order_edit"),
+    path("order_list/<int:order_id>/delete/", views.delete_order, name="delete_order"),
+    ############################### 订单 END ###############################
 ]
 
 if settings.DEBUG:

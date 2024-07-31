@@ -549,8 +549,10 @@ User = get_user_model()
 # 客户模型
 class Customer(models.Model):
     CUSTOMER_STATUS_CHOICES = [
-        ("已成交", "已成交"),
         ("跟进中", "跟进中"),
+        ("已付款", "已付款"),
+        ("已成交", "已成交"),
+        ("已放弃", "已放弃"),
     ]
     CUSTOMER_LEVEL_CHOICES = [
         ("A", "A"),

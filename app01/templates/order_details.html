@@ -1,0 +1,122 @@
+<!-- templates/order_details.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  订单详情
+{% endblock %}
+
+{% block content %}
+  <a href="{% url 'order_list' %}" class="btn btn-primary btn-lg" style="margin-left:auto">返回列表</a>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <div class="col-md-12">
+              <div class="card-body">
+                <h5 class="card-title">订单号: {{ order.order_number }}</h5>
+                <div class="row">
+                  <div class="col-6">
+                    <p class="card-text">
+                      <strong>客户:</strong> {{ order.customer.name }}
+                    </p>
+                    <p class="card-text">
+                      <strong>订单日期:</strong> {{ order.order_date|date:"Y-m-d" }}
+                    </p>
+                    <p class="card-text">
+                      <strong>应发货日期:</strong> {{ order.shipment_date|date:"Y-m-d" }}
+                    </p>
+                    <p class="card-text">
+                      <strong>实发货日期:</strong> {{ order.actual_shipment_date|date:"Y-m-d" }}
+                    </p>
+                    <p class="card-text">
+                      <strong>订单状态:</strong> {{ order.get_status_display }}
+                    </p>
+                    <p class="card-text">
+                      <strong>备货状态:</strong> {{ order.get_preparation_status_display }}
+                    </p>
+                    <p class="card-text">
+                      <strong>所收运费:</strong> {{ order.freight_cost_received }}
+                    </p>
+                  </div>
+                  <div class="col-6">
+                    <p class="card-text">
+                      <strong>实际运费:</strong> {{ order.actual_freight_cost }}
+                    </p>
+                    <p class="card-text">
+                      <strong>运单号:</strong> {{ order.tracking_number }}
+                    </p>
+                    <p class="card-text">
+                      <strong>发货方式:</strong> {{ order.shipping_method.name }}
+                    </p>
+                    <p class="card-text">
+                      <strong>实际收款金额:</strong> {{ order.actual_payment_received }}
+                    </p>
+                    <p class="card-text">
+                      <strong>创建时间:</strong> {{ order.created_at }}
+                    </p>
+                    <p class="card-text">
+                      <strong>更新时间:</strong> {{ order.updated_at }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">订单项</div>
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              {% for item in order_items %}
+                <li class="list-group-item">
+                  {% if item.product %}
+                    产品: {{ item.product.chinese_name }} (数量: {{ item.quantity }}, 单价: {{ item.unit_price }}, 总价: {{ item.total_price }})
+                  {% elif item.flower_material %}
+                    花材: {{ item.flower_material.chinese_name }} (数量: {{ item.quantity }}, 单价: {{ item.unit_price }}, 总价: {{ item.total_price }})
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="position-sticky" style="top: 1rem;">
+          <div class="card">
+            <div class="card-header">订单列表</div>
+            <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+              <input type="text" class="form-control mb-2" id="searchOrder" placeholder="搜索订单" />
+              <ul class="list-group list-group-flush" id="orderList">
+                {% for order in orders %}
+                  <li class="list-group-item">
+                    <a href="{% url 'order_details' order.id %}">{{ order.order_number }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('searchOrder').addEventListener('keyup', function () {
+      var searchValue = this.value.toLowerCase();
+      var orderItems = document.getElementById('orderList').getElementsByTagName('li');
+    
+      for (var i = 0; i < orderItems.length; i++) {
+        var orderText = orderItems[i].getElementsByTagName('a')[0].innerText.toLowerCase();
+        if (orderText.indexOf(searchValue) > -1) {
+          orderItems[i].style.display = '';
+        } else {
+          orderItems[i].style.display = 'none';
+        }
+      }
+    });
+  </script>
+{% endblock %}
