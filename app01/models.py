@@ -658,17 +658,19 @@ class ShippingMethod(models.Model):
 class Order(models.Model):
     # 订单状态选择
     ORDER_STATUS_CHOICES = [
-        ("pending", "待处理"),
-        ("confirmed", "已确认"),
+        ("unpaid", "未付款"),
+        ("paid", "已付款"),
         ("shipped", "已发货"),
-        ("delivered", "已送达"),
-        ("canceled", "已取消"),
+        ("signed", "已签收"),
+        ("completed", "已完成"),
+        ("closed", "已关闭"),
     ]
     # 备货状态选择
     PREPARATION_STATUS_CHOICES = [
         ("not_started", "未开始"),
-        ("in_progress", "进行中"),
-        ("completed", "已完成"),
+        ("need_progress", "需要备货"),
+        ("in_progress", "备货中"),
+        ("completed", "备货完成"),
     ]
 
     order_number = models.CharField(
@@ -712,7 +714,11 @@ class Order(models.Model):
         max_length=100, blank=True, null=True, verbose_name="运单号"
     )  # 运单号
     shipping_method = models.ForeignKey(
-        "ShippingMethod", on_delete=models.SET_NULL, null=True, verbose_name="发货方式"
+        "ShippingMethod",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="发货方式",
     )  # 发货方式
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -781,6 +787,7 @@ class OrderItem(models.Model):
                 self.unit_price = self.flower_material.price_one  # 使用花材价格一
             elif self.price_type == "price_two":
                 self.unit_price = self.flower_material.price_two  # 使用花材价格二
+        self.unit_price = self.unit_price or Decimal(0)  # 处理 None 值
         self.total_price = self.unit_price * self.quantity  # 总价 = 单价 * 数量
         super().save(*args, **kwargs)
 

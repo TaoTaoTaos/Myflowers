@@ -901,11 +901,18 @@ from .forms import OrderForm, OrderItemFormSet
 from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from .models import Order, OrderItem, Product, FlowerMaterial, ShippingMethod
+from .forms import OrderForm, OrderItemFormSet
+from django.contrib import messages
+from django.db import transaction
+from django.utils import timezone
 
 
 class OrderCreateView(View):
     def get(self, request, *args, **kwargs):
-        form = OrderForm()
+        form = OrderForm(initial={"order_date": timezone.now().date()})
         products = Product.objects.all()
         flower_materials = FlowerMaterial.objects.all()
         return render(
@@ -925,29 +932,33 @@ class OrderCreateView(View):
                     products_data = request.POST.get("products", "").split(";")
                     for p in products_data:
                         if p:
-                            product_id, quantity, price = p.split(",")
+                            product_id, quantity = p.split(",")[:2]
                             product = Product.objects.get(model=product_id)
                             OrderItem.objects.create(
                                 order=order,
-                                content_object=product,
-                                quantity=quantity,
-                                price=price,
+                                product=product,
+                                quantity=int(quantity),
+                                price_type="price_one",  # 默认选择价格类型为 price_one
                             )
                     materials_data = request.POST.get("materials", "").split(";")
                     for m in materials_data:
                         if m:
-                            material_id, quantity, price = m.split(",")
+                            material_id, quantity, price_type = m.split(",")[:3]
                             material = FlowerMaterial.objects.get(model=material_id)
                             OrderItem.objects.create(
                                 order=order,
-                                content_object=material,
-                                quantity=quantity,
-                                price=price,
+                                flower_material=material,
+                                quantity=int(quantity),
+                                price_type=price_type,
                             )
                     messages.success(request, "订单已成功创建")
                     return redirect("order_list")
             except Exception as e:
+                # 添加错误日志记录
+                print(f"创建订单时出现错误: {str(e)}")
                 form.add_error(None, f"创建订单时出现错误: {str(e)}")
+        else:
+            print("表单无效: ", form.errors)
         products = Product.objects.all()
         flower_materials = FlowerMaterial.objects.all()
         return render(
@@ -958,7 +969,7 @@ class OrderCreateView(View):
 
 
 @login_required
-def delete_order(request, order_id):
+def order_delete(request, order_id):
     """
     视图：删除订单
     功能：用户可以通过此视图删除订单
@@ -967,7 +978,7 @@ def delete_order(request, order_id):
     if request.method == "POST":
         order.delete()
         return redirect("order_list")
-    return render(request, "delete_order.html", {"order": order})
+    return render(request, "order_delete.html", {"order": order})
 
 
 @login_required

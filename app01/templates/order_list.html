@@ -60,9 +60,10 @@
                   <td style="text-align: center; vertical-align: middle;">
                     <a href="{% url 'order_details' order.id %}" class="btn btn-info btn-sm">详情</a>
                     <a href="{% url 'order_edit' order.id %}" class="btn btn-warning btn-sm">编辑</a>
-                    <form action="{% url 'delete_order' order.id %}" method="post" style="display:inline;">
+                    
+                    <form action="{% url 'delete_order' order.id %}" method="post" style="display:inline;" class="delete-form">
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-danger btn-sm">删除</button>
+                      <button type="button" class="btn btn-danger btn-sm delete-button">删除</button>
                     </form>
                   </td>
                 </tr>
@@ -89,6 +90,17 @@
           noRows: '没有找到符合条件的记录',
           info: '显示第 {start} 到 {end} 条记录，总共 {rows} 条记录'
         },
+      });
+
+      const deleteButtons = document.querySelectorAll('.delete-button');
+
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+          if (confirm('您确定要删除此订单吗？此操作无法撤销。')) {
+            this.closest('form').submit();
+          }
+        });
       });
     });
   </script>

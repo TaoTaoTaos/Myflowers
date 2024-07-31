@@ -125,9 +125,10 @@ urlpatterns = [
         "order_create/", OrderCreateView.as_view(), name="order_create"
     ),  # 确保使用 .as_view()
     path("order_list/", views.order_list, name="order_list"),
+    path("order/<int:order_id>/delete/", views.order_delete, name="delete_order"),
     path("order_list/<int:order_id>/", views.order_details, name="order_details"),
     path("order_list/<int:order_id>/edit/", views.order_edit, name="order_edit"),
-    path("order_list/<int:order_id>/delete/", views.delete_order, name="delete_order"),
+    path("order/<int:order_id>/delete/", views.order_delete, name="delete_order"),
     ############################### 订单 END ###############################
 ]
 
