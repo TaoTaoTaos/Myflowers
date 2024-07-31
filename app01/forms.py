@@ -317,6 +317,7 @@ class OrderForm(forms.ModelForm):
             "customer",
             "order_date",
             "shipment_date",
+            "actual_shipment_date",
             "remarks",
             "actual_payment_received",
             "status",
