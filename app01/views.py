@@ -386,7 +386,8 @@ def add_packaging(request):
                 "packaging_type": packaging.packaging_type.name,
                 "size": f"{packaging.length} x {packaging.width} x {packaging.height} cm",
             }
-            return JsonResponse(data)
+            messages.success(request, "包装创建成功!")
+            return redirect("packaging_list")  # 重定向到包装列表页面
         else:
             return JsonResponse({"errors": form.errors}, status=400)
     else:
@@ -685,6 +686,8 @@ def edit_product(request, model):
     )
 
     product = get_object_or_404(Product, model=model)
+    flower_materials = FlowerMaterial.objects.all()
+    packagings = Packaging.objects.all()
 
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -698,10 +701,10 @@ def edit_product(request, model):
 
                     # 处理花材信息
                     ProductMaterial.objects.filter(product=product).delete()
-                    flower_materials = request.POST.get("flower_materials", "").split(
-                        ";"
-                    )
-                    for fm in flower_materials:
+                    flower_materials_data = request.POST.get(
+                        "flower_materials", ""
+                    ).split(";")
+                    for fm in flower_materials_data:
                         if fm:
                             flower_material_model, quantity, ratio, cost_price = (
                                 fm.split(",")
@@ -716,17 +719,48 @@ def edit_product(request, model):
                                 ratio=ratio,
                             )
 
+                    # 处理包装信息
+                    ProductPackaging.objects.filter(product=product).delete()
+                    packagings_data = request.POST.get("packagings", "").split(";")
+                    for pk in packagings_data:
+                        if pk:
+                            packaging_model, inner_box_quantity, outer_box_quantity = (
+                                pk.split(",")
+                            )
+                            packaging = Packaging.objects.get(model=packaging_model)
+                            inner_box_quantity = (
+                                int(inner_box_quantity)
+                                if packaging.packaging_type.name == "内盒"
+                                else 0
+                            )
+                            outer_box_quantity = (
+                                int(outer_box_quantity)
+                                if packaging.packaging_type.name in ["内盒", "外箱"]
+                                else 0
+                            )
+                            ProductPackaging.objects.create(
+                                product=product,
+                                packaging=packaging,
+                                inner_box_quantity=inner_box_quantity,
+                                outer_box_quantity=outer_box_quantity,
+                            )
+
                     return redirect("product_list")  # 重定向到产品列表页面
             except IntegrityError:
                 form.add_error(None, "保存产品时出现错误，请重试。")
             except FlowerMaterial.DoesNotExist:
                 form.add_error(None, "指定的花材不存在，请检查输入。")
+            except Packaging.DoesNotExist:
+                form.add_error(None, "指定的包装不存在，请检查输入。")
+            except Exception as e:
+                form.add_error(None, "发生未知错误，请重试。")
+        else:
+            print("Product form is not valid: ", form.errors)
     else:
         form = ProductForm(instance=product)
-        flower_materials = FlowerMaterial.objects.all()
 
-        # 获取现有的花材信息，用于前端展示
-        existing_materials = ProductMaterial.objects.filter(product=product)
+    existing_materials = ProductMaterial.objects.filter(product=product)
+    existing_packagings = ProductPackaging.objects.filter(product=product)
 
     return render(
         request,
@@ -734,7 +768,9 @@ def edit_product(request, model):
         {
             "form": form,
             "flower_materials": flower_materials,
+            "packagings": packagings,
             "existing_materials": existing_materials,
+            "existing_packagings": existing_packagings,
             "current_user": request.user,
         },
     )
@@ -768,18 +804,24 @@ def product_list(request):
     )
 
 
+from django.shortcuts import render, get_object_or_404
+from .models import Product, ProductMaterial, ProductPackaging
+
+
 def product_details(request, model):
     """
     视图：产品详情页面
-    功能：展示特定产品的详细信息和关联的花材
+    功能：展示特定产品的详细信息、关联的花材和包装
     """
     product = get_object_or_404(Product, model=model)
     materials = product.productmaterial_set.all()
+    packagings = product.productpackaging_set.all()
     products = Product.objects.all()  # 获取所有产品
 
     context = {
         "product": product,
         "materials": materials,
+        "packagings": packagings,  # 将包装信息添加到上下文中
         "current_user": request.user,
         "products": products,  # 将产品列表添加到上下文中
     }
@@ -938,23 +980,27 @@ class OrderCreateView(View):
                                 order=order,
                                 product=product,
                                 quantity=int(quantity),
-                                price_type="price_one",  # 默认选择价格类型为 price_one
                             )
                     materials_data = request.POST.get("materials", "").split(";")
                     for m in materials_data:
                         if m:
                             material_id, quantity, price_type = m.split(",")[:3]
                             material = FlowerMaterial.objects.get(model=material_id)
+                            unit_price = (
+                                material.price_one
+                                if price_type == "price_one"
+                                else material.price_two
+                            )
                             OrderItem.objects.create(
                                 order=order,
                                 flower_material=material,
                                 quantity=int(quantity),
                                 price_type=price_type,
+                                unit_price=unit_price,
                             )
                     messages.success(request, "订单已成功创建")
                     return redirect("order_list")
             except Exception as e:
-                # 添加错误日志记录
                 print(f"创建订单时出现错误: {str(e)}")
                 form.add_error(None, f"创建订单时出现错误: {str(e)}")
         else:

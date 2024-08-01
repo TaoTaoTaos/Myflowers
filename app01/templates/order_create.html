@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load widget_tweaks %}
 
 {% block title %}
   创建订单页面
@@ -67,6 +66,7 @@
                 <th>图片</th>
                 <th style="width: 100px;">数量</th>
                 <th>价格</th>
+                <th>成本价</th>
                 <th style="width: 70px;">操作</th>
               </tr>
             </thead>
@@ -82,6 +82,7 @@
                 <th>图片</th>
                 <th style="width: 100px;">数量</th>
                 <th>价格</th>
+                <th>成本价</th>
                 <th style="width: 70px;">操作</th>
               </tr>
             </thead>
@@ -95,82 +96,81 @@
       <div class="card custom-width">
         <div class="card-body">
           <h2 class="card-title">创建订单</h2>
-<form method="post" id="order-form">
-    {% csrf_token %}
-    <div class="form-section">
-        <!-- 订单表单部分 -->
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="order_number">订单号</label>
-                {{ form.order_number|add_class:"form-control" }}
+          <form method="post" id="order-form">
+            {% csrf_token %}
+            <div class="form-section">
+                <!-- 订单表单部分 -->
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="order_number">订单号</label>
+                        {{ form.order_number }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="customer">客户</label>
+                        {{ form.customer }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="order_date">订单日期</label>
+                        {{ form.order_date }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="shipment_date">应发货日期</label>
+                        {{ form.shipment_date }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="actual_shipment_date">实发货日期</label>
+                        {{ form.actual_shipment_date }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="actual_payment_received">实际收款金额</label>
+                        {{ form.actual_payment_received }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="status">订单状态</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="preparation_status">备货状态</label>
+                        {{ form.preparation_status }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="freight_cost_received">所收运费</label>
+                        {{ form.freight_cost_received }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="actual_freight_cost">实际运费</label>
+                        {{ form.actual_freight_cost }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="tracking_number">运单号</label>
+                        {{ form.tracking_number }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="shipping_method">发货方式</label>
+                        {{ form.shipping_method }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="remarks">备注</label>
+                        {{ form.remarks }}
+                    </div>
+                </div>
             </div>
-            <div class="form-group col-md-6">
-                <label for="customer">客户</label>
-                {{ form.customer|add_class:"form-control" }}
+            <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-primary" type="submit">保存并创建订单</button>
             </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="order_date">订单日期</label>
-                {{ form.order_date|add_class:"form-control" }}
-            </div>
-            <div class="form-group col-md-6">
-                <label for="shipment_date">应发货日期</label>
-                {{ form.shipment_date|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="actual_shipment_date">实发货日期</label>
-                {{ form.actual_shipment_date|add_class:"form-control" }}
-            </div>
-            <div class="form-group col-md-6">
-                <label for="actual_payment_received">实际收款金额</label>
-                {{ form.actual_payment_received|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="status">订单状态</label>
-                {{ form.status|add_class:"form-control" }}
-            </div>
-            <div class="form-group col-md-6">
-                <label for="preparation_status">备货状态</label>
-                {{ form.preparation_status|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="freight_cost_received">所收运费</label>
-                {{ form.freight_cost_received|add_class:"form-control" }}
-            </div>
-            <div class="form-group col-md-6">
-                <label for="actual_freight_cost">实际运费</label>
-                {{ form.actual_freight_cost|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="tracking_number">运单号</label>
-                {{ form.tracking_number|add_class:"form-control" }}
-            </div>
-            <div class="form-group col-md-6">
-                <label for="shipping_method">发货方式</label>
-                {{ form.shipping_method|add_class:"form-control" }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-12">
-                <label for="remarks">备注</label>
-                {{ form.remarks|add_class:"form-control" }}
-            </div>
-        </div>
-    </div>
-    <div class="d-grid gap-2 mt-3">
-        <button class="btn btn-primary" type="submit">保存并创建订单</button>
-    </div>
-</form>
-
+          </form>
         </div>
       </div>
     </div>
@@ -190,6 +190,7 @@
                   <th>图片</th>
                   <th>名称</th>
                   <th>价格</th>
+                  <th>成本价</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -200,15 +201,16 @@
                   <td>{{ product.model }}</td>
                   <td class="fixed-image-cell">
                     {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="图片"style="width:60px">
+                    <img src="{{ product.image.url }}" alt="图片" style="width:60px">
                     {% else %}
                     无图片
                     {% endif %}
                   </td>
                   <td>{{ product.chinese_name }}</td>
                   <td>{{ product.price }}</td>
+                  <td>{{ product.cost }}</td>
                   <td>
-                    <button type="button" class="btn btn-primary add-product-btn" data-id="{{ product.model }}" data-name="{{ product.chinese_name }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}" data-price="{{ product.price }}">添加</button>
+                    <button type="button" class="btn btn-primary add-product-btn" data-id="{{ product.model }}" data-name="{{ product.chinese_name }}" data-image="{% if product.image %}{{ product.image.url }}{% endif %}" data-price="{{ product.price }}" data-cost="{{ product.cost }}">添加</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -231,7 +233,9 @@
                   <th>型号</th>
                   <th>图片</th>
                   <th>名称</th>
-                  <th>价格</th>
+                  <th>价格1</th>
+                  <th>价格2</th>
+                  <th>成本价</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -249,8 +253,10 @@
                   </td>
                   <td>{{ material.chinese_name }}</td>
                   <td>{{ material.price_one }}</td>
+                  <td>{{ material.price_two }}</td>
+                  <td>{{ material.cost_price }}</td>
                   <td>
-                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-name="{{ material.chinese_name }}" data-image="{% if material.image %}{{ material.image.url }}{% endif %}" data-price="{{ material.price_one }}">添加</button>
+                    <button type="button" class="btn btn-primary add-material-btn" data-id="{{ material.model }}" data-name="{{ material.chinese_name }}" data-image="{% if material.image %}{{ material.image.url }}{% endif %}" data-price-one="{{ material.price_one }}" data-price-two="{{ material.price_two }}" data-cost="{{ material.cost_price }}">添加</button>
                   </td>
                 </tr>
                 {% endfor %}
@@ -275,6 +281,7 @@
       var name = $(this).data('name');
       var imageUrl = $(this).data('image');
       var price = $(this).data('price');
+      var cost = $(this).data('cost');
 
       var newRow = `
         <tr data-id="${id}" data-price="${price}">
@@ -283,6 +290,7 @@
           <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" style="width: 50px; height: 50px;">` : '无图片'}</td>
           <td class="small-width"><input type="number" name="quantity" class="form-control" value="1"></td>
           <td>${price}</td>
+          <td>${cost}</td>
           <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
         </tr>
       `;
@@ -296,15 +304,22 @@
       var id = $(this).data('id');
       var name = $(this).data('name');
       var imageUrl = $(this).data('image');
-      var price = $(this).data('price');
+      var priceOne = $(this).data('price-one');
+      var priceTwo = $(this).data('price-two');
+      var cost = $(this).data('cost');
 
       var newRow = `
-        <tr data-id="${id}" data-price="${price}">
+        <tr data-id="${id}" data-price-one="${priceOne}" data-price-two="${priceTwo}">
           <td>${id}</td>
           <td>${name}</td>
           <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" style="width: 50px; height: 50px;">` : '无图片'}</td>
           <td class="small-width"><input type="number" name="quantity" class="form-control" value="1"></td>
-          <td>${price}</td>
+          <td><select class="form-control" name="price-type">
+                <option value="price_one">${priceOne}</option>
+                <option value="price_two">${priceTwo}</option>
+              </select>
+          </td>
+          <td>${cost}</td>
           <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
         </tr>
       `;
@@ -331,8 +346,9 @@
       $('#selected-materials-list tr').each(function(){
         var id = $(this).data('id');
         var quantity = $(this).find('input[name="quantity"]').val();
-        var price = $(this).data('price');
-        materials.push(`${id},${quantity},${price}`);
+        var priceType = $(this).find('select[name="price-type"]').val();
+        var price = priceType === "price_one" ? $(this).data('price-one') : $(this).data('price-two');
+        materials.push(`${id},${quantity},${priceType}`);
       });
       $('<input>').attr({
         type: 'hidden',
@@ -372,7 +388,7 @@
       });
     });
 
-    $('#selected-products-list, #selected-materials-list').on('change', 'input[name="quantity"]', function(){
+    $('#selected-products-list, #selected-materials-list').on('change', 'input[name="quantity"], select[name="price-type"]', function(){
       updateTotalPrice();
     });
 
@@ -385,7 +401,8 @@
       });
       $('#selected-materials-list tr').each(function(){
         var quantity = parseFloat($(this).find('input[name="quantity"]').val());
-        var price = parseFloat($(this).data('price'));
+        var priceType = $(this).find('select[name="price-type"]').val();
+        var price = priceType === "price_one" ? parseFloat($(this).data('price-one')) : parseFloat($(this).data('price-two'));
         totalCost += quantity * price;
       });
       var freightCost = parseFloat($('input[name="freight_cost"]').val()) || 0;
@@ -396,4 +413,3 @@
 </script>
 
 {% endblock %}
-

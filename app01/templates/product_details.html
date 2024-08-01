@@ -35,7 +35,7 @@
                     <p class="card-text"><strong>尺寸:</strong> {{ product.size }}</p>
                     <p class="card-text"><strong>重量:</strong> {{ product.weight }}</p>
                     <p class="card-text"><strong>颜色:</strong> {{ product.color }}</p>
-                    <p class="card-text"><strong>包装:</strong> {{ product.package }}</p>
+                    <p class="card-text"><strong>包装:</strong> {{ product.package_name }}</p>
                     <p class="card-text"><strong>销售规格数量:</strong> {{ product.sale_spec_quantity }}</p>
                     <p class="card-text"><strong>销售规格单位:</strong> {{ product.get_sale_spec_unit_display }}</p>
                     <p class="card-text"><strong>内箱尺寸:</strong> {{ product.inner_box_size }}</p>
@@ -73,6 +73,7 @@
             <h4>产品组成</h4>
           </div>
           <div class="card-body">
+            <h5>花材组成</h5>
             <table class="table table-bordered text-center">
               <thead>
                 <tr>
@@ -105,6 +106,48 @@
                   <td>{{ material.flower_material.cost_price }}</td>
                   <td>{{ material.flower_material.created_by }}</td>
                   <td>{{ material.flower_material.updated_at }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <h5>包装组成</h5>
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th>包装型号</th>
+                  <th>包装名称</th>
+                  <th>包装类型</th>
+                  <th>长度</th>
+                  <th>宽度</th>
+                  <th>高度</th>
+                  <th>成本价</th>
+                  <th>售价</th>
+                  <th>内箱数量</th>
+                  <th>外箱数量</th>
+                  <th>图片</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for packaging in packagings %}
+                <tr>
+                  <td>{{ packaging.packaging.model }}</td>
+                  <td>{{ packaging.packaging.name }}</td>
+                  <td>{{ packaging.packaging.packaging_type }}</td>
+                  <td>{{ packaging.packaging.length }}</td>
+                  <td>{{ packaging.packaging.width }}</td>
+                  <td>{{ packaging.packaging.height }}</td>
+                  <td>{{ packaging.packaging.cost_price }}</td>
+                  <td>{{ packaging.packaging.selling_price }}</td>
+                  <td>{{ packaging.inner_box_quantity }}</td>
+                  <td>{{ packaging.outer_box_quantity }}</td>
+                  <td>
+                    {% if packaging.packaging.image %}
+                      <img src="{{ packaging.packaging.image.url }}" class="img-fluid" style="max-width: 50px; max-height: 50px;" alt="{{ packaging.packaging.name }}" />
+                    {% else %}
+                      无图片
+                    {% endif %}
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>

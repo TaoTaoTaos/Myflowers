@@ -120,6 +120,7 @@ class FlowerMaterialForm(forms.ModelForm):
             "packing_quantity",
             "grade",
             "supplier",
+            "cost_price",
             "price_one",
             "price_two",
         ]
@@ -143,6 +144,9 @@ class FlowerMaterialForm(forms.ModelForm):
             "packing_quantity": forms.NumberInput(attrs={"class": "form-control"}),
             "grade": forms.Select(attrs={"class": "form-control"}),
             "supplier": forms.Select(attrs={"class": "form-control"}),
+            "cost_price": forms.NumberInput(
+                attrs={"class": "form-control"}
+            ),  # 使用正确的输入类型
             "price_one": forms.NumberInput(attrs={"class": "form-control"}),
             "price_two": forms.NumberInput(attrs={"class": "form-control"}),
         }

@@ -653,6 +653,41 @@ class ShippingMethod(models.Model):
 
 
 ############# 订单模型 #############
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from decimal import Decimal
+
+############# 采购状态模型 #############
+
+
+class PreparationStatus(models.Model):
+    PREPARATION_STATUS_CHOICES = [
+        ("needless", "不需要采购"),
+        ("needed", "需要采购"),
+        ("simple_purchase_order", "收到简单采购单"),
+        ("purchase_order_completed", "采购单完成"),
+        ("in_purchase", "正在采购"),
+        ("purchase_completed", "采购完成"),
+        ("stored", "已采购入库"),
+    ]
+
+    name = models.CharField(
+        max_length=100,
+        choices=PREPARATION_STATUS_CHOICES,
+        unique=True,
+        verbose_name="状态名称",
+    )
+
+    def __str__(self):
+        return self.get_name_display()
+
+    class Meta:
+        verbose_name = "采购状态"
+        verbose_name_plural = "采购状态"
+
+
+############# 订单模型 #############
 
 
 class Order(models.Model):
@@ -665,74 +700,56 @@ class Order(models.Model):
         ("completed", "已完成"),
         ("closed", "已关闭"),
     ]
-    # 备货状态选择
-    PREPARATION_STATUS_CHOICES = [
-        ("not_started", "未开始"),
-        ("need_progress", "需要备货"),
-        ("in_progress", "备货中"),
-        ("completed", "备货完成"),
-    ]
 
-    order_number = models.CharField(
-        max_length=100, unique=True, verbose_name="订单号"
-    )  # 订单号
+    order_number = models.CharField(max_length=100, unique=True, verbose_name="订单号")
     customer = models.ForeignKey(
         "Customer", on_delete=models.SET_NULL, null=True, verbose_name="客户"
-    )  # 客户
-    order_date = models.DateTimeField(
-        default=timezone.now, verbose_name="订单日期"
-    )  # 订单日期
-    shipment_date = models.DateField(
-        verbose_name="应发货日期", null=True, blank=True
-    )  # 应发货日期
+    )
+    order_date = models.DateTimeField(default=timezone.now, verbose_name="订单日期")
+    shipment_date = models.DateField(verbose_name="应发货日期", null=True, blank=True)
     actual_shipment_date = models.DateField(
         verbose_name="实发货日期", null=True, blank=True
-    )  # 实发货日期
-    remarks = models.TextField(blank=True, null=True, verbose_name="备注")  # 备注
+    )
+    remarks = models.TextField(blank=True, null=True, verbose_name="备注")
     actual_payment_received = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="实际收款金额", default=0.0
-    )  # 实际收款金额
+    )
     status = models.CharField(
         max_length=10,
         choices=ORDER_STATUS_CHOICES,
-        default="pending",
+        default="unpaid",
         verbose_name="订单状态",
-    )  # 订单状态
-    preparation_status = models.CharField(
-        max_length=20,
-        choices=PREPARATION_STATUS_CHOICES,
-        default="not_started",
-        verbose_name="备货状态",
-    )  # 备货状态
+    )
+    preparation_status = models.ForeignKey(
+        "PreparationStatus",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="采购状态",
+    )
     freight_cost_received = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="所收运费", default=0.0
-    )  # 所收运费
+    )
     actual_freight_cost = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="实际运费", default=0.0
-    )  # 实际运费
-    tracking_number = models.CharField(
-        max_length=100, blank=True, null=True, verbose_name="运单号"
-    )  # 运单号
+    )
+    tracking_number = models.TextField(blank=True, null=True, verbose_name="填写运单号")
     shipping_method = models.ForeignKey(
         "ShippingMethod",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="发货方式",
-    )  # 发货方式
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="创建者",
-    )  # 创建者
-    created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="创建时间"
-    )  # 创建时间
-    updated_at = models.DateTimeField(
-        auto_now=True, verbose_name="更新时间"
-    )  # 更新时间
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     def __str__(self):
         return self.order_number
@@ -754,41 +771,41 @@ class OrderItem(models.Model):
 
     order = models.ForeignKey(
         Order, related_name="items", on_delete=models.CASCADE, verbose_name="订单"
-    )  # 订单
+    )
     product = models.ForeignKey(
         "Product", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="产品"
-    )  # 产品
+    )
     flower_material = models.ForeignKey(
         "FlowerMaterial",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="花材",
-    )  # 花材
-    quantity = models.PositiveIntegerField(default=1, verbose_name="数量")  # 数量
+    )
+    quantity = models.PositiveIntegerField(default=1, verbose_name="数量")
     price_type = models.CharField(
         max_length=10,
         choices=PRICE_TYPE_CHOICES,
         default="price_one",
         verbose_name="价格类型",
-    )  # 价格类型
+    )
     unit_price = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="单价", editable=False
-    )  # 单价
+    )
     total_price = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="总价", editable=False
-    )  # 总价
+    )
 
     def save(self, *args, **kwargs):
         if self.product:
-            self.unit_price = self.product.price  # 使用产品价格
+            self.unit_price = self.product.price
         elif self.flower_material:
             if self.price_type == "price_one":
-                self.unit_price = self.flower_material.price_one  # 使用花材价格一
+                self.unit_price = self.flower_material.price_one
             elif self.price_type == "price_two":
-                self.unit_price = self.flower_material.price_two  # 使用花材价格二
-        self.unit_price = self.unit_price or Decimal(0)  # 处理 None 值
-        self.total_price = self.unit_price * self.quantity  # 总价 = 单价 * 数量
+                self.unit_price = self.flower_material.price_two
+        self.unit_price = self.unit_price or Decimal(0)
+        self.total_price = self.unit_price * self.quantity
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -810,46 +827,43 @@ class OrderItem(models.Model):
 class OrderProfit(models.Model):
     order = models.OneToOneField(
         Order, related_name="profit", on_delete=models.CASCADE, verbose_name="订单"
-    )  # 订单
+    )
     theoretical_profit = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name="理论利润",
         editable=False,
         default=0.0,
-    )  # 理论利润
+    )
     actual_profit = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name="实际利润",
         editable=False,
         default=0.0,
-    )  # 实际利润
+    )
 
     def calculate_profit(self):
-        # 计算利润
         total_cost = Decimal(0.0)
         total_revenue = Decimal(0.0)
         for item in self.order.items.all():
             if item.product:
-                total_cost += item.product.cost * item.quantity  # 计算产品总成本
-                total_revenue += item.unit_price * item.quantity  # 计算产品总收入
+                total_cost += item.product.cost * item.quantity
+                total_revenue += item.unit_price * item.quantity
             elif item.flower_material:
-                total_cost += (
-                    item.flower_material.cost_price * item.quantity
-                )  # 计算花材总成本
-                total_revenue += item.unit_price * item.quantity  # 计算花材总收入
+                total_cost += item.flower_material.cost_price * item.quantity
+                total_revenue += item.unit_price * item.quantity
         self.theoretical_profit = (
             total_revenue - total_cost + self.order.freight_cost_received
-        )  # 计算理论利润（包含所收运费）
+        )
         self.actual_profit = (
             self.order.actual_payment_received
             - total_cost
             - self.order.actual_freight_cost
-        )  # 计算实际利润（包含实际运费）
+        )
 
     def save(self, *args, **kwargs):
-        self.calculate_profit()  # 保存前计算利润
+        self.calculate_profit()
         super().save(*args, **kwargs)
 
     def __str__(self):
