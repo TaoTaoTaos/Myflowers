@@ -652,15 +652,14 @@ class ShippingMethod(models.Model):
         verbose_name_plural = "发货方式"
 
 
-############# 订单模型 #############
+######################################订单模型 ##########################################
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from decimal import Decimal
 
+
 ############# 采购状态模型 #############
-
-
 class PreparationStatus(models.Model):
     PREPARATION_STATUS_CHOICES = [
         ("needless", "不需要采购"),
@@ -668,8 +667,8 @@ class PreparationStatus(models.Model):
         ("simple_purchase_order", "收到简单采购单"),
         ("purchase_order_completed", "采购单完成"),
         ("in_purchase", "正在采购"),
-        ("purchase_completed", "采购完成"),
         ("stored", "已采购入库"),
+        ("purchase_completed", "采购完成"),
     ]
 
     name = models.CharField(

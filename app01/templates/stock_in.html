@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+  入库页面
+{% endblock %}
+
+{% block extra_css %}
+  .align-middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fixed-image-cell img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+  }
+
+  .fixed-image-cell {
+    width: 100px;
+  }
+
+  .scrollable-table {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .form-section {
+    margin-bottom: 20px;
+  }
+
+  .card.custom-width {
+    width: 100%;
+  }
+
+  .small-width {
+    width: 80px;
+  }
+
+  .img-thumbnail {
+    height: 30px;
+    width: 30px;
+    object-fit: cover;
+  }
+
+  .img-thumbnail-cell {
+    width: 100px;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card custom-width mb-4">
+        <div class="card-body">
+          <h3 class="card-title">已选择的入库项目</h3>
+          <table class="table table-bordered" id="selected-stock-items-table">
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>型号</th>
+                <th>名称</th>
+                <th>图片</th>
+                <th>尺寸</th>
+                <th>颜色</th>
+                <th>数量</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="selected-stock-items-list">
+            </tbody>
+          </table>
+
+          <div class="card-body" style="border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
+            <h3 class="card-title">添加入库项目</h3>
+            <form method="post" id="stock-in-form" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-section">
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="stock_type">库存类型</label>
+                    {{ stock_in_form.stock_type|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="in_type">入库类型</label>
+                    {{ stock_in_form.in_type|add_class:"form-control" }}
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="batch_number">批次号</label>
+                    {{ stock_in_form.batch_number|add_class:"form-control" }}
+                  </div>
+                </div>
+                <div class="d-grid gap-2 mt-3">
+                  <button class="btn btn-outline-success" type="submit">添加入库项目</button>
+                </div>
+              </div>
+            </form>
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                <ul>
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card custom-width">
+        <div class="card-body">
+          <h3 class="card-title">概念列表</h3>
+          <input type="text" id="search-box" placeholder="搜索概念项目" class="form-control mb-3">
+          <div class="table-responsive scrollable-table">
+            <table class="table table-hover table-fixed" id="stock-items-table">
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>编号</th>
+                  <th>名称</th>
+                  <th>图片</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="stock-items-list">
+                {% for item in stock_items %}
+                <tr>
+                  <td>{{ item.type }}</td>
+                  <td>{{ item.model }}</td>
+                  <td>{{ item.name }}</td>
+                  <td class="fixed-image-cell">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="图片" style="width: 50px; height: 50px;" />
+                    {% else %}
+                    无图片
+                    {% endif %}
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-primary add-stock-item-btn" data-id="{{ item.model }}" data-type="{{ item.type }}" data-name="{{ item.name }}" data-image="{% if item.image %}{{ item.image.url }}{% endif %}">添加</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('.add-stock-item-btn').click(function(){
+      var id = $(this).data('id');
+      var type = $(this).data('type');
+      var name = $(this).data('name');
+      var imageUrl = $(this).data('image');
+
+      var newRow = `
+        <tr data-id="${id}">
+          <td>${type}</td>
+          <td>${id}</td>
+          <td>${name}</td>
+          <td class="img-thumbnail-cell">${imageUrl ? `<img src="${imageUrl}" alt="图片" style="width: 50px; height: 50px;" >` : '无图片'}</td>
+          <td><input type="text" name="size" class="form-control" value=""></td>
+          <td><input type="text" name="color" class="form-control" value=""></td>
+          <td class="small-width"><input type="number" name="quantity" class="form-control" value="1"></td>
+          <td><button type="button" class="btn btn-danger remove-item-btn">删除</button></td>
+        </tr>
+      `;
+      $('#selected-stock-items-list').append(newRow);
+    });
+
+    $('#selected-stock-items-list').on('click', '.remove-item-btn', function(){
+      $(this).closest('tr').remove();
+    });
+
+    $('#stock-in-form').submit(function(event){
+      event.preventDefault();
+
+      var stockItems = [];
+      var batchNumber = $('#id_batch_number').val();  // 获取批次号
+      $('#selected-stock-items-list tr').each(function(){
+        var id = $(this).data('id');
+        var size = $(this).find('input[name="size"]').val();
+        var color = $(this).find('input[name="color"]').val();
+        var quantity = $(this).find('input[name="quantity"]').val();
+        stockItems.push(`${id},${size},${color},${quantity}`);
+      });
+
+      $('<input>').attr({
+        type: 'hidden',
+        name: 'stock_items',
+        value: stockItems.join(';')
+      }).appendTo('#stock-in-form');
+
+      this.submit();
+    });
+
+    $('#search-box').on('input', function(){
+      var searchTerm = $(this).val().toLowerCase();
+      $('#stock-items-list tr').each(function(){
+        var id = $(this).find('td:eq(1)').text().toLowerCase();
+        var name = $(this).find('td:eq(2)').text().toLowerCase();
+        if (id.includes(searchTerm) || name.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
